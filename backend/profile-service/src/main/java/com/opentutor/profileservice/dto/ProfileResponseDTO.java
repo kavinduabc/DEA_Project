@@ -1,39 +1,26 @@
-package com.opentutor.profileservice.model;
+package com.opentutor.profileservice.dto;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+public class ProfileResponseDTO {
 
-@Entity
-@Table(name = "profiles")
-public class Profile {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotBlank(message = "Name is required")
-    @Column(nullable = false)
     private String name;
-
-    @Email(message = "Email should be valid")
-    @NotBlank(message = "Email is required")
-    @Column(nullable = false, unique = true)
     private String email;
-
     private String phone;
-
     private String address;
 
-    public Profile() {
+    // Constructors
+    public ProfileResponseDTO() {
     }
 
-    public Profile(String name, String email, String phone, String address) {
+    public ProfileResponseDTO(Long id, String name, String email, String phone, String address) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.address = address;
     }
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }

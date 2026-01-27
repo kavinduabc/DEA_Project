@@ -1,47 +1,36 @@
-package com.opentutor.profileservice.model;
+package com.opentutor.profileservice.dto;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.Length;
 
-@Entity
-@Table(name = "profiles")
-public class Profile {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class ProfileRequestDTO {
 
     @NotBlank(message = "Name is required")
-    @Column(nullable = false)
+    @Length(min = 2, max = 50, message = "Name should be between 2 and 50 characters")
     private String name;
 
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email is required")
-    @Column(nullable = false, unique = true)
     private String email;
 
+    @Length(min = 10, max = 10, message = "Phone number should be valid")
     private String phone;
 
     private String address;
 
-    public Profile() {
+    // Constructors
+    public ProfileRequestDTO() {
     }
 
-    public Profile(String name, String email, String phone, String address) {
+    public ProfileRequestDTO(String name, String email, String phone, String address) {
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.address = address;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    // Getters and Setters
     public String getName() {
         return name;
     }
