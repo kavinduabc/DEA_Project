@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: Enrollment Service
+
+
+  config:
+    import: optional:file:.env[.properties]
+
+  datasource:
+    url: ${SUPABASE_URL}
+
+    username: ${SUPABASE_USER}
+    password: ${SUPABASE_PASS}
+    driverClassName: org.postgresql.Driver
+
+    hikari:
+      data-source-properties:
+        ssl: true
+        sslmode: require
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+
+server:
+  port: 8094
