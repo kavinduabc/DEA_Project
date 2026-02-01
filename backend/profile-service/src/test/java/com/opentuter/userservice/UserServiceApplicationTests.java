@@ -1,13 +1,13 @@
-package com.opentutor.profileservice;
+package com.opentuter.userservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ProfileServiceApplicationTests {
+class UserServiceApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }
