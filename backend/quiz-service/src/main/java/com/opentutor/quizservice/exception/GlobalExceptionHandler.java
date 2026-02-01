@@ -1,178 +1,107 @@
 package com.opentutor.quizservice.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
+
+import com.opentutor.quizservice.dto.ErrorRespoceDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
-    // Handle custom DuplicateResourceException
-    @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<Map<String, Object>> handleDuplicateResource(
-            DuplicateResourceException ex,
-            WebRequest request) {
-
-        logger.warn("Duplicate resource: {}", ex.getMessage());
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.CONFLICT.value());
-        response.put("error", "Conflict");
-        response.put("message", ex.getMessage());
-        response.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-    }
-
-    // Handle custom ResourceNotFoundException
+    // Handle ResourceNotFoundException
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleResourceNotFound(
-            ResourceNotFoundException ex,
-            WebRequest request) {
-
-        logger.warn("Resource not found: {}", ex.getMessage());
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.NOT_FOUND.value());
-        response.put("error", "Not Found");
-        response.put("message", ex.getMessage());
-        response.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorRespoceDto> handleResourceNotFoundException(ResourceNotFoundException exception, WebRequest webRequest) {
+        ErrorRespoceDto ErrorRespoceDto = new ErrorRespoceDto(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false)
+        );
+        return new ResponseEntity<>(ErrorRespoceDto, HttpStatus.NOT_FOUND);
     }
 
-    // Handle custom QuizDeletionNotAllowedException
-    @ExceptionHandler(QuizDeletionNotAllowedException.class)
-    public ResponseEntity<Map<String, Object>> handleQuizDeletionNotAllowed(
-            QuizDeletionNotAllowedException ex,
-            WebRequest request) {
-
-        logger.warn("Quiz deletion not allowed: {}", ex.getMessage());
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.CONFLICT.value());
-        response.put("error", "Conflict");
-        response.put("message", ex.getMessage());
-        response.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    // Handle BadRequestException
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorRespoceDto> handleBadRequestException(BadRequestException exception, WebRequest webRequest) {
+        ErrorRespoceDto ErrorRespoceDto = new ErrorRespoceDto(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false)
+        );
+        return new ResponseEntity<>(ErrorRespoceDto, HttpStatus.BAD_REQUEST);
     }
 
-    // Handle validation errors
+    // Handle Validation Exceptions (MethodArgumentNotValidException)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidationExceptions(
-            MethodArgumentNotValidException ex,
-            WebRequest request) {
+    public ResponseEntity<ErrorRespoceDto> handleValidationException(MethodArgumentNotValidException exception, WebRequest webRequest) {
+        String errorMessage = exception.getBindingResult().getFieldErrors()
+                .stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
 
-        logger.warn("Validation failed: {} error(s)", ex.getBindingResult().getErrorCount());
-
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.BAD_REQUEST.value());
-        response.put("error", "Validation Failed");
-        response.put("message", "Invalid input data");
-        response.put("errors", errors);
-        response.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        ErrorRespoceDto ErrorRespoceDto = new ErrorRespoceDto(
+                LocalDateTime.now(),
+                "Validation failed: " + errorMessage,
+                webRequest.getDescription(false)
+        );
+        return new ResponseEntity<>(ErrorRespoceDto, HttpStatus.BAD_REQUEST);
     }
 
-    // Handle database constraint violations (fallback for DataIntegrityViolationException)
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(
-            DataIntegrityViolationException ex,
-            WebRequest request) {
-
-        logger.error("Database constraint violation", ex);
-
-        String message = "Data integrity violation occurred";
-        String detailedMessage = ex.getMessage();
-
-        // Check for specific constraint violations
-        if (detailedMessage != null) {
-            if (detailedMessage.contains("duplicate key") && detailedMessage.contains("title")) {
-                message = "A quiz with this title already exists. Please use a different title.";
-            } else if (detailedMessage.contains("duplicate key")) {
-                message = "A quiz with these details already exists. Please use different information.";
-            } else if (detailedMessage.contains("foreign key constraint")) {
-                message = "Cannot perform this operation due to related data constraints.";
-            } else if (detailedMessage.contains("not-null constraint")) {
-                message = "Required field cannot be empty.";
-            }
+    // Handle Malformed JSON or Invalid Request Body Structure
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorRespoceDto> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception, WebRequest webRequest) {
+        String errorMessage = "Invalid request body structure or malformed JSON";
+        if (exception.getMessage() != null && exception.getMessage().contains("JSON parse error")) {
+            errorMessage = "Malformed JSON request";
+        } else if (exception.getMessage() != null && exception.getMessage().contains("Required request body is missing")) {
+            errorMessage = "Request body is required";
         }
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.CONFLICT.value());
-        response.put("error", "Conflict");
-        response.put("message", message);
-        response.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        ErrorRespoceDto ErrorRespoceDto = new ErrorRespoceDto(
+                LocalDateTime.now(),
+                errorMessage,
+                webRequest.getDescription(false)
+        );
+        return new ResponseEntity<>(ErrorRespoceDto, HttpStatus.BAD_REQUEST);
     }
 
-    // Handle IllegalArgumentException (e.g., invalid UUID format)
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleIllegalArgument(
-            IllegalArgumentException ex,
-            WebRequest request) {
-
-        logger.warn("Invalid argument: {}", ex.getMessage());
-
-        String message = ex.getMessage();
-        // Check if it's a UUID parsing error
-        if (message != null && message.contains("Invalid UUID string")) {
-            message = "Invalid ID format provided";
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.BAD_REQUEST.value());
-        response.put("error", "Bad Request");
-        response.put("message", message != null ? message : "Invalid argument provided");
-        response.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    // Handle DuplicateResourceException
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ErrorRespoceDto> handleDuplicateResourceException(DuplicateResourceException exception, WebRequest webRequest) {
+        ErrorRespoceDto ErrorRespoceDto = new ErrorRespoceDto(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false)
+        );
+        return new ResponseEntity<>(ErrorRespoceDto, HttpStatus.CONFLICT);
     }
 
-    // Handle all other exceptions
+    // Handle DeletionNotAllowedException
+    @ExceptionHandler(DeletionNotAllowedException.class)
+    public ResponseEntity<ErrorRespoceDto> handleDeletionNotAllowedException(DeletionNotAllowedException exception, WebRequest webRequest) {
+        ErrorRespoceDto ErrorRespoceDto = new ErrorRespoceDto(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false)
+        );
+        return new ResponseEntity<>(ErrorRespoceDto, HttpStatus.FORBIDDEN);
+    }
+
+    // Handle Global Generic Exceptions
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGlobalException(
-            Exception ex,
-            WebRequest request) {
-
-        logger.error("Unexpected error occurred", ex);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.put("error", "Internal Server Error");
-        response.put("message", "An unexpected error occurred. Please try again later.");
-        response.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ErrorRespoceDto> handleGlobalException(Exception exception, WebRequest webRequest) {
+        ErrorRespoceDto ErrorRespoceDto = new ErrorRespoceDto(
+                LocalDateTime.now(),
+                "Internal Server Error",
+                exception.getMessage()
+        );
+        return new ResponseEntity<>(ErrorRespoceDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

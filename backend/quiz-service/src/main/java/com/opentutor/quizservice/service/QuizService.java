@@ -4,7 +4,7 @@ import com.opentutor.quizservice.dto.QuizRequestDto;
 import com.opentutor.quizservice.dto.QuizResponceDto;
 import com.opentutor.quizservice.dto.QuizUpdateDto;
 import com.opentutor.quizservice.exception.DuplicateResourceException;
-import com.opentutor.quizservice.exception.QuizDeletionNotAllowedException;
+import com.opentutor.quizservice.exception.DeletionNotAllowedException;
 import com.opentutor.quizservice.exception.ResourceNotFoundException;
 import com.opentutor.quizservice.mapper.QuizMapper;
 import com.opentutor.quizservice.model.Quiz;
@@ -24,7 +24,6 @@ public class QuizService {
     private QuizMapper quizMapper;
 
     public QuizResponceDto createQuiz(QuizRequestDto requestDto) {
-        // Check if a quiz with the same title already exists in this module
         if (quizRepository.findByModuleIdAndTitle(requestDto.getModuleId(), requestDto.getTitle()).isPresent()) {
             throw new DuplicateResourceException("Quiz", "title", requestDto.getTitle());
         }
@@ -60,7 +59,6 @@ public class QuizService {
             Quiz existingQuiz = quizRepository.findById(java.util.UUID.fromString(id))
                     .orElseThrow(() -> new ResourceNotFoundException("Quiz", "id", id));
 
-            // Check if another quiz with the same title exists in the same module
             if (quizRepository.findByModuleIdAndTitleAndIdNot(
                     existingQuiz.getModuleId(),
                     updateDto.getTitle(),
@@ -75,7 +73,6 @@ public class QuizService {
             Quiz updatedQuiz = quizRepository.save(existingQuiz);
             return quizMapper.toDto(updatedQuiz);
         } catch (IllegalArgumentException e) {
-            // Check if it's a UUID parsing error (not thrown from orElseThrow)
             if (e.getMessage().contains("Invalid UUID format") || e.getMessage().contains("Invalid UUID string")) {
                 throw new IllegalArgumentException("Invalid UUID format: " + id);
             }
@@ -90,14 +87,14 @@ public class QuizService {
 
             // Check if quiz has any questions
             if (quiz.getQuestions() != null && !quiz.getQuestions().isEmpty()) {
-                throw new QuizDeletionNotAllowedException(
+                throw new DeletionNotAllowedException(
                         "Cannot delete quiz with ID " + id + " because it contains " +
                         quiz.getQuestions().size() + " question(s). Please remove all questions before deleting the quiz.");
             }
 
             // Check if quiz has any attempts
             if (quiz.getAttempts() != null && !quiz.getAttempts().isEmpty()) {
-                throw new QuizDeletionNotAllowedException(
+                throw new DeletionNotAllowedException(
                         "Cannot delete quiz with ID " + id + " because it has " +
                         quiz.getAttempts().size() + " attempt(s). Quizzes with student attempts cannot be deleted.");
             }
