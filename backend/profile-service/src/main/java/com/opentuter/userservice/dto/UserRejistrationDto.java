@@ -15,7 +15,7 @@ import jakarta.validation.constraints.NotBlank;
 //   security purpose .don't accidentally leak sensitive data
 //   you send smaller amount od data over the internet, which makes your app faster
 //   */
-public class UserRegistrationDto {
+public class UserRejistrationDto {
 
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email is required")
