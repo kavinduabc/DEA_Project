@@ -27,7 +27,7 @@ public class UserMapper {
         {
             return null;
         }
-
+        //collect data from using user schema and return to UserResponseDto
         return new UserResponseDto(
                 user.getId(),
                 user.getEmail(),
@@ -37,13 +37,15 @@ public class UserMapper {
     }
 
     //conver request dto into Entity
-    public User toUserModel(UserRejistrationDto registrationDTO)
+    public static User toUserModel(UserRejistrationDto registrationDTO)
     {
         if(registrationDTO == null)
         {
             return  null;
         }
-
+        //*
+        // form data mapping into user model using
+        // userRegistrtionDTO*/
         User user = new User();
 
         user.setEmail(registrationDTO.getEmail());
