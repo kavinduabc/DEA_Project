@@ -6,24 +6,29 @@ import com.opentuter.userservice.mapper.UserMapper;
 import com.opentuter.userservice.model.User;
 import com.opentuter.userservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Service
 public class UserService  {
 
-    private UserRepository userRepository;
-    private UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final PasswordEncoder encoder;
 
     //create constructor Injection for dependencies
     @Autowired
-    public UserService(UserRepository userRepository, UserMapper userMapper)
+    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordEncoder encoder)
     {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.encoder = encoder;
     }
 
     //implement method for user rejistration
-    public UserResponseDto addUser(UserRejistrationDto registrationDto)
+    public UserResponseDto addUser(@RequestBody UserRejistrationDto registrationDto)
     {
         //*
         //1. convert the sign up page entered data into a database model
@@ -33,8 +38,11 @@ public class UserService  {
 
         User user = userMapper.toUserModel(registrationDto);
 
-        User saveUser = userRepository.save(user);
 
+        user.setEmail(registrationDto.getEmail());
+        user.setPassword(encoder.encode(registrationDto.getPassword()));
+
+        User saveUser = userRepository.save( user);
         return userMapper.toReseponseDTO(saveUser);
 
     }
