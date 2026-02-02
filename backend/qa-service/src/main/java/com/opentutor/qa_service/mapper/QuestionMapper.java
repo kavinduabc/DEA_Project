@@ -24,11 +24,11 @@ public class QuestionMapper {
         QuestionResponseDto dto = new QuestionResponseDto(
                 question.getId(),
                 question.getTitle(),
-                question.getTags(),
                 question.getContent(),
                 question.getUserId(),
                 question.getUserName(),
                 question.getClassroomId(),
+                question.getTags(),
                 question.getViewCount(),
                 question.getAnswerCount(),
                 question.getIsResolved(),

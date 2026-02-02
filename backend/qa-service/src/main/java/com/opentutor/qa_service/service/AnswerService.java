@@ -7,7 +7,6 @@ import com.opentutor.qa_service.exception.DeletionNotAllowedException;
 import com.opentutor.qa_service.exception.ResourceNotFoundException;
 import com.opentutor.qa_service.mapper.AnswerMapper;
 import com.opentutor.qa_service.model.Answer;
-import com.opentutor.qa_service.model.Question;
 import com.opentutor.qa_service.repository.AnswerRepository;
 import com.opentutor.qa_service.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,7 @@ public class AnswerService {
      */
     public AnswerResponseDto createAnswer(AnswerRequestDto requestDto) {
         // Verify that the question exists
-        Question question = questionRepository.findById(requestDto.getQuestionId())
+        questionRepository.findById(requestDto.getQuestionId())
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + requestDto.getQuestionId()));
 
         Answer answer = answerMapper.toEntity(requestDto);
@@ -76,12 +75,13 @@ public class AnswerService {
     /**
      * Get answers by user ID
      */
-}
+
     public List<AnswerResponseDto> getAnswersByUserId(Long userId) {
         List<Answer> answers = answerRepository.findByUserIdOrderByCreatedAtDesc(userId);
         return answers.stream()
                 .map(answerMapper::toResponseDto)
                 .collect(Collectors.toList());
+    }
 
     /**
      * Update an answer
