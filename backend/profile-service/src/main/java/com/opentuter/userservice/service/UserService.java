@@ -12,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
 
@@ -28,7 +29,7 @@ public class UserService  {
     public UserService(UserRepository userRepository,
                        UserMapper userMapper,
                        PasswordEncoder encoder,
-                       @Lazy AuthenticationManager authenticationManager, // 2. IMPORTANT: @Lazy prevents StackOverflow
+                       @Lazy AuthenticationManager authenticationManager,
                        JwtService jwtService)
     {
         this.userRepository = userRepository;
@@ -37,7 +38,9 @@ public class UserService  {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
     }
-
+    //**
+    // implement the function for register user
+    // password encode using bcrpt*/
     public UserResponseDto addUser(UserRejistrationDto registrationDto)
     {
         User user = UserMapper.toUserModel(registrationDto);
@@ -48,6 +51,9 @@ public class UserService  {
         return userMapper.toReseponseDTO(saveUser);
     }
 
+    //**
+    // implement the function for verify user
+    // and authenticate with jwt token*/
     public String verify(String email, String password) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password)
@@ -58,5 +64,17 @@ public class UserService  {
             return jwtService.generateToken(user);
         }
         return "Fail";
+    }
+     //**
+     // implement the function for get user by id*/
+    public UserResponseDto getUser(@PathVariable String email)
+    {
+        User user = userRepository.findByEmail(email);
+
+        if(user == null)
+        {
+            throw new RuntimeException("User is not found");
+        }
+        return userMapper.toReseponseDTO(user);
     }
 }

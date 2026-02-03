@@ -2,6 +2,7 @@ package com.opentuter.userservice.controller;
 
 import com.opentuter.userservice.dto.UserRejistrationDto;
 import com.opentuter.userservice.dto.UserResponseDto;
+import com.opentuter.userservice.model.User;
 import com.opentuter.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,5 +37,11 @@ public class UserController {
             return new ResponseEntity<>("Invalid Credentials", HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(token, HttpStatus.OK);
+    }
+
+    @GetMapping("/view/{email}")
+    public UserResponseDto getUser(@PathVariable String email)
+    {
+        return userService.getUser(email);
     }
 }
