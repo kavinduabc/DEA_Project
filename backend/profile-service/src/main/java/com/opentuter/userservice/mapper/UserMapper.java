@@ -1,17 +1,5 @@
 package com.opentuter.userservice.mapper;
 
-
-//*
-// Mapper class act as trnslator or converter
-//  imagine you have a Entity and DTO .the mapper clas is the
-//  person who sits in the middle and rewrites the document for you
-//  -- Important --
-//   1.Centralization(one place rule)
-//   2.Two-Way Traffic
-//    Entity -> DTO
-//    DTO -> Entity
-//     */
-
 import com.opentuter.userservice.dto.UserRejistrationDto;
 import com.opentuter.userservice.dto.UserResponseDto;
 import com.opentuter.userservice.model.User;
@@ -31,7 +19,7 @@ public class UserMapper {
         return new UserResponseDto(
                 user.getId(),
                 user.getEmail(),
-                user.getPassword(),
+                user.getRole(),
                 user.getCreatedAt()
         );
     }
@@ -41,7 +29,7 @@ public class UserMapper {
     {
         if(registrationDTO == null)
         {
-            return  null;
+            return null;
         }
         //*
         // form data mapping into user model using
@@ -53,7 +41,5 @@ public class UserMapper {
         user.setPassword(registrationDTO.getPassword());
 
         return user;
-
     }
-
 }

@@ -1,13 +1,13 @@
 package com.opentuter.userservice.service;
 
-
 import com.opentuter.userservice.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm; // Imported this
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
-import java.security.Key
+import java.security.Key; // Fixed: Added semicolon here
 import java.util.Date;
 
 @Component
@@ -30,8 +30,8 @@ public class JwtService {
                 .setSubject(user.getEmail())
                 .claim("role" , user.getRole())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 864000))
-                .signWith(getKey(), signatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                .signWith(getKey(), SignatureAlgorithm.HS256) // Fixed: Capitalized SignatureAlgorithm
                 .compact();
     }
 
@@ -42,7 +42,7 @@ public class JwtService {
     }
 
     //implement function for extract role claim from jet
-    public String extractRole(String toke)
+    public String extractRole(String token) // Fixed: Changed 'toke' to 'token'
     {
         return extractAllClaims(token).get("role", String.class);
     }
@@ -53,9 +53,7 @@ public class JwtService {
         return Jwts.parserBuilder()
                 .setSigningKey(getKey())
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody();
     }
-
-
 }
