@@ -2,6 +2,7 @@ package com.opentuter.userservice.controller;
 
 import com.opentuter.userservice.dto.UserRejistrationDto;
 import com.opentuter.userservice.dto.UserResponseDto;
+import com.opentuter.userservice.dto.UserUpdateDto;
 import com.opentuter.userservice.model.User;
 import com.opentuter.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -43,5 +45,26 @@ public class UserController {
     public UserResponseDto getUser(@PathVariable String email)
     {
         return userService.getUser(email);
+    }
+
+    @GetMapping("/veiwAll")
+    public List<UserResponseDto> getAllUser()
+    {
+        return userService.getAllUser();
+    }
+
+    @PatchMapping("/update/{email}")
+    public UserResponseDto updateUser(
+            @PathVariable String email,
+            @RequestBody UserUpdateDto userUpdateDto)
+    {
+        return userService.updateUser(email, userUpdateDto);
+    }
+
+
+    @DeleteMapping("/delete/{email}")
+    public  UserResponseDto deleteUser(@PathVariable String email)
+    {
+        return userService.deleteUser(email);
     }
 }

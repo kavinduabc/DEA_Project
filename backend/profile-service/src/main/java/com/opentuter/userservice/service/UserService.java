@@ -2,6 +2,7 @@ package com.opentuter.userservice.service;
 
 import com.opentuter.userservice.dto.UserRejistrationDto;
 import com.opentuter.userservice.dto.UserResponseDto;
+import com.opentuter.userservice.dto.UserUpdateDto;
 import com.opentuter.userservice.mapper.UserMapper;
 import com.opentuter.userservice.model.User;
 import com.opentuter.userservice.repository.UserRepository;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService  {
@@ -66,7 +69,7 @@ public class UserService  {
         return "Fail";
     }
      //**
-     // implement the function for get user by id*/
+     // implement the function for get user by email*/
     public UserResponseDto getUser(@PathVariable String email)
     {
         User user = userRepository.findByEmail(email);
@@ -77,4 +80,61 @@ public class UserService  {
         }
         return userMapper.toReseponseDTO(user);
     }
+
+    //**
+    // implement the function for delete user */
+    public UserResponseDto deleteUser(@PathVariable String email)
+    {
+       User user = userRepository.findByEmail(email);
+
+       if(user == null)
+       {
+           throw new RuntimeException("User is not found");
+       }
+
+       userRepository.delete(user);
+
+       return userMapper.toReseponseDTO(user);
+    }
+
+    //**
+    // implement function for get all user*/
+    public List<UserResponseDto> getAllUser()
+    {
+
+
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::toReseponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    //**
+// implement method for update user by email*/
+    public UserResponseDto updateUser(String email, UserUpdateDto userUpdateDto)
+    {
+        User user = userRepository.findByEmail(email);
+
+        if(user == null)
+        {
+            throw new RuntimeException("User not found");
+        }
+
+        if(userUpdateDto.getRole() != null)
+        {
+            user.setRole(userUpdateDto.getRole());
+        }
+
+        if(userUpdateDto.getPassword() != null)
+        {
+            user.setPassword(encoder.encode(userUpdateDto.getPassword()));
+        }
+
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.toReseponseDTO(updatedUser);
+    }
+
+
+
 }

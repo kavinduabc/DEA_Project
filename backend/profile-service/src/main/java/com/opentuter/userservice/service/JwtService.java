@@ -14,7 +14,8 @@ import java.util.Date;
 public class JwtService {
 
     // implement the secret key use for generate the jwt token
-    private static final String secret = "my_super_secure_jwt_secret_key_which_is_long_enough_256bits";
+    private static final String secret =
+            "my_super_secure_jwt_secret_key_which_is_long_enough_256bits";
 
     // implement  function for generate signing key from secret string
     private Key getKey(){
@@ -28,7 +29,7 @@ public class JwtService {
     {
         return Jwts.builder()
                 .setSubject(user.getEmail())
-                .claim("role" , user.getRole())
+                .claim("role", user.getRole())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(getKey(), SignatureAlgorithm.HS256)

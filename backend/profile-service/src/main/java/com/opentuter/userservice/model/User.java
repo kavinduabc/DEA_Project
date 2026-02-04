@@ -27,6 +27,9 @@ private String password;
 @NotBlank(message = "Role is required")
     private String role;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Profile profile;
+
 private LocalDateTime createdAt;
 
     public User(Long id, String email, String role, String password ,LocalDateTime createdAt) {
@@ -65,8 +68,8 @@ private LocalDateTime createdAt;
         this.password = password;
     }
 
-    public @NotBlank(message = "Role is required") String getRole() {
-        return role;
+    public @NotBlank String getRole() {
+        return this.role;
     }
 
     public void setRole(@NotBlank(message = "Role is required") String role) {
