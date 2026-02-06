@@ -30,7 +30,7 @@ public class ProfileMapper {
     }
 
     //implement method to convert profile entity into  profileDto
-    public ProfileDto toProfileDto(Profile profile)
+    public static ProfileDto toProfileDto(Profile profile)
     {
         if(profile == null)
         {

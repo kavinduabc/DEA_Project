@@ -10,6 +10,8 @@ public class ProfileDto {
     private String imageUrl;
     private List<String> socailMediaUrl;
 
+    public ProfileDto() {}
+
     public ProfileDto(String fullName, String bio, String imageUrl, List<String> socailMediaUrl) {
         this.fullName = fullName;
         this.bio = bio;

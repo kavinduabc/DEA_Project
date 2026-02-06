@@ -11,9 +11,17 @@ public class Profile {
 
     @Id
     private Long id;
+
     private String fullName;
     private String bio;
     private String imageUrl;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "profile_social_links",
+            joinColumns = @JoinColumn(name = "profile_id")
+    )
+    @Column(name = "social_url")
     private List<String> socialMediaUrl;
 
     @OneToOne
