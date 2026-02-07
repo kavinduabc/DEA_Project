@@ -111,22 +111,16 @@ public class UserService  {
 
     //**
 // implement method for update user by email*/
-    public UserResponseDto updateUser(String email, UserUpdateDto userUpdateDto)
-    {
-        User user = userRepository.findByEmail(email);
+    public UserResponseDto updateUser(Long id, UserUpdateDto userUpdateDto) {
 
-        if(user == null)
-        {
-            throw new RuntimeException("User not found");
-        }
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if(userUpdateDto.getRole() != null)
-        {
+        if (userUpdateDto.getRole() != null) {
             user.setRole(userUpdateDto.getRole());
         }
 
-        if(userUpdateDto.getPassword() != null)
-        {
+        if (userUpdateDto.getPassword() != null) {
             user.setPassword(encoder.encode(userUpdateDto.getPassword()));
         }
 
@@ -134,7 +128,5 @@ public class UserService  {
 
         return userMapper.toReseponseDTO(updatedUser);
     }
-
-
 
 }
