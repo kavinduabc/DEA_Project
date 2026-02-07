@@ -10,10 +10,13 @@ public class Resource {
 
     @Id
     @GeneratedValue
+    @Column(columnDefinition = "uuid")
     private UUID id;
 
-    @Column(name = "module_id", nullable = false)
-    private UUID moduleId;
+    // Foreign key relationship
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "module_id", nullable = false)
+    private Module module;
 
     @Column(nullable = false)
     private String title;
@@ -25,19 +28,9 @@ public class Resource {
     private String fileUrl;
 
     // ===== Constructors =====
-
-    public Resource() {
-    }
-
-    public Resource(UUID moduleId, String title, String type, String fileUrl) {
-        this.moduleId = moduleId;
-        this.title = title;
-        this.type = type;
-        this.fileUrl = fileUrl;
-    }
+    public Resource() {}
 
     // ===== Getters & Setters =====
-
     public UUID getId() {
         return id;
     }
@@ -46,12 +39,12 @@ public class Resource {
         this.id = id;
     }
 
-    public UUID getModuleId() {
-        return moduleId;
+    public Module getModule() {
+        return module;
     }
 
-    public void setModuleId(UUID moduleId) {
-        this.moduleId = moduleId;
+    public void setModule(Module module) {
+        this.module = module;
     }
 
     public String getTitle() {

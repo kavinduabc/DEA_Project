@@ -1,82 +1,65 @@
 package com.opentuter.resourceservice.service;
 
-
 import com.opentuter.resourceservice.dto.ResourceRequestDto;
 import com.opentuter.resourceservice.dto.ResourceResponseDto;
-import com.opentuter.resourceservice.exception.DuplicateResourceException;
 import com.opentuter.resourceservice.exception.ResourceNotFoundException;
 import com.opentuter.resourceservice.mapper.ResourceMapper;
+import com.opentuter.resourceservice.model.Module;
 import com.opentuter.resourceservice.model.Resource;
+import com.opentuter.resourceservice.repository.ModuleRepository;
 import com.opentuter.resourceservice.repository.ResourceRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class ResourceService {
 
     private final ResourceRepository resourceRepository;
-    private final ResourceMapper resourceMapper;
+    private final ModuleRepository moduleRepository;
 
     public ResourceService(ResourceRepository resourceRepository,
-                           ResourceMapper resourceMapper) {
+                           ModuleRepository moduleRepository) {
         this.resourceRepository = resourceRepository;
-        this.resourceMapper = resourceMapper;
+        this.moduleRepository = moduleRepository;
     }
 
-    // Create
-    public ResourceResponseDto createResource(ResourceRequestDto resourceRequestDto) {
+    // CREATE RESOURCE
+    public ResourceResponseDto createResource(ResourceRequestDto dto) {
 
-        // Optional duplicate check (same title in same module)
-        List<Resource> existingResources =
-                resourceRepository.findByModuleId(resourceRequestDto.getModuleId());
+        Module module = moduleRepository.findById(dto.getModuleId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Module", "id", dto.getModuleId()));
 
-        boolean duplicateExists = existingResources.stream()
-                .anyMatch(r -> r.getTitle().equalsIgnoreCase(resourceRequestDto.getTitle()));
+        Resource resource = ResourceMapper.toEntity(dto);
+        resource.setModule(module);
 
-        if (duplicateExists) {
-            throw new DuplicateResourceException(
-                    "Resource",
-                    "title",
-                    resourceRequestDto.getTitle()
-            );
-        }
-
-        Resource entity = resourceMapper.toEntity(resourceRequestDto);
-        Resource savedEntity = resourceRepository.save(entity);
-
-        return resourceMapper.toResponseDto(savedEntity);
+        return ResourceMapper.toDto(resourceRepository.save(resource));
     }
 
-    // Read all resources by module
-    public List<ResourceResponseDto> getResourcesByModuleId(UUID moduleId) {
-        List<Resource> resources = resourceRepository.findByModuleId(moduleId);
-        return resourceMapper.toResponseDtoList(resources);
-    }
-
-    // Read by ID
-    public Optional<ResourceResponseDto> getResourceById(UUID id) {
+    // GET RESOURCE
+    public ResourceResponseDto getResourceById(UUID id) {
         return resourceRepository.findById(id)
-                .map(resourceMapper::toResponseDto);
+                .map(ResourceMapper::toDto)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Resource", "id", id));
     }
 
-    // Update
-    public ResourceResponseDto updateResource(UUID id,
-                                              ResourceRequestDto resourceRequestDto) {
+    // UPDATE RESOURCE
+    public ResourceResponseDto updateResource(UUID id, ResourceRequestDto dto) {
 
         Resource resource = resourceRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Resource", "id", id));
 
-        resourceMapper.updateEntityFromDto(resource, resourceRequestDto);
-        Resource updatedEntity = resourceRepository.save(resource);
+        resource.setTitle(dto.getTitle());
+        resource.setType(dto.getType());
+        resource.setFileUrl(dto.getFileUrl());
 
-        return resourceMapper.toResponseDto(updatedEntity);
+        return ResourceMapper.toDto(resourceRepository.save(resource));
     }
 
-    // Delete
+    // DELETE RESOURCE
     public void deleteResource(UUID id) {
         Resource resource = resourceRepository.findById(id)
                 .orElseThrow(() ->
@@ -85,4 +68,3 @@ public class ResourceService {
         resourceRepository.delete(resource);
     }
 }
-

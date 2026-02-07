@@ -1,74 +1,108 @@
 package com.opentuter.resourceservice.controller;
 
+
 import com.opentuter.resourceservice.dto.ResourceRequestDto;
 import com.opentuter.resourceservice.dto.ResourceResponseDto;
+import com.opentuter.resourceservice.exception.ResourceNotFoundException;
+import com.opentuter.resourceservice.model.Module;
 import com.opentuter.resourceservice.service.ResourceService;
+import com.opentuter.resourceservice.repository.ModuleRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/resources")
+@RequestMapping("/api")
 public class ResourceController {
 
     private final ResourceService resourceService;
+    private final ModuleRepository moduleRepository;
 
-    public ResourceController(ResourceService resourceService) {
+    public ResourceController(ResourceService resourceService,
+                              ModuleRepository moduleRepository) {
         this.resourceService = resourceService;
+        this.moduleRepository = moduleRepository;
     }
 
-    // Add a new resource (PDF / VIDEO / LINK)
-    @PostMapping
+    // ==================================================
+    // MODULE ENDPOINTS
+    // ==================================================
+
+    // POST /api/modules - Create a new chapter/week
+    @PostMapping("/modules")
+    public ResponseEntity<Module> createModule(@Valid @RequestBody Module module) {
+        return new ResponseEntity<>(
+                moduleRepository.save(module),
+                HttpStatus.CREATED
+        );
+    }
+
+    // PUT /api/modules/{id} - Rename or reorder a module
+    @PutMapping("/modules/{id}")
+    public ResponseEntity<Module> updateModule(
+            @PathVariable UUID id,
+            @RequestBody Module updatedModule) {
+
+        Module module = moduleRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Module", "id", id));
+
+        module.setTitle(updatedModule.getTitle());
+
+        return ResponseEntity.ok(moduleRepository.save(module));
+    }
+
+    // DELETE /api/modules/{id} - Remove a module
+    @DeleteMapping("/modules/{id}")
+    public ResponseEntity<Void> deleteModule(@PathVariable UUID id) {
+
+        Module module = moduleRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Module", "id", id));
+
+        moduleRepository.delete(module);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ==================================================
+    // RESOURCE ENDPOINTS
+    // ==================================================
+
+    // POST /api/resources - Upload a file or add a video link
+    @PostMapping("/resources")
     public ResponseEntity<ResourceResponseDto> createResource(
-            @Valid @RequestBody ResourceRequestDto resourceRequest) {
+            @Valid @RequestBody ResourceRequestDto request) {
 
-        ResourceResponseDto createdResource = resourceService.createResource(resourceRequest);
-        return new ResponseEntity<>(createdResource, HttpStatus.CREATED);
+        return new ResponseEntity<>(
+                resourceService.createResource(request),
+                HttpStatus.CREATED
+        );
     }
 
-    // Get all resources for a module
-    @GetMapping("/module/{moduleId}")
-    public ResponseEntity<List<ResourceResponseDto>> getResourcesByModule(
-            @PathVariable UUID moduleId) {
-
-        List<ResourceResponseDto> resources = resourceService.getResourcesByModuleId(moduleId);
-        return ResponseEntity.ok(resources);
+    // GET /api/resources/{id} - Get resource details
+    @GetMapping("/resources/{id}")
+    public ResponseEntity<ResourceResponseDto> getResource(@PathVariable UUID id) {
+        return ResponseEntity.ok(resourceService.getResourceById(id));
     }
 
-    // Get resource by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<ResourceResponseDto> getResourceById(@PathVariable UUID id) {
-        return resourceService.getResourceById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.<ResourceResponseDto>status(HttpStatus.NOT_FOUND).build());
-    }
-
-    // Update resource metadata (title, type, url)
-    @PutMapping("/{id}")
+    // PUT /api/resources/{id} - Update resource metadata
+    @PutMapping("/resources/{id}")
     public ResponseEntity<ResourceResponseDto> updateResource(
             @PathVariable UUID id,
-            @Valid @RequestBody ResourceRequestDto resourceRequest) {
+            @Valid @RequestBody ResourceRequestDto request) {
 
-        try {
-            ResourceResponseDto updatedResource = resourceService.updateResource(id, resourceRequest);
-            return ResponseEntity.ok(updatedResource);
-        } catch (RuntimeException e) {
-            return ResponseEntity.<ResourceResponseDto>status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.ok(
+                resourceService.updateResource(id, request)
+        );
     }
 
-    // Delete a resource
-    @DeleteMapping("/{id}")
+    // DELETE /api/resources/{id} - Remove a resource
+    @DeleteMapping("/resources/{id}")
     public ResponseEntity<Void> deleteResource(@PathVariable UUID id) {
-        try {
-            resourceService.deleteResource(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.<Void>status(HttpStatus.NOT_FOUND).build();
-        }
+        resourceService.deleteResource(id);
+        return ResponseEntity.noContent().build();
     }
 }
