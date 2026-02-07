@@ -38,8 +38,7 @@ public class AnnouncementMapper {
         dto.setMessage(entity.getMessage());
         dto.setClassroomId(entity.getClassroomId());
         dto.setCreatedBy(entity.getCreatedBy());
-        dto.setCreatedAt(entity.getCreatedAt());
-
+        dto.setCreatedAt(entity.getCreatedAt() != null ? entity.getCreatedAt().toString() : null);
         return dto;
     }
 
