@@ -3,16 +3,26 @@ package com.opentuter.userservice.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "profiles")
 public class Profile {
 
     @Id
     private Long id;
+
     private String fullName;
     private String bio;
     private String imageUrl;
-    private String scialMediaUrl;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "profile_social_links",
+            joinColumns = @JoinColumn(name = "profile_id")
+    )
+    @Column(name = "social_url")
+    private List<String> socialMediaUrl;
 
     @OneToOne
     @MapsId
@@ -51,12 +61,12 @@ public class Profile {
         this.imageUrl = imageUrl;
     }
 
-    public String getScialMediaUrl() {
-        return scialMediaUrl;
+    public List<String> getSocialMediaUrl() {
+        return socialMediaUrl;
     }
 
-    public void setScialMediaUrl(String scialMediaUrl) {
-        this.scialMediaUrl = scialMediaUrl;
+    public void setSocialMediaUrl(List<String> socialMediaUrl) {
+        this.socialMediaUrl = socialMediaUrl;
     }
 
     public User getUser() {

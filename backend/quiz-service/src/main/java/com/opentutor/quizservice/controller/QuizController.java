@@ -1,5 +1,9 @@
 package com.opentutor.quizservice.controller;
 
+import com.opentutor.quizservice.dto.AttemptRequestDto;
+import com.opentutor.quizservice.dto.AttemptResponseDto;
+import com.opentutor.quizservice.dto.QuestionRequestDto;
+import com.opentutor.quizservice.dto.QuestionResponseDto;
 import com.opentutor.quizservice.dto.QuizRequestDto;
 import com.opentutor.quizservice.dto.QuizResponceDto;
 import com.opentutor.quizservice.dto.QuizUpdateDto;
@@ -49,5 +53,45 @@ public class QuizController {
     public ResponseEntity<Void> deleteQuiz(@PathVariable("id") String id) {
         quizService.deleteQuiz(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{quizId}/questions")
+    public ResponseEntity<QuestionResponseDto> createQuestion(
+            @PathVariable("quizId") String quizId,
+            @Valid @RequestBody QuestionRequestDto requestDto) {
+        QuestionResponseDto responseDto = quizService.createQuestion(quizId, requestDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/questions/{id}")
+    public ResponseEntity<QuestionResponseDto> getQuestionById(@PathVariable("id") String id) {
+        QuestionResponseDto responseDto = quizService.getQuestionById(id);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/{quizId}/questions")
+    public ResponseEntity<List<QuestionResponseDto>> getQuestionsByQuizId(@PathVariable("quizId") String quizId) {
+        List<QuestionResponseDto> responseDto = quizService.getQuestionsByQuizId(quizId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @DeleteMapping("/questions/{id}")
+    public ResponseEntity<Void> deleteQuestion(@PathVariable("id") String id) {
+        quizService.deleteQuestion(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{quizId}/attempts")
+    public ResponseEntity<AttemptResponseDto> createAttempt(
+            @PathVariable("quizId") String quizId,
+            @Valid @RequestBody AttemptRequestDto requestDto) {
+        AttemptResponseDto responseDto = quizService.createAttempt(quizId, requestDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{quizId}/attempts")
+    public ResponseEntity<List<AttemptResponseDto>> getAttemptsByQuizId(@PathVariable("quizId") String quizId) {
+        List<AttemptResponseDto> responseDto = quizService.getAttemptsByQuizId(quizId);
+        return ResponseEntity.ok(responseDto);
     }
 }

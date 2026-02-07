@@ -34,6 +34,7 @@ public class SecurityConfig {
                                 "/api/user/register",
                                 "/api/user/login"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/profile/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess ->

@@ -53,13 +53,15 @@ public class UserController {
         return userService.getAllUser();
     }
 
-    @PatchMapping("/update/{email}")
+    @PutMapping("/update/{id}")
     public UserResponseDto updateUser(
-            @PathVariable String email,
-            @RequestBody UserUpdateDto userUpdateDto)
-    {
-        return userService.updateUser(email, userUpdateDto);
+            @PathVariable Long id,
+            @RequestBody UserUpdateDto userUpdateDto
+    ) {
+        return userService.updateUser(id, userUpdateDto);
     }
+
+
 
 
     @DeleteMapping("/delete/{email}")
