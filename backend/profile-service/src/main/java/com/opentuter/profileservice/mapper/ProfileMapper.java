@@ -1,6 +1,5 @@
 package com.opentuter.profileservice.mapper;
 
-import com.opentuter.profileservice.dto.ProfileDto;
 import com.opentuter.profileservice.model.Profile;
 
 public class ProfileMapper {
