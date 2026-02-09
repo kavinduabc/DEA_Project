@@ -4,37 +4,41 @@ package com.opentuter.profileservice.model;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "profiles")
 public class Profile {
 
-    @Id
-    private Long id;
+   @Id
+   private UUID uuid;
+   private String fullName;
+   private String bio;
+   private String imageUrl;
 
-    private String fullName;
-    private String bio;
-    private String imageUrl;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "profile_social_links",
-            joinColumns = @JoinColumn(name = "profile_id")
-    )
-    @Column(name = "social_url")
-    private List<String> socialMediaUrl;
+    private List<String> socialMediaUrls;
 
-    @OneToOne
+   @OneToOne
     @MapsId
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "uuid")
     private User user;
 
-    public Long getId() {
-        return id;
+    public Profile(UUID uuid, String fullName, String bio, String imageUrl, List<String> socialMediaUrls, User user) {
+        this.uuid = uuid;
+        this.fullName = fullName;
+        this.bio = bio;
+        this.imageUrl = imageUrl;
+        this.socialMediaUrls = socialMediaUrls;
+        this.user = user;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public String getFullName() {
@@ -61,12 +65,12 @@ public class Profile {
         this.imageUrl = imageUrl;
     }
 
-    public List<String> getSocialMediaUrl() {
-        return socialMediaUrl;
+    public List<String> getSocialMediaUrls() {
+        return socialMediaUrls;
     }
 
-    public void setSocialMediaUrl(List<String> socialMediaUrl) {
-        this.socialMediaUrl = socialMediaUrl;
+    public void setSocialMediaUrls(List<String> socialMediaUrls) {
+        this.socialMediaUrls = socialMediaUrls;
     }
 
     public User getUser() {
