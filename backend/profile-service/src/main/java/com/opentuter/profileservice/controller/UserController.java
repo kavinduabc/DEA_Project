@@ -1,6 +1,6 @@
 package com.opentuter.profileservice.controller;
 
-import com.opentuter.profileservice.dto.UserRejistrationDto;
+import com.opentuter.profileservice.dto.UserProfileRequestDto;
 import com.opentuter.profileservice.dto.UserResponseDto;
 import com.opentuter.profileservice.dto.UserUpdateDto;
 import com.opentuter.profileservice.service.UserService;
@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDto> register(@RequestBody UserRejistrationDto userRejistrationDto)
+    public ResponseEntity<UserResponseDto> register(@RequestBody UserProfileRequestDto userRejistrationDto)
     {
         UserResponseDto response = userService.addUser(userRejistrationDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

@@ -1,6 +1,6 @@
 package com.opentuter.profileservice.service;
 
-import com.opentuter.profileservice.dto.UserRejistrationDto;
+import com.opentuter.profileservice.dto.UserProfileRequestDto;
 import com.opentuter.profileservice.dto.UserResponseDto;
 import com.opentuter.profileservice.dto.UserUpdateDto;
 import com.opentuter.profileservice.mapper.UserMapper;
@@ -44,7 +44,7 @@ public class UserService  {
     //**
     // implement the function for register user
     // password encode using bcrpt*/
-    public UserResponseDto addUser(UserRejistrationDto registrationDto)
+    public UserResponseDto addUser(UserProfileRequestDto registrationDto)
     {
         User user = UserMapper.toUserModel(registrationDto);
         user.setPassword(encoder.encode(registrationDto.getPassword()));

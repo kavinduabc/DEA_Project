@@ -1,6 +1,6 @@
 package com.opentuter.profileservice.mapper;
 
-import com.opentuter.profileservice.dto.UserRejistrationDto;
+import com.opentuter.profileservice.dto.UserProfileRequestDto;
 import com.opentuter.profileservice.dto.UserResponseDto;
 import com.opentuter.profileservice.model.User;
 import org.springframework.stereotype.Component;
@@ -25,7 +25,7 @@ public class UserMapper {
     }
 
     //conver request dto into Entity
-    public static User toUserModel(UserRejistrationDto registrationDTO)
+    public static User toUserModel(UserProfileRequestDto registrationDTO)
     {
         if(registrationDTO == null)
         {
