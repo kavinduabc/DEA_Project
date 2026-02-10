@@ -46,12 +46,17 @@ public class UserService  {
     // password encode using bcrpt*/
     public UserProfileResponseDto addUser(UserProfileRequestDto registrationDto)
     {
+//        User user = UserMapper.toUserModel(registrationDto);
+//        user.setPassword(encoder.encode(registrationDto.getPassword()));
+//
+//
+//        User saveUser = userRepository.save(user);
+//        return userMapper.toReseponseDTO(saveUser);
+
         User user = UserMapper.toUserModel(registrationDto);
         user.setPassword(encoder.encode(registrationDto.getPassword()));
-        user.setCreatedAt(LocalDateTime.now());
-
-        User saveUser = userRepository.save(user);
-        return userMapper.toReseponseDTO(saveUser);
+        User savedUser = userRepository.save(user);
+        return  UserMapper.
     }
 
     //**

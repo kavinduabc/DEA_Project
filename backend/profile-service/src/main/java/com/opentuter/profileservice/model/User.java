@@ -35,7 +35,7 @@ public class User {
     )
     private Profile profile;
 
-    private LocalDateTime createAt;
+    private LocalDateTime createAt = LocalDateTime.now();
 
     public User() {
         this.uuid = uuid;
