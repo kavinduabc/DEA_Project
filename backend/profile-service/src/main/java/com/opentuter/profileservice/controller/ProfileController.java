@@ -1,6 +1,5 @@
 package com.opentuter.profileservice.controller;
 
-import com.opentuter.profileservice.service.ProfileService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
