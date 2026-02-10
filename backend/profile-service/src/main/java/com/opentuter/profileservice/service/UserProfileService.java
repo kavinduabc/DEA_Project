@@ -4,6 +4,7 @@ import com.opentuter.profileservice.dto.UserProfileRequestDto;
 import com.opentuter.profileservice.dto.UserProfileResponseDto;
 import com.opentuter.profileservice.dto.UserProfileUpdateDto;
 import com.opentuter.profileservice.mapper.UserMapper;
+import com.opentuter.profileservice.model.Profile;
 import com.opentuter.profileservice.model.User;
 import com.opentuter.profileservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +16,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService  {
+public class UserProfileService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -29,11 +30,11 @@ public class UserService  {
     private final JwtService jwtService;
 
     @Autowired
-    public UserService(UserRepository userRepository,
-                       UserMapper userMapper,
-                       PasswordEncoder encoder,
-                       @Lazy AuthenticationManager authenticationManager,
-                       JwtService jwtService)
+    public UserProfileService(UserRepository userRepository,
+                              UserMapper userMapper,
+                              PasswordEncoder encoder,
+                              @Lazy AuthenticationManager authenticationManager,
+                              JwtService jwtService)
     {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
@@ -66,7 +67,7 @@ public class UserService  {
             User user = userRepository.findByEmail(email);
             return jwtService.generateToken(user);
         }
-        return "Fail";
+        throw new RuntimeException("Invalid credentials");
     }
      //**
      // implement the function for get user by email*/
@@ -82,22 +83,6 @@ public class UserService  {
     }
 
     //**
-    // implement the function for delete user */
-    public UserProfileResponseDto deleteUser(@PathVariable String email)
-    {
-       User user = userRepository.findByEmail(email);
-
-       if(user == null)
-       {
-           throw new RuntimeException("User is not found");
-       }
-
-       userRepository.delete(user);
-
-       return userMapper.toReseponseDTO(user);
-    }
-
-    //**
     // implement function for get all user*/
     public List<UserProfileResponseDto> getAllUser()
     {
@@ -109,24 +94,65 @@ public class UserService  {
                 .collect(Collectors.toList());
     }
 
+
     //**
-// implement method for update user by email*/
-    public UserProfileResponseDto updateUser(Long id, UserProfileUpdateDto userUpdateDto) {
+    // implement the function for update user and user profile*/
+    public UserProfileResponseDto updateUser(UUID uuid, UserProfileUpdateDto userProfileUpdateDto)
+    {
+        User user = userRepository.findById(uuid)
+                .orElseThrow(() -> new RuntimeException("User is Not found"));
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (userUpdateDto.getRole() != null) {
-            user.setRole(userUpdateDto.getRole());
+        if(userProfileUpdateDto.getEmail() != null)
+        {
+            user.setEmail(userProfileUpdateDto.getEmail());
         }
 
-        if (userUpdateDto.getPassword() != null) {
-            user.setPassword(encoder.encode(userUpdateDto.getPassword()));
+        if(userProfileUpdateDto.getRole() != null)
+        {
+            user.setRole(userProfileUpdateDto.getRole());
         }
 
-        User updatedUser = userRepository.save(user);
+        Profile profile = user.getProfile();
+        if(profile != null)
+        {
+            if(userProfileUpdateDto.getFullName() != null)
+            {
+                profile.setFullName(userProfileUpdateDto.getFullName());
+            }
 
-        return userMapper.toReseponseDTO(updatedUser);
+            if(userProfileUpdateDto.getBio() != null)
+            {
+                profile.setBio(userProfileUpdateDto.getBio());
+            }
+
+            if(userProfileUpdateDto.getImageUrl() != null)
+            {
+                profile.setImageUrl(userProfileUpdateDto.getImageUrl());
+            }
+
+            if(userProfileUpdateDto.getSocialMediaUrls() != null)
+            {
+                profile.setSocialMediaUrls(userProfileUpdateDto.getSocialMediaUrls());
+            }
+        }
+
+        return userMapper.toReseponseDTO(user);
     }
+
+    //**
+    // implement the function for delete user */
+    public UserProfileResponseDto deleteUser(String email) {
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            throw new RuntimeException("User is not found");
+        }
+
+        userRepository.delete(user);
+
+        return userMapper.toReseponseDTO(user);
+    }
+
+
 
 }

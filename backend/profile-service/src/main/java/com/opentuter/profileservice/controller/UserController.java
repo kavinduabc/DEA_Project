@@ -3,7 +3,7 @@ package com.opentuter.profileservice.controller;
 import com.opentuter.profileservice.dto.UserProfileRequestDto;
 import com.opentuter.profileservice.dto.UserProfileResponseDto;
 import com.opentuter.profileservice.dto.UserProfileUpdateDto;
-import com.opentuter.profileservice.service.UserService;
+import com.opentuter.profileservice.service.UserProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +17,9 @@ import java.util.Map;
 public class UserController {
 
     @Autowired
-    private final UserService userService;
+    private final UserProfileService userService;
 
-    public UserController(UserService userService) {
+    public UserController(UserProfileService userService) {
         this.userService = userService;
     }
 
