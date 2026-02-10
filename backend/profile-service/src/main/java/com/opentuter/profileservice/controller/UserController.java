@@ -16,56 +16,5 @@ import java.util.Map;
 @RequestMapping("/api/user")
 public class UserController {
 
-    @Autowired
-    private final UserProfileService userService;
 
-    public UserController(UserProfileService userService) {
-        this.userService = userService;
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<UserProfileResponseDto> register(@RequestBody UserProfileRequestDto userRejistrationDto)
-    {
-        UserProfileResponseDto response = userService.addUser(userRejistrationDto);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
-    // Implement method for LOGIN
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Map<String, String> loginData) {
-        String token = userService.verify(loginData.get("email"), loginData.get("password"));
-        if(token.equals("Fail")){
-            return new ResponseEntity<>("Invalid Credentials", HttpStatus.UNAUTHORIZED);
-        }
-        return new ResponseEntity<>(token, HttpStatus.OK);
-    }
-
-    @GetMapping("/view/{email}")
-    public UserProfileResponseDto getUser(@PathVariable String email)
-    {
-        return userService.getUser(email);
-    }
-
-    @GetMapping("/veiwAll")
-    public List<UserProfileResponseDto> getAllUser()
-    {
-        return userService.getAllUser();
-    }
-
-    @PutMapping("/update/{id}")
-    public UserProfileResponseDto updateUser(
-            @PathVariable Long id,
-            @RequestBody UserProfileUpdateDto userUpdateDto
-    ) {
-        return userService.updateUser(id, userUpdateDto);
-    }
-
-
-
-
-    @DeleteMapping("/delete/{email}")
-    public UserProfileResponseDto deleteUser(@PathVariable String email)
-    {
-        return userService.deleteUser(email);
-    }
 }
