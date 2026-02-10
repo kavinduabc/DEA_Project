@@ -1,8 +1,8 @@
 package com.opentuter.profileservice.service;
 
 import com.opentuter.profileservice.dto.UserProfileRequestDto;
-import com.opentuter.profileservice.dto.UserResponseDto;
-import com.opentuter.profileservice.dto.UserUpdateDto;
+import com.opentuter.profileservice.dto.UserProfileResponseDto;
+import com.opentuter.profileservice.dto.UserProfileUpdateDto;
 import com.opentuter.profileservice.mapper.UserMapper;
 import com.opentuter.profileservice.model.User;
 import com.opentuter.profileservice.repository.UserRepository;
@@ -44,7 +44,7 @@ public class UserService  {
     //**
     // implement the function for register user
     // password encode using bcrpt*/
-    public UserResponseDto addUser(UserProfileRequestDto registrationDto)
+    public UserProfileResponseDto addUser(UserProfileRequestDto registrationDto)
     {
         User user = UserMapper.toUserModel(registrationDto);
         user.setPassword(encoder.encode(registrationDto.getPassword()));
@@ -70,7 +70,7 @@ public class UserService  {
     }
      //**
      // implement the function for get user by email*/
-    public UserResponseDto getUser(@PathVariable String email)
+    public UserProfileResponseDto getUser(@PathVariable String email)
     {
         User user = userRepository.findByEmail(email);
 
@@ -83,7 +83,7 @@ public class UserService  {
 
     //**
     // implement the function for delete user */
-    public UserResponseDto deleteUser(@PathVariable String email)
+    public UserProfileResponseDto deleteUser(@PathVariable String email)
     {
        User user = userRepository.findByEmail(email);
 
@@ -99,7 +99,7 @@ public class UserService  {
 
     //**
     // implement function for get all user*/
-    public List<UserResponseDto> getAllUser()
+    public List<UserProfileResponseDto> getAllUser()
     {
 
 
@@ -111,7 +111,7 @@ public class UserService  {
 
     //**
 // implement method for update user by email*/
-    public UserResponseDto updateUser(Long id, UserUpdateDto userUpdateDto) {
+    public UserProfileResponseDto updateUser(Long id, UserProfileUpdateDto userUpdateDto) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));

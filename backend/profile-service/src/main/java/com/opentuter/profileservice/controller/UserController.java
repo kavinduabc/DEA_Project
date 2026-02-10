@@ -1,8 +1,8 @@
 package com.opentuter.profileservice.controller;
 
 import com.opentuter.profileservice.dto.UserProfileRequestDto;
-import com.opentuter.profileservice.dto.UserResponseDto;
-import com.opentuter.profileservice.dto.UserUpdateDto;
+import com.opentuter.profileservice.dto.UserProfileResponseDto;
+import com.opentuter.profileservice.dto.UserProfileUpdateDto;
 import com.opentuter.profileservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,9 +24,9 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDto> register(@RequestBody UserProfileRequestDto userRejistrationDto)
+    public ResponseEntity<UserProfileResponseDto> register(@RequestBody UserProfileRequestDto userRejistrationDto)
     {
-        UserResponseDto response = userService.addUser(userRejistrationDto);
+        UserProfileResponseDto response = userService.addUser(userRejistrationDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -41,21 +41,21 @@ public class UserController {
     }
 
     @GetMapping("/view/{email}")
-    public UserResponseDto getUser(@PathVariable String email)
+    public UserProfileResponseDto getUser(@PathVariable String email)
     {
         return userService.getUser(email);
     }
 
     @GetMapping("/veiwAll")
-    public List<UserResponseDto> getAllUser()
+    public List<UserProfileResponseDto> getAllUser()
     {
         return userService.getAllUser();
     }
 
     @PutMapping("/update/{id}")
-    public UserResponseDto updateUser(
+    public UserProfileResponseDto updateUser(
             @PathVariable Long id,
-            @RequestBody UserUpdateDto userUpdateDto
+            @RequestBody UserProfileUpdateDto userUpdateDto
     ) {
         return userService.updateUser(id, userUpdateDto);
     }
@@ -64,7 +64,7 @@ public class UserController {
 
 
     @DeleteMapping("/delete/{email}")
-    public  UserResponseDto deleteUser(@PathVariable String email)
+    public UserProfileResponseDto deleteUser(@PathVariable String email)
     {
         return userService.deleteUser(email);
     }

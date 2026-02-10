@@ -1,7 +1,7 @@
 package com.opentuter.profileservice.mapper;
 
 import com.opentuter.profileservice.dto.UserProfileRequestDto;
-import com.opentuter.profileservice.dto.UserResponseDto;
+import com.opentuter.profileservice.dto.UserProfileResponseDto;
 import com.opentuter.profileservice.model.User;
 import org.springframework.stereotype.Component;
 
@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     //convert entity into response DTO
-    public UserResponseDto toReseponseDTO(User user)
+    public UserProfileResponseDto toReseponseDTO(User user)
     {
         if(user == null)
         {
             return null;
         }
         //collect data from using user schema and return to UserResponseDto
-        return new UserResponseDto(
+        return new UserProfileResponseDto(
                 user.getId(),
                 user.getEmail(),
                 user.getRole(),
