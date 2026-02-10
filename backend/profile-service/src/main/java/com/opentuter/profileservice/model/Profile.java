@@ -24,7 +24,7 @@ public class Profile {
     @JoinColumn(name = "uuid")
     private User user;
 
-    public Profile(UUID uuid, String fullName, String bio, String imageUrl, List<String> socialMediaUrls, User user) {
+    public Profile() {
         this.uuid = uuid;
         this.fullName = fullName;
         this.bio = bio;

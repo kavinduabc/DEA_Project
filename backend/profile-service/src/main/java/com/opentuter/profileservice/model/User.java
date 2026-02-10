@@ -37,7 +37,7 @@ public class User {
 
     private LocalDateTime createAt;
 
-    public User(UUID uuid, String email, String password, String role, Profile profile, LocalDateTime createAt) {
+    public User() {
         this.uuid = uuid;
         this.email = email;
         this.password = password;
