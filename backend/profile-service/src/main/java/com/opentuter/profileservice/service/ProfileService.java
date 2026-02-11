@@ -1,8 +1,8 @@
 package com.opentuter.profileservice.service;
 
-import com.opentuter.profileservice.dto.UserProfileRequestDto;
-import com.opentuter.profileservice.dto.UserProfileResponseDto;
-import com.opentuter.profileservice.dto.UserProfileUpdateDto;
+import com.opentuter.profileservice.dto.ProfileRequestDto;
+import com.opentuter.profileservice.dto.ProfileResponseDto;
+import com.opentuter.profileservice.dto.ProfileUpdateDto;
 import com.opentuter.profileservice.exception.BadRequestException;
 import com.opentuter.profileservice.exception.ResourceNotFoundException;
 import com.opentuter.profileservice.mapper.UserMapper;
@@ -23,7 +23,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class UserProfileService {
+public class ProfileService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -32,11 +32,11 @@ public class UserProfileService {
     private final JwtService jwtService;
 
     @Autowired
-    public UserProfileService(UserRepository userRepository,
-                              UserMapper userMapper,
-                              PasswordEncoder encoder,
-                              @Lazy AuthenticationManager authenticationManager,
-                              JwtService jwtService)
+    public ProfileService(UserRepository userRepository,
+                          UserMapper userMapper,
+                          PasswordEncoder encoder,
+                          @Lazy AuthenticationManager authenticationManager,
+                          JwtService jwtService)
     {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
@@ -47,7 +47,7 @@ public class UserProfileService {
     //**
     // implement the function for register user
     // password encode using bcrpt*/
-    public UserProfileResponseDto addUser(UserProfileRequestDto registrationDto)
+    public ProfileResponseDto addUser(ProfileRequestDto registrationDto)
     {
         try{
             if(userRepository.findByEmail(registrationDto.getEmail()) !=  null)
@@ -92,7 +92,7 @@ public class UserProfileService {
     }
      //**
      // implement the function for get user by email*/
-    public UserProfileResponseDto getUser(@PathVariable String email)
+    public ProfileResponseDto getUser(@PathVariable String email)
     {
         try {
             User user = userRepository.findByEmail(email);
@@ -111,7 +111,7 @@ public class UserProfileService {
 
     //**
     // implement function for get all user*/
-    public List<UserProfileResponseDto> getAllUser()
+    public List<ProfileResponseDto> getAllUser()
     {
         try {
 
@@ -127,7 +127,7 @@ public class UserProfileService {
 
     //**
     // implement the function for update user and user profile*/
-    public UserProfileResponseDto updateUser(UUID uuid, UserProfileUpdateDto userProfileUpdateDto)
+    public ProfileResponseDto updateUser(UUID uuid, ProfileUpdateDto userProfileUpdateDto)
     {
         try {
             User user = userRepository.findById(uuid)
@@ -172,7 +172,7 @@ public class UserProfileService {
 
     //**
     // implement the function for delete user */
-    public UserProfileResponseDto deleteUser(String email) {
+    public ProfileResponseDto deleteUser(String email) {
         try {
             User user = userRepository.findByEmail(email);
 

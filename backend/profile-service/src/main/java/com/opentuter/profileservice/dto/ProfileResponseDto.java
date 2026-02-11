@@ -3,9 +3,9 @@ package com.opentuter.profileservice.dto;
 import java.util.List;
 import java.util.UUID;
 
-public class UserProfileUpdateDto {
+public class ProfileResponseDto {
 
-
+    public UUID uuid;
     public String email;
     public String role;
 
@@ -13,6 +13,14 @@ public class UserProfileUpdateDto {
     public String bio;
     public String imageUrl;
     public List<String> socialMediaUrls;
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
 
     public String getEmail() {
         return email;

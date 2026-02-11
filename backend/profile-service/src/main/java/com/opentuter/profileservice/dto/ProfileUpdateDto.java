@@ -1,12 +1,10 @@
 package com.opentuter.profileservice.dto;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
-public class UserProfileResponseDto {
+public class ProfileUpdateDto {
 
-    public UUID uuid;
+
     public String email;
     public String role;
 
@@ -14,14 +12,6 @@ public class UserProfileResponseDto {
     public String bio;
     public String imageUrl;
     public List<String> socialMediaUrls;
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
 
     public String getEmail() {
         return email;

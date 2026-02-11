@@ -17,7 +17,7 @@ import java.util.List;
 //   security purpose .don't accidentally leak sensitive data
 //   you send smaller amount od data over the internet, which makes your app faster
 //   */
-public class UserProfileRequestDto {
+public class ProfileRequestDto {
 
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email is required")

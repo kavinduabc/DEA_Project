@@ -1,7 +1,7 @@
 package com.opentuter.profileservice.mapper;
 
-import com.opentuter.profileservice.dto.UserProfileRequestDto;
-import com.opentuter.profileservice.dto.UserProfileResponseDto;
+import com.opentuter.profileservice.dto.ProfileRequestDto;
+import com.opentuter.profileservice.dto.ProfileResponseDto;
 import com.opentuter.profileservice.model.Profile;
 import com.opentuter.profileservice.model.User;
 import org.springframework.stereotype.Component;
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     //convert entity into response DTO
-    public UserProfileResponseDto toReseponseDTO(User user)
+    public ProfileResponseDto toReseponseDTO(User user)
     {
-        UserProfileResponseDto response = new UserProfileResponseDto();
+        ProfileResponseDto response = new ProfileResponseDto();
 
         response.uuid = user.getUuid();
         response.email = user.getEmail();
@@ -30,7 +30,7 @@ public class UserMapper {
     }
 
     //conver request dto into Entity
-    public static User toUserModel(UserProfileRequestDto registrationDTO)
+    public static User toUserModel(ProfileRequestDto registrationDTO)
     {
         if(registrationDTO == null)
         {
@@ -59,7 +59,7 @@ public class UserMapper {
     }
 
     //update user and profile
-    public static void updateUserProfile(User user, UserProfileRequestDto request)
+    public static void updateUserProfile(User user, ProfileRequestDto request)
     {
         user.setEmail(request.email);
         user.setRole(request.role);
