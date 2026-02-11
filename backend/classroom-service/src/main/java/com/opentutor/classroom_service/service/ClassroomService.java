@@ -86,7 +86,7 @@ public class ClassroomService {
         if (classroomRequestDTO.getInviteCode() != null &&
                 !classroomRequestDTO.getInviteCode().equals(classroom.getInviteCode())) {
 
-            if (classroomRepository
+            if (!classroomRepository
                     .findByInviteCode(classroomRequestDTO.getInviteCode())
                     .isEmpty()) {
 
