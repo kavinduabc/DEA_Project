@@ -6,10 +6,10 @@ spring:
     import: optional:file:.env[.properties]
 
   datasource:
-    url: ${SUPABASE_URL}
+    url: ${SUPABASE_URL:jdbc:postgresql://localhost:5432/qa_service}
 
-    username: ${SUPABASE_USER}
-    password: ${SUPABASE_PASS}
+    username: ${SUPABASE_USER:postgres}
+    password: ${SUPABASE_PASS:postgres}
     driverClassName: org.postgresql.Driver
 
     hikari:
