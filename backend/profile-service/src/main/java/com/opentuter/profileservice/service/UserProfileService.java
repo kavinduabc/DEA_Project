@@ -48,7 +48,6 @@ public class UserProfileService {
     public UserProfileResponseDto addUser(UserProfileRequestDto registrationDto)
     {
 
-
         User user = UserMapper.toUserModel(registrationDto);
         user.setPassword(encoder.encode(registrationDto.getPassword()));
         User savedUser = userRepository.save(user);
