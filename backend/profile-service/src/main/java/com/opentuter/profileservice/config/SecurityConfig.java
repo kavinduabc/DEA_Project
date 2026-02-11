@@ -4,6 +4,8 @@ import com.opentuter.profileservice.jwt.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,6 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Configuration
 public class SecurityConfig {
@@ -31,7 +36,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/user/register",
+                                "/api/user/reg",
                                 "/api/user/login"
                         ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/api/profile/**").authenticated()
@@ -39,6 +44,27 @@ public class SecurityConfig {
                 )
                 .sessionManagement(sess ->
                         sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling
+                                .authenticationEntryPoint((request, response, authException) -> {
+                                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                                    String jsonResponse = buildErrorJson(
+                                            "Unauthorized: " + authException.getMessage(),
+                                            request.getRequestURI()
+                                    );
+                                    response.getWriter().write(jsonResponse);
+                                })
+                                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                    response.setStatus(HttpStatus.FORBIDDEN.value());
+                                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                                    String jsonResponse = buildErrorJson(
+                                            "Forbidden: " + accessDeniedException.getMessage(),
+                                            request.getRequestURI()
+                                    );
+                                    response.getWriter().write(jsonResponse);
+                                })
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -54,5 +80,26 @@ public class SecurityConfig {
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
         return config.getAuthenticationManager();
+    }
+
+    private static String buildErrorJson(String message, String details) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        String timestamp = LocalDateTime.now().format(formatter);
+        return "{" +
+                "\"localDateTime\":\"" + timestamp + "\"," +
+                "\"message\":\"" + escapeJson(message) + "\"," +
+                "\"details\":\"" + escapeJson(details) + "\"" +
+                "}";
+    }
+
+    private static String escapeJson(String input) {
+        if (input == null) {
+            return "";
+        }
+        return input.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
 }

@@ -4,15 +4,18 @@ package com.opentuter.profileservice.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-
+@Table(name = "user")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
+    @UuidGenerator
+    @Column(name = "uuid", updatable = false, nullable = false)
     private UUID uuid;
 
     @Email

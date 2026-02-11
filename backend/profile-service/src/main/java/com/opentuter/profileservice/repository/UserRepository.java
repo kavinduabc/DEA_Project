@@ -15,7 +15,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     ProfileResponseDto deleteByEmail(String email);
 
-    List<User> id(Long id);
+    List<User> uuid(UUID uuid);
 
 
 }

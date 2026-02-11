@@ -44,29 +44,25 @@ public class ProfileService {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
     }
+
     //**
     // implement the function for register user
     // password encode using bcrpt*/
     public ProfileResponseDto addUser(ProfileRequestDto registrationDto)
     {
-        try{
-            if(userRepository.findByEmail(registrationDto.getEmail()) !=  null)
-            {
-                throw  new BadRequestException("Email already exists");
-            }
+        if(userRepository.findByEmail(registrationDto.getEmail()) !=  null)
+        {
+            throw new BadRequestException("Email already exists");
+        }
 
+        try {
             User user = UserMapper.toUserModel(registrationDto);
             user.setPassword(encoder.encode(registrationDto.getPassword()));
             User savedUser = userRepository.save(user);
-            return  userMapper.toReseponseDTO(savedUser);
-
-        }catch (BadRequestException ex)
-        {
-            throw  ex;
+            return userMapper.toReseponseDTO(savedUser);
         } catch (Exception e) {
-            throw new RuntimeException("Error while registrering user");
+            throw new RuntimeException("Error while registering user");
         }
-
     }
 
     //**
@@ -80,33 +76,28 @@ public class ProfileService {
 
             if (authentication.isAuthenticated()) {
                 User user = userRepository.findByEmail(email);
+                if (user == null) {
+                    throw new ResourceNotFoundException("User not found");
+                }
                 return jwtService.generateToken(user);
             }
-            throw new RuntimeException("Invalid credentials");
-        }catch (BadRequestException ex)
-        {
-            throw ex;
+            throw new BadRequestException("Invalid credentials");
         } catch (Exception e) {
-            throw new RuntimeException("Authentication faild");
+            throw new BadRequestException("Authentication failed");
         }
     }
-     //**
-     // implement the function for get user by email*/
+
+    //**
+    // implement the function for get user by email*/
     public ProfileResponseDto getUser(@PathVariable String email)
     {
-        try {
-            User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email);
 
-            if (user == null) {
-                throw new RuntimeException("User is not found");
-            }
-            return userMapper.toReseponseDTO(user);
-        } catch (ResourceNotFoundException ex)
-        {
-            throw ex;
-        } catch (Exception e) {
-            throw new RuntimeException("Error while fetching user");
+        if (user == null) {
+            throw new ResourceNotFoundException("User is not found");
         }
+
+        return userMapper.toReseponseDTO(user);
     }
 
     //**
@@ -114,7 +105,6 @@ public class ProfileService {
     public List<ProfileResponseDto> getAllUser()
     {
         try {
-
             return userRepository.findAll()
                     .stream()
                     .map(userMapper::toReseponseDTO)
@@ -124,48 +114,43 @@ public class ProfileService {
         }
     }
 
-
     //**
     // implement the function for update user and user profile*/
     public ProfileResponseDto updateUser(UUID uuid, ProfileUpdateDto userProfileUpdateDto)
     {
+        User user = userRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("User is not found"));
+
+        if (userProfileUpdateDto.getEmail() != null) {
+            user.setEmail(userProfileUpdateDto.getEmail());
+        }
+
+        if (userProfileUpdateDto.getRole() != null) {
+            user.setRole(userProfileUpdateDto.getRole());
+        }
+
+        Profile profile = user.getProfile();
+        if (profile != null) {
+            if (userProfileUpdateDto.getFullName() != null) {
+                profile.setFullName(userProfileUpdateDto.getFullName());
+            }
+
+            if (userProfileUpdateDto.getBio() != null) {
+                profile.setBio(userProfileUpdateDto.getBio());
+            }
+
+            if (userProfileUpdateDto.getImageUrl() != null) {
+                profile.setImageUrl(userProfileUpdateDto.getImageUrl());
+            }
+
+            if (userProfileUpdateDto.getSocialMediaUrls() != null) {
+                profile.setSocialMediaUrls(userProfileUpdateDto.getSocialMediaUrls());
+            }
+        }
+
         try {
-            User user = userRepository.findById(uuid)
-                    .orElseThrow(() -> new RuntimeException("User is Not found"));
-
-            if (userProfileUpdateDto.getEmail() != null) {
-                user.setEmail(userProfileUpdateDto.getEmail());
-            }
-
-            if (userProfileUpdateDto.getRole() != null) {
-                user.setRole(userProfileUpdateDto.getRole());
-            }
-
-            Profile profile = user.getProfile();
-            if (profile != null) {
-                if (userProfileUpdateDto.getFullName() != null) {
-                    profile.setFullName(userProfileUpdateDto.getFullName());
-                }
-
-                if (userProfileUpdateDto.getBio() != null) {
-                    profile.setBio(userProfileUpdateDto.getBio());
-                }
-
-                if (userProfileUpdateDto.getImageUrl() != null) {
-                    profile.setImageUrl(userProfileUpdateDto.getImageUrl());
-                }
-
-                if (userProfileUpdateDto.getSocialMediaUrls() != null) {
-                    profile.setSocialMediaUrls(userProfileUpdateDto.getSocialMediaUrls());
-                }
-            }
-
-            return userMapper.toReseponseDTO(user);
-        }catch(ResourceNotFoundException ex)
-        {
-            throw  ex;
-        }catch(Exception e)
-        {
+            return userMapper.toReseponseDTO(userRepository.save(user));
+        } catch (Exception e) {
             throw new RuntimeException("Error while updating user");
         }
     }
@@ -173,24 +158,18 @@ public class ProfileService {
     //**
     // implement the function for delete user */
     public ProfileResponseDto deleteUser(String email) {
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            throw new ResourceNotFoundException("User is not found");
+        }
+
         try {
-            User user = userRepository.findByEmail(email);
-
-            if (user == null) {
-                throw new RuntimeException("User is not found");
-            }
-
             userRepository.delete(user);
-
             return userMapper.toReseponseDTO(user);
-        }catch(ResourceNotFoundException ex)
-        {
-            throw ex;
         } catch (Exception e) {
             throw new RuntimeException("Error while deleting user");
         }
     }
-
-
 
 }
