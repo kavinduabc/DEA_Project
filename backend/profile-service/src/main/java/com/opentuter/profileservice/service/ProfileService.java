@@ -3,6 +3,7 @@ package com.opentuter.profileservice.service;
 import com.opentuter.profileservice.dto.ProfileRequestDto;
 import com.opentuter.profileservice.dto.ProfileResponseDto;
 import com.opentuter.profileservice.dto.ProfileUpdateDto;
+import com.opentuter.profileservice.dto.LoginResponseDto;
 import com.opentuter.profileservice.exception.BadRequestException;
 import com.opentuter.profileservice.exception.ResourceNotFoundException;
 import com.opentuter.profileservice.mapper.UserMapper;
@@ -16,8 +17,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -66,30 +67,42 @@ public class ProfileService {
     }
 
     //**
-    // implement the function for verify user
-    // and authenticate with jwt token*/
-    public String verify(String email, String password) {
+    // implement the function for login user and generate jwt token
+    // return the token using AuthRespnseDto
+    // */
+    public LoginResponseDto verify(String email, String password) {
         try {
+            // using authentication manager to authenticate user using email and password
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
 
+            // implement the method for generate the jwt token
             if (authentication.isAuthenticated()) {
                 User user = userRepository.findByEmail(email);
                 if (user == null) {
                     throw new ResourceNotFoundException("User not found");
                 }
-                return jwtService.generateToken(user);
+
+
+                String token = jwtService.generateToken(user);
+                Instant expiresAt = Instant.now().plusSeconds(86400);
+
+
+                return new LoginResponseDto(token, user.getEmail(), user.getRole(), expiresAt);
             }
+
             throw new BadRequestException("Invalid credentials");
+        } catch (BadRequestException | ResourceNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            throw new BadRequestException("Authentication failed");
+            throw new BadRequestException("Authentication failed: " + e.getMessage());
         }
     }
 
     //**
     // implement the function for get user by email*/
-    public ProfileResponseDto getUser(@PathVariable String email)
+    public ProfileResponseDto getUser(String email)
     {
         User user = userRepository.findByEmail(email);
 
