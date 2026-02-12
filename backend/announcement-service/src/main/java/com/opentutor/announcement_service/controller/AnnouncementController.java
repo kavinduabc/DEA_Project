@@ -9,75 +9,56 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/announcements")
 public class AnnouncementController {
 
-    private final AnnouncementService announcementService;
+    private final AnnouncementService service;
 
-    public AnnouncementController(AnnouncementService announcementService) {
-        this.announcementService = announcementService;
+    public AnnouncementController(AnnouncementService service) {
+        this.service = service;
     }
 
-    //Post Announcement
     @PostMapping
-    public ResponseEntity<AnnouncementResponseDTO> createAnnouncement(
-            @Valid @RequestBody AnnouncementRequestDTO requestDTO) {
-
-        AnnouncementResponseDTO created = announcementService.createAnnouncement(requestDTO);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    public ResponseEntity<AnnouncementResponseDTO> create(@Valid @RequestBody AnnouncementRequestDTO dto) {
+        return new ResponseEntity<>(service.createAnnouncement(dto), HttpStatus.CREATED);
     }
 
-    //Get Classroom Announcements
     @GetMapping("/classroom/{classroomId}")
-    public ResponseEntity<List<AnnouncementResponseDTO>> getClassroomAnnouncements(
-            @PathVariable Long classroomId) {
-
-        List<AnnouncementResponseDTO> list = announcementService.getByClassroomId(classroomId);
-        return ResponseEntity.ok(list);
+    public ResponseEntity<List<AnnouncementResponseDTO>> getByClassroom(@PathVariable UUID classroomId) {
+        return ResponseEntity.ok(service.getByClassroomId(classroomId));
     }
 
-    //Get Announcement Details
     @GetMapping("/{id}")
-    public ResponseEntity<AnnouncementResponseDTO> getAnnouncementById(@PathVariable Long id) {
-        return announcementService.getById(id)
+    public ResponseEntity<AnnouncementResponseDTO> getById(@PathVariable UUID id) {
+        return service.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Update Announcement
     @PutMapping("/{id}")
-    public ResponseEntity<AnnouncementResponseDTO> updateAnnouncement(
-            @PathVariable Long id,
-            @Valid @RequestBody AnnouncementRequestDTO requestDTO) {
-
-        try {
-            AnnouncementResponseDTO updated =
-                    announcementService.updateAnnouncement(id, requestDTO);
-            return ResponseEntity.ok(updated);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<AnnouncementResponseDTO> update(@PathVariable UUID id,
+                                                         @Valid @RequestBody AnnouncementRequestDTO dto) {
+        return ResponseEntity.ok(service.updateAnnouncement(id, dto));
     }
 
-    //Delete Announcement
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAnnouncement(@PathVariable Long id) {
-        try {
-            announcementService.deleteAnnouncement(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        service.deleteAnnouncement(id);
+        return ResponseEntity.noContent().build();
     }
 
-    //View Shared Announcements
-    @GetMapping("/shared/{userId}")
-    public ResponseEntity<List<AnnouncementResponseDTO>> getSharedAnnouncements(
-            @PathVariable Long userId) {
+    // generate token
+    @PostMapping("/{id}/share")
+    public ResponseEntity<AnnouncementResponseDTO> share(@PathVariable UUID id) {
+        return ResponseEntity.ok(service.generateShareToken(id));
+    }
 
-        List<AnnouncementResponseDTO> list = announcementService.getSharedAnnouncements(userId);
-        return ResponseEntity.ok(list);
+    // access by token
+    @GetMapping("/share/{token}")
+    public ResponseEntity<AnnouncementResponseDTO> getShared(@PathVariable String token) {
+        return ResponseEntity.ok(service.getByShareToken(token));
     }
 }

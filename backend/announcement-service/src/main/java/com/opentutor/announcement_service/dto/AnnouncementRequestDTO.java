@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
+import java.util.UUID;
+
 public class AnnouncementRequestDTO {
 
     @NotBlank(message = "Title is required")
@@ -15,24 +17,21 @@ public class AnnouncementRequestDTO {
     private String message;
 
     @NotNull(message = "Classroom ID is required")
-    private Long classroomId;
+    private UUID classroomId;
 
-    @NotNull(message = "CreatedBy is required")
-    private Long createdBy;
+    @NotNull(message = "Teacher ID is required")
+    private UUID teacherId;
 
-    // Constructors
     public AnnouncementRequestDTO() {
     }
 
-    public AnnouncementRequestDTO(String title, String message,
-                                  Long classroomId, Long createdBy) {
+    public AnnouncementRequestDTO(String title, String message, UUID classroomId, UUID teacherId) {
         this.title = title;
         this.message = message;
         this.classroomId = classroomId;
-        this.createdBy = createdBy;
+        this.teacherId = teacherId;
     }
 
-    // Getters and Setters
     public String getTitle() {
         return title;
     }
@@ -49,19 +48,19 @@ public class AnnouncementRequestDTO {
         this.message = message;
     }
 
-    public Long getClassroomId() {
+    public UUID getClassroomId() {
         return classroomId;
     }
 
-    public void setClassroomId(Long classroomId) {
+    public void setClassroomId(UUID classroomId) {
         this.classroomId = classroomId;
     }
 
-    public Long getCreatedBy() {
-        return createdBy;
+    public UUID getTeacherId() {
+        return teacherId;
     }
 
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
+    public void setTeacherId(UUID teacherId) {
+        this.teacherId = teacherId;
     }
 }

@@ -1,33 +1,36 @@
 package com.opentutor.announcement_service.dto;
 
+import java.util.UUID;
+
 public class AnnouncementResponseDTO {
-      private Long id;
+
+    private UUID id;
     private String title;
     private String message;
-    private Long classroomId;
-    private Long createdBy;
+    private UUID classroomId;
+    private UUID teacherId;
+    private String shareToken;
     private String createdAt;
 
-    // Constructors
     public AnnouncementResponseDTO() {
     }
 
-    public AnnouncementResponseDTO(Long id, String title, String message,
-                                   Long classroomId, Long createdBy, String createdAt) {
+    public AnnouncementResponseDTO(UUID id, String title, String message, UUID classroomId,
+                                   UUID teacherId, String shareToken, String createdAt) {
         this.id = id;
         this.title = title;
         this.message = message;
         this.classroomId = classroomId;
-        this.createdBy = createdBy;
+        this.teacherId = teacherId;
+        this.shareToken = shareToken;
         this.createdAt = createdAt;
     }
 
-    // Getters and Setters
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -47,20 +50,28 @@ public class AnnouncementResponseDTO {
         this.message = message;
     }
 
-    public Long getClassroomId() {
+    public UUID getClassroomId() {
         return classroomId;
     }
 
-    public void setClassroomId(Long classroomId) {
+    public void setClassroomId(UUID classroomId) {
         this.classroomId = classroomId;
     }
 
-    public Long getCreatedBy() {
-        return createdBy;
+    public UUID getTeacherId() {
+        return teacherId;
     }
 
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
+    public void setTeacherId(UUID teacherId) {
+        this.teacherId = teacherId;
+    }
+
+    public String getShareToken() {
+        return shareToken;
+    }
+
+    public void setShareToken(String shareToken) {
+        this.shareToken = shareToken;
     }
 
     public String getCreatedAt() {

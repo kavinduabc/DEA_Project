@@ -8,85 +8,67 @@ import com.opentutor.announcement_service.repository.AnnouncementRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
 public class AnnouncementService {
 
-    private final AnnouncementRepository announcementRepository;
-    private final AnnouncementMapper announcementMapper;
+    private final AnnouncementRepository repo;
+    private final AnnouncementMapper mapper;
 
-    public AnnouncementService(AnnouncementRepository announcementRepository,
-                              AnnouncementMapper announcementMapper) {
-        this.announcementRepository = announcementRepository;
-        this.announcementMapper = announcementMapper;
+    public AnnouncementService(AnnouncementRepository repo, AnnouncementMapper mapper) {
+        this.repo = repo;
+        this.mapper = mapper;
     }
 
-    // Create Announcement
     public AnnouncementResponseDTO createAnnouncement(AnnouncementRequestDTO requestDTO) {
-        Announcement entity = announcementMapper.toEntity(requestDTO);
+        Announcement entity = mapper.toEntity(requestDTO);
+        Announcement saved = repo.save(entity);
+        return mapper.toResponseDTO(saved);
+    }
 
-        // Ensure createdAt is set even when using mapper
-        if (entity.getCreatedAt() == null) {
-            entity.setCreatedAt(LocalDateTime.now());
+    @Transactional(readOnly = true)
+    public List<AnnouncementResponseDTO> getByClassroomId(UUID classroomId) {
+        return mapper.toResponseDTOList(repo.findAllByClassroomId(classroomId));
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<AnnouncementResponseDTO> getById(UUID id) {
+        return repo.findById(id).map(mapper::toResponseDTO);
+    }
+
+    public AnnouncementResponseDTO updateAnnouncement(UUID id, AnnouncementRequestDTO requestDTO) {
+        Announcement existing = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Announcement not found: " + id));
+
+        mapper.updateEntityFromDTO(existing, requestDTO);
+        Announcement updated = repo.save(existing);
+        return mapper.toResponseDTO(updated);
+    }
+
+    public void deleteAnnouncement(UUID id) {
+        if (!repo.existsById(id)) {
+            throw new RuntimeException("Announcement not found: " + id);
         }
-
-        Announcement saved = announcementRepository.save(entity);
-        return announcementMapper.toResponseDTO(saved);
+        repo.deleteById(id);
     }
 
-    // Get Announcements by Classroom ID
+    public AnnouncementResponseDTO generateShareToken(UUID id) {
+        Announcement a = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Announcement not found: " + id));
+
+        a.setShareToken(UUID.randomUUID().toString());
+        Announcement saved = repo.save(a);
+        return mapper.toResponseDTO(saved);
+    }
+
     @Transactional(readOnly = true)
-    public List<AnnouncementResponseDTO> getByClassroomId(Long classroomId) {
-        List<Announcement> list = announcementRepository.findAllByClassroomId(classroomId);
-        return announcementMapper.toResponseDTOList(list);
-    }
-
-    // Get Announcement by ID
-    @Transactional(readOnly = true)
-    public Optional<AnnouncementResponseDTO> getById(Long id) {
-        return announcementRepository.findById(id)
-                .map(announcementMapper::toResponseDTO);
-    }
-
-    // Update Announcement
-    public AnnouncementResponseDTO updateAnnouncement(Long id, AnnouncementRequestDTO requestDTO) {
-        Announcement existing = announcementRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Announcement not found with id: " + id));
-
-        // Update allowed fields
-        announcementMapper.updateEntityFromDTO(existing, requestDTO);
-
-        // Optional: if you want to allow updating createdBy too, uncomment:
-        // existing.setCreatedBy(requestDTO.getCreatedBy());
-
-        Announcement updated = announcementRepository.save(existing);
-        return announcementMapper.toResponseDTO(updated);
-    }
-
-    // Delete Announcement
-    public void deleteAnnouncement(Long id) {
-        if (!announcementRepository.existsById(id)) {
-            throw new RuntimeException("Announcement not found with id: " + id);
-        }
-        announcementRepository.deleteById(id);
-    }
-
-    /**
-     * View Shared Announcements
-     *
-     * NOTE: Your current model has no "shared" concept (no shared table, no recipients, no join table).
-     * So this is a placeholder that returns an empty list.
-     *
-     * If you explain how "shared" is stored (e.g., shared_with_user_id column or announcement_shares table),
-     * I can provide the exact repository query and full working implementation.
-     */
-    @Transactional(readOnly = true)
-    public List<AnnouncementResponseDTO> getSharedAnnouncements(Long userId) {
-        return Collections.emptyList();
+    public AnnouncementResponseDTO getByShareToken(String token) {
+        Announcement a = repo.findByShareToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid share token"));
+        return mapper.toResponseDTO(a);
     }
 }
