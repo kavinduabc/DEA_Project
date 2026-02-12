@@ -8,21 +8,34 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+import java.util.UUID;
+
 @Entity
+@Table(name = "assignments")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Assignment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     private String title;
     private String description;
-    private Long classroomId;
-    private Long teacherId;
+
+    @Column(name = "max_points")
+    private Double maxPoints;
+
+    @Column(name = "due_date")
     private LocalDateTime dueDate;
 
+    @Column(name = "classroom_id")
+    private UUID classroomId;
+
+    @Column(name = "teacher_id")
+    private UUID teacherId;
+
     @CreationTimestamp
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

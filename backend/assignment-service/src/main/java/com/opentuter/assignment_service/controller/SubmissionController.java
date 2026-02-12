@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import java.util.UUID;
+
 @RestController
-@RequestMapping("/submissions")
+@RequestMapping("/api/submissions")
 @RequiredArgsConstructor
 public class SubmissionController {
 
@@ -22,19 +24,19 @@ public class SubmissionController {
     }
 
     @PutMapping("/{id}/grade")
-    public ResponseEntity<SubmissionResponseDTO> gradeSubmission(@PathVariable Long id,
+    public ResponseEntity<SubmissionResponseDTO> gradeSubmission(@PathVariable UUID id,
             @RequestParam Double grade,
             @RequestParam String feedback) {
         return ResponseEntity.ok(submissionService.gradeSubmission(id, grade, feedback));
     }
 
     @GetMapping("/assignment/{assignmentId}")
-    public ResponseEntity<List<SubmissionResponseDTO>> getSubmissionsByAssignment(@PathVariable Long assignmentId) {
+    public ResponseEntity<List<SubmissionResponseDTO>> getSubmissionsByAssignment(@PathVariable UUID assignmentId) {
         return ResponseEntity.ok(submissionService.getSubmissionsByAssignment(assignmentId));
     }
 
     @GetMapping("/student/{studentId}")
-    public ResponseEntity<List<SubmissionResponseDTO>> getSubmissionsByStudent(@PathVariable Long studentId) {
+    public ResponseEntity<List<SubmissionResponseDTO>> getSubmissionsByStudent(@PathVariable UUID studentId) {
         return ResponseEntity.ok(submissionService.getSubmissionsByStudent(studentId));
     }
 }

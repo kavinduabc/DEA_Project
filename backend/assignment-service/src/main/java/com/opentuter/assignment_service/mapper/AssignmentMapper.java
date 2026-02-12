@@ -17,6 +17,7 @@ public class AssignmentMapper {
         assignment.setDescription(dto.getDescription());
         assignment.setClassroomId(dto.getClassroomId());
         assignment.setTeacherId(dto.getTeacherId());
+        assignment.setMaxPoints(dto.getMaxPoints());
         assignment.setDueDate(dto.getDueDate());
         return assignment;
     }
@@ -28,6 +29,7 @@ public class AssignmentMapper {
         dto.setDescription(assignment.getDescription());
         dto.setClassroomId(assignment.getClassroomId());
         dto.setTeacherId(assignment.getTeacherId());
+        dto.setMaxPoints(assignment.getMaxPoints());
         dto.setDueDate(assignment.getDueDate());
         dto.setCreatedAt(assignment.getCreatedAt());
         return dto;
