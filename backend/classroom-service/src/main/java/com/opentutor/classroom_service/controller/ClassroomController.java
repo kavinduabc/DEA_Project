@@ -36,9 +36,8 @@ public class ClassroomController {
     public ResponseEntity<ClassroomResponseDTO> getClassroomById(
             @PathVariable Long id) {
 
-        return classroomService.getClassroomById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        ClassroomResponseDTO classroom = classroomService.getClassroomById(id);
+        return ResponseEntity.ok(classroom);
     }
 
     @GetMapping("/verify/{inviteCode}")
@@ -67,25 +66,17 @@ public class ClassroomController {
             @PathVariable Long id,
             @Valid @RequestBody ClassroomRequestDTO classroomRequestDTO) {
 
-        try {
-            ClassroomResponseDTO updatedClassroom =
-                    classroomService.updateClassroom(id, classroomRequestDTO);
+        ClassroomResponseDTO updatedClassroom =
+                classroomService.updateClassroom(id, classroomRequestDTO);
 
             return ResponseEntity.ok(updatedClassroom);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
         }
-    }
 
     // Delete classroom
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClassroom(@PathVariable Long id) {
 
-        try {
-            classroomService.deleteClassroom(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        classroomService.deleteClassroom(id);
+        return ResponseEntity.noContent().build();
     }
 }

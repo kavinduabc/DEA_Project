@@ -30,7 +30,7 @@ public class ClassroomService {
 
         // Check if invite code already exists (if provided)
         if (classroomRequestDTO.getInviteCode() != null &&
-                classroomRepository.findByInviteCode(classroomRequestDTO.getInviteCode()).isEmpty()) {
+                !classroomRepository.findByInviteCode(classroomRequestDTO.getInviteCode()).isEmpty()) {
 
             throw new DuplicateResourceException(
                     "Classroom",
@@ -52,9 +52,13 @@ public class ClassroomService {
     }
 
     // Read by ID
-    public Optional<ClassroomResponseDTO> getClassroomById(Long id) {
-        return classroomRepository.findById(id)
-                .map(classroomMapper::toResponseDTO);
+    public ClassroomResponseDTO getClassroomById(Long id) {
+        Classroom classroom = classroomRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Classroom", "id", id)
+                );
+
+        return classroomMapper.toResponseDTO(classroom);
     }
 
     // Read by teacher ID
