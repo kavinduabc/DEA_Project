@@ -2,6 +2,8 @@ package com.opentuter.assignment_service.controller;
 
 import com.opentuter.assignment_service.dto.AssignmentRequestDTO;
 import com.opentuter.assignment_service.dto.AssignmentResponseDTO;
+import com.opentuter.assignment_service.dto.SubmissionRequestDTO;
+import com.opentuter.assignment_service.dto.SubmissionResponseDTO;
 import com.opentuter.assignment_service.service.AssignmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,8 @@ import java.util.UUID;
 public class AssignmentController {
 
     private final AssignmentService assignmentService;
+
+    // --- Assignment Endpoints ---
 
     @GetMapping("/health")
     public String health() {
@@ -53,5 +57,29 @@ public class AssignmentController {
     public ResponseEntity<Void> deleteAssignment(@PathVariable UUID id) {
         assignmentService.deleteAssignment(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // --- Submission Endpoints ---
+
+    @PostMapping("/submissions")
+    public ResponseEntity<SubmissionResponseDTO> submitAssignment(@RequestBody SubmissionRequestDTO request) {
+        return ResponseEntity.ok(assignmentService.submitAssignment(request));
+    }
+
+    @PutMapping("/submissions/{id}/grade")
+    public ResponseEntity<SubmissionResponseDTO> gradeSubmission(@PathVariable UUID id,
+            @RequestParam Double grade,
+            @RequestParam String feedback) {
+        return ResponseEntity.ok(assignmentService.gradeSubmission(id, grade, feedback));
+    }
+
+    @GetMapping("/submissions/assignment/{assignmentId}")
+    public ResponseEntity<List<SubmissionResponseDTO>> getSubmissionsByAssignment(@PathVariable UUID assignmentId) {
+        return ResponseEntity.ok(assignmentService.getSubmissionsByAssignment(assignmentId));
+    }
+
+    @GetMapping("/submissions/student/{studentId}")
+    public ResponseEntity<List<SubmissionResponseDTO>> getSubmissionsByStudent(@PathVariable UUID studentId) {
+        return ResponseEntity.ok(assignmentService.getSubmissionsByStudent(studentId));
     }
 }
