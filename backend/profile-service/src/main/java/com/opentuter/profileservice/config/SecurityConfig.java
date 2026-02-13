@@ -1,12 +1,14 @@
 package com.opentuter.profileservice.config;
 
 import com.opentuter.profileservice.jwt.JwtAuthFilter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -15,8 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Configuration
 public class SecurityConfig {
@@ -27,79 +29,75 @@ public class SecurityConfig {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
-    //*
-    // implement functions for authentication process
-    // admin what to do and user what to do etc*/
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                // Disable CSRF (standard for stateless APIs)
+                .csrf(csrf -> csrf.disable())
 
-        http.csrf(csrf -> csrf.disable())
+                // Enable CORS (essential if frontend is on a different port)
+                .cors(Customizer.withDefaults())
+
+                // 1. Define Access Rules
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/user/reg",
-                                "/api/user/login"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/api/profile/**").authenticated()
+                        // Goal 2: Allow Login & Register without token
+                        .requestMatchers("/api/user/reg", "/api/user/login").permitAll()
+
+                        // Catch-all: Anything else requires login
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(sess ->
-                        sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+                // Make it Stateless (No Session created)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 3. Custom Error Handling (Without ObjectMapper)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) ->
+                                writeCustomJsonError(response, HttpStatus.UNAUTHORIZED, "Unauthorized", authException.getMessage(), request))
+
+                        .accessDeniedHandler((request, response, accessDeniedException) ->
+                                writeCustomJsonError(response, HttpStatus.FORBIDDEN, "Forbidden", accessDeniedException.getMessage(), request))
                 )
-                .exceptionHandling(exceptionHandling ->
-                        exceptionHandling
-                                .authenticationEntryPoint((request, response, authException) -> {
-                                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                                    String jsonResponse = buildErrorJson(
-                                            "Unauthorized: " + authException.getMessage(),
-                                            request.getRequestURI()
-                                    );
-                                    response.getWriter().write(jsonResponse);
-                                })
-                                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                                    response.setStatus(HttpStatus.FORBIDDEN.value());
-                                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                                    String jsonResponse = buildErrorJson(
-                                            "Forbidden: " + accessDeniedException.getMessage(),
-                                            request.getRequestURI()
-                                    );
-                                    response.getWriter().write(jsonResponse);
-                                })
-                )
+
+                // Add your JWT Filter before the standard auth filter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-
     @Bean
-    PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    private static String buildErrorJson(String message, String details) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        String timestamp = LocalDateTime.now().format(formatter);
-        return "{" +
-                "\"localDateTime\":\"" + timestamp + "\"," +
-                "\"message\":\"" + escapeJson(message) + "\"," +
-                "\"details\":\"" + escapeJson(details) + "\"" +
-                "}";
+    // --- Helper Methods for Manual JSON Construction ---
+
+    private void writeCustomJsonError(HttpServletResponse response, HttpStatus status, String error, String message, HttpServletRequest request) throws IOException {
+        response.setStatus(status.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+
+        // Manually build the JSON string
+        String json = String.format(
+                "{\"timestamp\": \"%s\", \"status\": %d, \"error\": \"%s\", \"message\": \"%s\", \"path\": \"%s\"}",
+                LocalDateTime.now(),
+                status.value(),
+                escapeJson(error),
+                escapeJson(message),
+                escapeJson(request.getRequestURI())
+        );
+
+        response.getWriter().write(json);
     }
 
-    private static String escapeJson(String input) {
-        if (input == null) {
-            return "";
-        }
-        return input.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
+    // Simple helper to escape quotes so JSON doesn't break
+    private String escapeJson(String text) {
+        if (text == null) return "";
+        return text.replace("\"", "\\\"").replace("\n", " ");
     }
 }

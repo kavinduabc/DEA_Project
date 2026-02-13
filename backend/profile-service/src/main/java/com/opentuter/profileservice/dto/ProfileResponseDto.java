@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public class ProfileResponseDto {
 
-    public UUID uuid;
+    public UUID id;
     public String email;
     public String role;
 
@@ -14,12 +14,12 @@ public class ProfileResponseDto {
     public String imageUrl;
     public List<String> socialMediaUrls;
 
-    public UUID getUuid() {
-        return uuid;
+    public UUID getId() {
+        return id;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getEmail() {

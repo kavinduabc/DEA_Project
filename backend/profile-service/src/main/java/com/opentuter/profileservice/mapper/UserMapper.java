@@ -14,7 +14,7 @@ public class UserMapper {
     {
         ProfileResponseDto response = new ProfileResponseDto();
 
-        response.uuid = user.getUuid();
+        response.id = user.getId();
         response.email = user.getEmail();
         response.role = user.getRole();
 

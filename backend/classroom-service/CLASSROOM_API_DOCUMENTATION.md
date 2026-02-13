@@ -1,9 +1,10 @@
 # Classroom Service API Documentation
 
-## Base URL
-```
-/api/classrooms
-```
+## Base Information
+- **Service Name**: Classroom Service
+- **Base URL**: `http://localhost:8092`
+- **API Prefix**: `/api/classrooms`
+- **Server Port**: 8092
 
 ## Overview
 The Classroom Service provides RESTful APIs for managing classrooms in the OpenTutor platform. This service handles classroom creation, retrieval, updates, and deletion operations.
@@ -445,7 +446,7 @@ All error responses follow this standard structure:
 
 #### Create a classroom:
 ```bash
-curl -X POST http://localhost:8080/api/classrooms \
+curl -X POST http://localhost:8092/api/classrooms \
   -H "Content-Type: application/json" \
   -d '{
     "teacherId": "550e8400-e29b-41d4-a716-446655440000",
@@ -458,27 +459,27 @@ curl -X POST http://localhost:8080/api/classrooms \
 
 #### Get all classrooms:
 ```bash
-curl -X GET http://localhost:8080/api/classrooms
+curl -X GET http://localhost:8092/api/classrooms
 ```
 
 #### Get classroom by ID:
 ```bash
-curl -X GET http://localhost:8080/api/classrooms/1
+curl -X GET http://localhost:8092/api/classrooms/1
 ```
 
 #### Get classrooms by invite code:
 ```bash
-curl -X GET http://localhost:8080/api/classrooms/verify/ABC123
+curl -X GET http://localhost:8092/api/classrooms/verify/ABC123
 ```
 
 #### Get classrooms by teacher ID:
 ```bash
-curl -X GET http://localhost:8080/api/classrooms/teacher/550e8400-e29b-41d4-a716-446655440000
+curl -X GET http://localhost:8092/api/classrooms/teacher/550e8400-e29b-41d4-a716-446655440000
 ```
 
 #### Update a classroom:
 ```bash
-curl -X PUT http://localhost:8080/api/classrooms/1 \
+curl -X PUT http://localhost:8092/api/classrooms/1 \
   -H "Content-Type: application/json" \
   -d '{
     "teacherId": "550e8400-e29b-41d4-a716-446655440000",
@@ -491,7 +492,7 @@ curl -X PUT http://localhost:8080/api/classrooms/1 \
 
 #### Delete a classroom:
 ```bash
-curl -X DELETE http://localhost:8080/api/classrooms/1
+curl -X DELETE http://localhost:8092/api/classrooms/1
 ```
 
 ---
@@ -503,15 +504,18 @@ curl -X DELETE http://localhost:8080/api/classrooms/1
 3. **Invite Codes**: Invite codes should be unique across classrooms for proper verification
 4. **Banner Images**: Banner image URLs should be publicly accessible
 5. **Active Status**: The `isActive` field in the response indicates whether the classroom is currently active
+6. **Database**: The service uses PostgreSQL (via Supabase) for data persistence
 
 ---
 
 ## Version Information
 
 - **API Version**: 1.0
-- **Last Updated**: February 9, 2026
+- **Last Updated**: February 13, 2026
 - **Service**: Classroom Service
+- **Server Port**: 8092
 - **Framework**: Spring Boot
+- **Database**: PostgreSQL (Supabase)
 
 ---
 

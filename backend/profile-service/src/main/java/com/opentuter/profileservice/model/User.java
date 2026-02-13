@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue
     @UuidGenerator
-    @Column(name = "uuid", updatable = false, nullable = false)
-    private UUID uuid;
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
 
     @Email
     @NotBlank
@@ -41,20 +41,15 @@ public class User {
     private LocalDateTime createAt = LocalDateTime.now();
 
     public User() {
-        this.uuid = uuid;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.profile = profile;
-        this.createAt = createAt;
+        // Default constructor for JPA
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public UUID getId() {
+        return id;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public @Email @NotBlank String getEmail() {

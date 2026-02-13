@@ -11,7 +11,7 @@ import java.util.UUID;
 public class Profile {
 
    @Id
-   private UUID uuid;
+   private UUID id;
    private String fullName;
    private String bio;
    private String imageUrl;
@@ -21,24 +21,19 @@ public class Profile {
 
    @OneToOne
     @MapsId
-    @JoinColumn(name = "uuid")
+    @JoinColumn(name = "id")
     private User user;
 
     public Profile() {
-        this.uuid = uuid;
-        this.fullName = fullName;
-        this.bio = bio;
-        this.imageUrl = imageUrl;
-        this.socialMediaUrls = socialMediaUrls;
-        this.user = user;
+        // Default constructor for JPA
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public UUID getId() {
+        return id;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getFullName() {

@@ -19,7 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -46,9 +48,6 @@ public class ProfileService {
         this.jwtService = jwtService;
     }
 
-    //**
-    // implement the function for register user
-    // password encode using bcrpt*/
     public ProfileResponseDto addUser(ProfileRequestDto registrationDto)
     {
         if(userRepository.findByEmail(registrationDto.getEmail()) !=  null)
@@ -66,18 +65,12 @@ public class ProfileService {
         }
     }
 
-    //**
-    // implement the function for login user and generate jwt token
-    // return the token using AuthRespnseDto
-    // */
     public LoginResponseDto verify(String email, String password) {
         try {
-            // using authentication manager to authenticate user using email and password
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
 
-            // implement the method for generate the jwt token
             if (authentication.isAuthenticated()) {
                 User user = userRepository.findByEmail(email);
                 if (user == null) {
@@ -86,8 +79,7 @@ public class ProfileService {
 
 
                 String token = jwtService.generateToken(user);
-                Instant expiresAt = Instant.now().plusSeconds(86400);
-
+                Instant expiresAt = Instant.now().plusSeconds(604800);
 
                 return new LoginResponseDto(token, user.getEmail(), user.getRole(), expiresAt);
             }
@@ -100,8 +92,7 @@ public class ProfileService {
         }
     }
 
-    //**
-    // implement the function for get user by email*/
+
     public ProfileResponseDto getUser(String email)
     {
         User user = userRepository.findByEmail(email);
@@ -113,8 +104,14 @@ public class ProfileService {
         return userMapper.toReseponseDTO(user);
     }
 
-    //**
-    // implement function for get all user*/
+    public ProfileResponseDto getUserById(UUID id)
+    {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User is not found"));
+
+        return userMapper.toReseponseDTO(user);
+    }
+
     public List<ProfileResponseDto> getAllUser()
     {
         try {
@@ -127,11 +124,10 @@ public class ProfileService {
         }
     }
 
-    //**
-    // implement the function for update user and user profile*/
-    public ProfileResponseDto updateUser(UUID uuid, ProfileUpdateDto userProfileUpdateDto)
+
+    public ProfileResponseDto updateUser(UUID id, ProfileUpdateDto userProfileUpdateDto)
     {
-        User user = userRepository.findById(uuid)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User is not found"));
 
         if (userProfileUpdateDto.getEmail() != null) {
@@ -168,9 +164,7 @@ public class ProfileService {
         }
     }
 
-    //**
-    // implement the function for delete user */
-    public ProfileResponseDto deleteUser(String email) {
+    public Map<String, String> deleteUser(String email) {
         User user = userRepository.findByEmail(email);
 
         if (user == null) {
@@ -179,7 +173,9 @@ public class ProfileService {
 
         try {
             userRepository.delete(user);
-            return userMapper.toReseponseDTO(user);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User deleted successfully");
+            return response;
         } catch (Exception e) {
             throw new RuntimeException("Error while deleting user");
         }

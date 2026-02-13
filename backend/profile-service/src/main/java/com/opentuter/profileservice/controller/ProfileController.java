@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -24,12 +25,9 @@ public class ProfileController {
 
     @Autowired
     public ProfileController(ProfileService userProfileService) {
-
         this.userProfileService = userProfileService;
     }
 
-    //**
-    // implement the endpoint for register user  */
     @PostMapping("/reg")
     public ResponseEntity<ProfileResponseDto> addUser(
             @Valid @RequestBody ProfileRequestDto profileRequestDto) {
@@ -37,8 +35,6 @@ public class ProfileController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    //**
-    // implement the endpoint for verify the user  */
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> verifyUser(
             @Valid @RequestBody LoginRequestDto loginRequest) {
@@ -49,8 +45,6 @@ public class ProfileController {
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }
 
-    //**
-    // implement the endpoint for get user using email  */
     @GetMapping("/view/{email}")
     public ResponseEntity<ProfileResponseDto> viewUserByEmail(
             @PathVariable String email) {
@@ -58,30 +52,31 @@ public class ProfileController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    //**
-    // implement the endpoint for get all users  */
+    @GetMapping("/view/id/{id}")
+    public ResponseEntity<ProfileResponseDto> viewUserById(
+            @PathVariable UUID id) {
+        ProfileResponseDto response = userProfileService.getUserById(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping("/views")
     public ResponseEntity<List<ProfileResponseDto>> viewAllUsers() {
         List<ProfileResponseDto> response = userProfileService.getAllUser();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    //**
-    // implement the endpoint for update user using uuid  */
-    @PutMapping("/update/{uuid}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<ProfileResponseDto> updateUser(
-            @PathVariable UUID uuid,
+            @PathVariable UUID id,
             @Valid @RequestBody ProfileUpdateDto profileUpdateDto) {
-        ProfileResponseDto response = userProfileService.updateUser(uuid, profileUpdateDto);
+        ProfileResponseDto response = userProfileService.updateUser(id, profileUpdateDto);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    //**
-    // implement the endpoint for delete user using email  */
     @DeleteMapping("/delete/{email}")
-    public ResponseEntity<ProfileResponseDto> deleteUser(
+    public ResponseEntity<Map<String, String>> deleteUser(
             @PathVariable String email) {
-        ProfileResponseDto response = userProfileService.deleteUser(email);
+        Map<String, String> response = userProfileService.deleteUser(email);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
