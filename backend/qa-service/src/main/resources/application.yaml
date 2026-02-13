@@ -1,15 +1,15 @@
 spring:
   application:
-    name: QA-Service
+    name: QA Service
 
   config:
     import: optional:file:.env[.properties]
 
   datasource:
-    url: ${SUPABASE_URL:jdbc:postgresql://localhost:5432/qa_service}
+    url: ${SUPABASE_URL}
 
-    username: ${SUPABASE_USER:postgres}
-    password: ${SUPABASE_PASS:postgres}
+    username: ${SUPABASE_USER}
+    password: ${SUPABASE_PASS}
     driverClassName: org.postgresql.Driver
 
     hikari:
@@ -24,6 +24,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
 
 server:
   port: 8097
