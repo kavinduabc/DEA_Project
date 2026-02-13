@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -31,11 +30,4 @@ public class Assignment {
 
     @Column(name = "classroom_id")
     private UUID classroomId;
-
-    @Column(name = "teacher_id")
-    private UUID teacherId;
-
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
 }

@@ -83,3 +83,4 @@ public class AssignmentController {
         return ResponseEntity.ok(assignmentService.getSubmissionsByStudent(studentId));
     }
 }
+ 

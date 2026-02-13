@@ -9,7 +9,6 @@ public class AssignmentRequestDTO {
     private String title;
     private String description;
     private UUID classroomId;
-    private UUID teacherId;
     private Double maxPoints;
     private LocalDateTime dueDate;
 }
