@@ -151,7 +151,6 @@ public class QaService {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + id));
 
-        // Check if question has answers
         if (question.getAnswers() != null && !question.getAnswers().isEmpty()) {
             throw new DeletionNotAllowedException(
                     "Cannot delete question with ID " + id + " because it has " +
@@ -179,14 +178,12 @@ public class QaService {
 
   
     public AnswerResponseDto createAnswer(AnswerRequestDto requestDto) {
-        // Verify that the question exists
         questionRepository.findById(requestDto.getQuestionId())
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + requestDto.getQuestionId()));
 
         Answer answer = answerMapper.toEntity(requestDto);
         Answer savedAnswer = answerRepository.save(answer);
         
-        // Increment answer count on the question
         incrementAnswerCount(requestDto.getQuestionId());
         
         return answerMapper.toResponseDto(savedAnswer);
@@ -201,7 +198,6 @@ public class QaService {
 
 
     public List<AnswerResponseDto> getAnswersByQuestionId(String questionId) {
-        // Verify that the question exists
         questionRepository.findById(questionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
 
@@ -224,7 +220,6 @@ public class QaService {
         Answer existingAnswer = answerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + id));
 
-        // Check if answer is already accepted (prevent editing accepted answers)
         if (existingAnswer.getIsAccepted()) {
             throw new DeletionNotAllowedException("Cannot edit an accepted answer");
         }
@@ -242,7 +237,6 @@ public class QaService {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + answerId));
 
-        // Unmark any previously accepted answer for this question
         List<Answer> previouslyAccepted = answerRepository
                 .findByQuestionIdOrderByIsAcceptedDescUpvotesDescCreatedAtDesc(answer.getQuestionId())
                 .stream()
@@ -254,19 +248,15 @@ public class QaService {
             answerRepository.save(prevAnswer);
         }
 
-        // Mark this answer as accepted
         answer.setIsAccepted(true);
         Answer updatedAnswer = answerRepository.save(answer);
 
-        // Update the question to mark it as resolved
         markAsResolved(answer.getQuestionId(), answerId);
 
         return answerMapper.toResponseDto(updatedAnswer);
     }
 
-    /**
-     * Unmark answer as accepted
-     */
+
     public AnswerResponseDto unmarkAsAccepted(String answerId) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + answerId));
@@ -274,15 +264,13 @@ public class QaService {
         answer.setIsAccepted(false);
         Answer updatedAnswer = answerRepository.save(answer);
 
-        // Update the question to mark it as unresolved
+   
         markAsUnresolved(answer.getQuestionId());
 
         return answerMapper.toResponseDto(updatedAnswer);
     }
 
-    /**
-     * Upvote an answer
-     */
+   
     public AnswerResponseDto upvoteAnswer(String answerId) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + answerId));
@@ -292,9 +280,7 @@ public class QaService {
         return answerMapper.toResponseDto(updatedAnswer);
     }
 
-    /**
-     * Remove upvote from an answer
-     */
+
     public AnswerResponseDto removeUpvote(String answerId) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + answerId));
@@ -304,14 +290,11 @@ public class QaService {
         return answerMapper.toResponseDto(updatedAnswer);
     }
 
-    /**
-     * Delete an answer
-     */
+
     public void deleteAnswer(String id) {
         Answer answer = answerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + id));
 
-        // Prevent deletion of accepted answers
         if (answer.getIsAccepted()) {
             throw new DeletionNotAllowedException("Cannot delete an accepted answer. Please unmark it first.");
         }
@@ -319,7 +302,6 @@ public class QaService {
         String questionId = answer.getQuestionId();
         answerRepository.delete(answer);
         
-        // Decrement answer count on the question
         decrementAnswerCount(questionId);
     }
 }
