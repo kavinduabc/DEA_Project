@@ -9,6 +9,20 @@ import org.hibernate.annotations.UuidGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+//**
+// import jakarta and jakarta.validation -> for validation and persistence
+// import java.util -> List and UUID
+// */
+
+//**
+// This is user model.It consists of
+//    id (UUID)
+//    email, password,role, (String)
+//    localDatetime (LocalDateTime)
+//    and Profile
+//    uuid is a primary key
+//    use anotations :@Entity ,@TAble ,@ID,@Email
+//    */
 @Entity
 @Table(name = "users")
 public class User {
@@ -30,6 +44,15 @@ public class User {
     @NotBlank
     private String role;
 
+    //**
+    // @OneToOne -> one user has one profile , one profile belongs to one user
+    // mappedBy = "user" ->  refers to the variable name inside profile class
+    // cascade = CascadeType.ALL -> save, update , delete all of are include in this
+    //       this method use to , if do the operation on user, it will also apply to profile
+    //       accordingly , profile also saved automatically
+    // orphanRemoval = true -> this method allows  to , if a remove profile
+    //   from user , profile record  will be automatically delete from database automatically.
+    // fetch = FetchType.LAZY ->   */
     @OneToOne(
             mappedBy = "user",
             cascade = CascadeType.ALL,
@@ -42,6 +65,15 @@ public class User {
 
     public User() {
         // Default constructor for JPA
+    }
+
+    public User(UUID id, String email, String password, String role, Profile profile, LocalDateTime createAt) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.profile = profile;
+        this.createAt = createAt;
     }
 
     public UUID getId() {

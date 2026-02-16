@@ -20,6 +20,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+//**
+// this is securit configuration file .
+// using bcrypt for password  hashing and use for jwt for authentication and authorization
+// difine JwtAuthFilter
+// *
+// import org.springframwork.security
+// import java.io.IOException
+// import java.time.LocalDateTime*/
 @Configuration
 public class SecurityConfig {
 
@@ -29,6 +37,10 @@ public class SecurityConfig {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
+    //**
+    // @Bean -> this is an annotation used to tell spring to create and manage an object as a Bean
+    // it is usually written inside a @Configuration class
+    // */
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
