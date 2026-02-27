@@ -1,6 +1,6 @@
 spring:
   application:
-    name: resource-service
+    name: ResourceService
 
   config:
     import: optional:file:.env[.properties]
@@ -28,3 +28,8 @@ spring:
 
 server:
   port: 8093
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

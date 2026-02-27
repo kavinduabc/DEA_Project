@@ -15,9 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-/api/v1/
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class ProfileController {
 

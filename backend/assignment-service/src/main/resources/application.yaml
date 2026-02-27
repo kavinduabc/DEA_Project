@@ -1,6 +1,6 @@
 spring:
   application:
-    name: Assignment Service 
+    name: AssignmentService
 
   config:
     import: optional:file:.env[.properties]
