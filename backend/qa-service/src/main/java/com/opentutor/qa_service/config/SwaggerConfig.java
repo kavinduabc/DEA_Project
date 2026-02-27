@@ -1,4 +1,4 @@
-package com.opentutor.classroom_service.config;
+package com.opentutor.qa_service.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -11,8 +11,8 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Classroom Service APIs")
+                        .title("Q&A Service APIs")
                         .version("1.0")
-                        .description("Classroom Service API documentation of OpenTuror Learing Platform"));
+                        .description("Q&A Service API documentation of OpenTuror Learing Platform"));
     }
 }

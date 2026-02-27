@@ -55,7 +55,10 @@ public class SecurityConfig {
                         // Goal 2: Allow Login & Register without token
                         .requestMatchers("/api/user/reg", "/api/user/login").permitAll()
 
-                        // Catch-all: Anything else requires login
+                        // Allow Swagger UI and OpenAPI docs without authentication
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+
+                        // Catch-all: Anything else requires login (must be last)
                         .anyRequest().authenticated()
                 )
 
@@ -72,7 +75,8 @@ public class SecurityConfig {
                 )
 
                 // Add your JWT Filter before the standard auth filter
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .formLogin(login -> login.defaultSuccessUrl("/swagger-ui.html", true));
 
         return http.build();
     }
