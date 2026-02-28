@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="announcement-service" />
+        <module name="config-server" />
         <module name="discovery-server" />
         <module name="resource-service" />
         <module name="qa-service" />
@@ -31,6 +32,7 @@
       <module name="announcement-service" options="-parameters" />
       <module name="assignment-service" options="-parameters" />
       <module name="classroom-service" options="-parameters" />
+      <module name="config-server" options="-parameters" />
       <module name="discovery-server" options="-parameters" />
       <module name="enrollment-service" options="-parameters" />
       <module name="profile-service" options="-parameters" />

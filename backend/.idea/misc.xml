@@ -13,6 +13,7 @@
         <option value="$PROJECT_DIR$/enrollment-service/pom.xml" />
         <option value="$PROJECT_DIR$/announcement-service/pom.xml" />
         <option value="$PROJECT_DIR$/discovery-server/pom.xml" />
+        <option value="$PROJECT_DIR$/config-server/pom.xml" />
       </list>
     </option>
   </component>
