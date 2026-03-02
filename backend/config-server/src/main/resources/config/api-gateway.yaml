@@ -1,0 +1,68 @@
+server:
+  port: 8090
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins: "http://localhost:3000"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
+                allowedHeaders: "*"
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+            - id: announcement-service-route
+              uri: lb://announcement-service
+              predicates:
+                - Path=/api/announcements/**
+
+            - id: assignment-service-route
+              uri: lb://assignment-service
+              predicates:
+                - Path=/api/assignments/**
+
+            - id: classroom-service-route
+              uri: lb://classroom-service
+              predicates:
+                - Path=/api/classrooms/**
+
+            - id: enrollment-service-route
+              uri: lb://enrollment-service
+              predicates:
+                - Path=/api/enrollments/**
+
+            - id: profile-service-route
+              uri: lb://profile-service
+              predicates:
+                - Path=/api/user/**
+
+            - id: qa-service-route
+              uri: lb://qa-service
+              predicates:
+                - Path=/api/qa/**
+
+            - id: quiz-service-route
+              uri: lb://quiz-service
+              predicates:
+                - Path=/api/quizzes/**
+
+            - id: resource-service-route
+              uri: lb://resource-service
+              predicates:
+                - Path=/api/resources/**

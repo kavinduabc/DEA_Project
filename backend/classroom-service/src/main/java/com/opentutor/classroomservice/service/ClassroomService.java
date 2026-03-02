@@ -1,5 +1,6 @@
 package com.opentutor.classroomservice.service;
 
+import com.opentutor.classroomservice.client.UserServiceClient;
 import com.opentutor.classroomservice.dto.ClassroomRequestDTO;
 import com.opentutor.classroomservice.dto.ClassroomResponseDTO;
 import com.opentutor.classroomservice.exception.DuplicateResourceException;
@@ -17,15 +18,27 @@ public class ClassroomService {
 
     private final ClassroomRepository classroomRepository;
     private final ClassroomMapper classroomMapper;
+    private final UserServiceClient userServiceClient;
 
     public ClassroomService(ClassroomRepository classroomRepository,
-                            ClassroomMapper classroomMapper) {
+                            ClassroomMapper classroomMapper,
+                            UserServiceClient userServiceClient) {
         this.classroomRepository = classroomRepository;
         this.classroomMapper = classroomMapper;
+        this.userServiceClient = userServiceClient;
     }
 
     // Create
     public ClassroomResponseDTO createClassroom(ClassroomRequestDTO classroomRequestDTO) {
+
+        // Verify that the teacher (user) exists in the profile-service
+        if (!userServiceClient.userExists(classroomRequestDTO.getTeacherId())) {
+            throw new ResourceNotFoundException(
+                    "User",
+                    "id",
+                    classroomRequestDTO.getTeacherId()
+            );
+        }
 
         // Check if invite code already exists (if provided)
         if (classroomRequestDTO.getInviteCode() != null &&
