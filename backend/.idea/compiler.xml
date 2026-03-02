@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="announcement-service" />
+        <module name="config-server" />
+        <module name="discovery-server" />
+        <module name="resource-service" />
+        <module name="qa-service" />
+        <module name="quiz-service" />
+        <module name="profile-service" />
+        <module name="enrollment-service" />
+        <module name="classroom-service" />
+      </profile>
+      <profile name="Annotation profile for Assignment Service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+        </processorPath>
+        <module name="assignment-service" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="announcement-service" options="-parameters" />
+      <module name="assignment-service" options="-parameters" />
+      <module name="classroom-service" options="-parameters" />
+      <module name="config-server" options="-parameters" />
+      <module name="discovery-server" options="-parameters" />
+      <module name="enrollment-service" options="-parameters" />
+      <module name="profile-service" options="-parameters" />
+      <module name="qa-service" options="-parameters" />
+      <module name="quiz-service" options="-parameters" />
+      <module name="resource-service" options="-parameters" />
+    </option>
+  </component>
+</project>
