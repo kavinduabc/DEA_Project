@@ -1,5 +1,6 @@
 package com.opentuter.resourceservice.model;
 
+
 import jakarta.persistence.*;
 import java.util.List;
 import java.util.UUID;
@@ -9,23 +10,21 @@ import java.util.UUID;
 public class Module {
 
     @Id
-    @Column(columnDefinition = "uuid")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
     @Column(nullable = false)
     private String title;
 
-    @Column(name = "course_id", nullable = false, columnDefinition = "uuid")
-    private UUID courseId;
+    @Column(name = "classroom_id", nullable = false, columnDefinition = "uuid")
+    private UUID classroomId;
 
-    // One module can have many resources
-    @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "module", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Resource> resources;
 
-    // ===== Constructors =====
     public Module() {}
 
-    // ===== Getters & Setters =====
     public UUID getId() {
         return id;
     }
@@ -42,12 +41,12 @@ public class Module {
         this.title = title;
     }
 
-    public UUID getCourseId() {
-        return courseId;
+    public UUID getClassroomId() {
+        return classroomId;
     }
 
-    public void setCourseId(UUID courseId) {
-        this.courseId = courseId;
+    public void setClassroomId(UUID classroomId) {
+        this.classroomId = classroomId;
     }
 
     public List<Resource> getResources() {
@@ -58,4 +57,3 @@ public class Module {
         this.resources = resources;
     }
 }
-
