@@ -1,6 +1,7 @@
 package com.opentuter.profileservice.model;
 
 
+import com.opentuter.profileservice.util.Utils;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -24,12 +25,12 @@ import java.util.UUID;
 //    use anotations :@Entity ,@TAble ,@ID,@Email
 //    */
 @Entity
-@Table(name = "users")
+@Table(name = Utils.USER_TABLE)
 public class User {
     @Id
     @GeneratedValue
     @UuidGenerator
-    @Column(name = "id", updatable = false, nullable = false)
+    @Column(name = Utils.ID, updatable = false, nullable = false)
     private UUID id;
 
     @Email

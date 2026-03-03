@@ -1,5 +1,6 @@
 package com.opentuter.profileservice.dto;
 
+import com.opentuter.profileservice.util.Utils;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -19,17 +20,17 @@ import java.util.List;
 //   */
 public class ProfileRequestDto {
 
-    @Email(message = "Email should be valid")
-    @NotBlank(message = "Email is required")
+    @Email(message = Utils.EMAIL_VALIDE)
+    @NotBlank(message = Utils.EMAIL_REQUIRED)
     public String email;
 
-    @NotBlank(message = "Password is required")
+    @NotBlank(message = Utils.PASSWORD_REQUIRED)
     public String password;
 
-    @NotBlank(message = "Role is required")
+    @NotBlank(message = Utils.ROLE_REQUIRED)
     public String role;
 
-    @NotBlank(message = "Name is required")
+    @NotBlank(message = Utils.NAME_REQUIRED)
     public String fullName;
 
     public String bio;
@@ -39,35 +40,35 @@ public class ProfileRequestDto {
     public List<String> socialMediaUrls;
 
 
-    public @Email(message = "Email should be valid") @NotBlank(message = "Email is required") String getEmail() {
+    public @Email(message = Utils.EMAIL_VALIDE) @NotBlank(message = Utils.EMAIL_REQUIRED) String getEmail() {
         return email;
     }
 
-    public void setEmail(@Email(message = "Email should be valid") @NotBlank(message = "Email is required") String email) {
+    public void setEmail(@Email(message = Utils.EMAIL_VALIDE) @NotBlank(message = Utils.EMAIL_REQUIRED) String email) {
         this.email = email;
     }
 
-    public @NotBlank(message = "Password is required") String getPassword() {
+    public @NotBlank(message = Utils.PASSWORD_REQUIRED) String getPassword() {
         return password;
     }
 
-    public void setPassword(@NotBlank(message = "Password is required") String password) {
+    public void setPassword(@NotBlank(message = Utils.PASSWORD_REQUIRED) String password) {
         this.password = password;
     }
 
-    public @NotBlank(message = "Role is required") String getRole() {
+    public @NotBlank(message = Utils.ROLE_REQUIRED) String getRole() {
         return role;
     }
 
-    public void setRole(@NotBlank(message = "Role is required") String role) {
+    public void setRole(@NotBlank(message = Utils.ROLE_REQUIRED) String role) {
         this.role = role;
     }
 
-    public @NotBlank(message = "Name is required") String getFullName() {
+    public @NotBlank(message = Utils.NAME_REQUIRED) String getFullName() {
         return fullName;
     }
 
-    public void setFullName(@NotBlank(message = "Name is required") String fullName) {
+    public void setFullName(@NotBlank(message = Utils.NAME_REQUIRED) String fullName) {
         this.fullName = fullName;
     }
 

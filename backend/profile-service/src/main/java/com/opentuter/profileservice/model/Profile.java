@@ -1,6 +1,7 @@
 package com.opentuter.profileservice.model;
 
 
+import com.opentuter.profileservice.util.Utils;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.UUID;
 
 
 @Entity
-@Table(name = "profiles")
+@Table(name = Utils.PROFILE_TABLE)
 public class Profile {
 
    @Id
@@ -35,7 +36,7 @@ public class Profile {
 
    @OneToOne
     @MapsId
-    @JoinColumn(name = "id")
+    @JoinColumn(name = Utils.ID)
     private User user;
 
     public Profile(UUID id, String fullName, String bio, String imageUrl, List<String> socialMediaUrls, User user) {
