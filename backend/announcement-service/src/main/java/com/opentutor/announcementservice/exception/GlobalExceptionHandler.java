@@ -12,10 +12,27 @@ import org.springframework.web.context.request.WebRequest;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
+/**
+ * Global exception handler for the Announcement Service.
+ * Catches and formats exceptions thrown across all controllers
+ * into consistent {@link ErrorResponseDTO} JSON responses.
+ *
+ * <p>Handler resolution order (Spring picks the most specific match first):
+ * <ol>
+ *   <li>{@link ResourceNotFoundException}    → 404 NOT FOUND</li>
+ *   <li>{@link DuplicateResourceException}   → 409 CONFLICT</li>
+ *   <li>{@link AnnouncementServiceException} → 400 BAD REQUEST (base for all custom exceptions)</li>
+ *   <li>{@link MethodArgumentNotValidException}  → 400 BAD REQUEST (Bean Validation failures)</li>
+ *   <li>{@link HttpMessageNotReadableException}  → 400 BAD REQUEST (malformed JSON)</li>
+ *   <li>{@link Exception}                    → 500 INTERNAL SERVER ERROR (catch-all)</li>
+ * </ol>
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 404 - Resource Not Found
+    /**
+     * Handles 404 - thrown when a requested announcement or related resource does not exist.
+     */
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleResourceNotFoundException(
             ResourceNotFoundException exception,
@@ -29,7 +46,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
-    // 409 - Duplicate Resource
+    /**
+     * Handles 409 - thrown when trying to create a resource that already exists.
+     */
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ErrorResponseDTO> handleDuplicateResourceException(
             DuplicateResourceException exception,
@@ -43,7 +62,28 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
-    // 400 - Validation errors (@Valid)
+    /**
+     * Handles 400 - base handler for any custom AnnouncementServiceException
+     * not caught by a more specific handler above.
+     * Ensures future custom exceptions extending the base class are handled gracefully.
+     */
+    @ExceptionHandler(AnnouncementServiceException.class)
+    public ResponseEntity<ErrorResponseDTO> handleAnnouncementServiceException(
+            AnnouncementServiceException exception,
+            WebRequest webRequest
+    ) {
+        ErrorResponseDTO body = new ErrorResponseDTO(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false)
+        );
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handles 400 - triggered when @Valid annotated request body fields fail validation.
+     * Aggregates all field-level errors into a single readable message.
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleValidationException(
             MethodArgumentNotValidException exception,
@@ -62,7 +102,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
-    // 400 - Malformed JSON / wrong request body
+    /**
+     * Handles 400 - triggered when the request body contains malformed or unreadable JSON.
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseDTO> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException exception,
@@ -84,7 +126,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
-    // 500 - Catch-all
+    /**
+     * Handles 500 - catch-all for any unhandled runtime exceptions.
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGlobalException(
             Exception exception,
