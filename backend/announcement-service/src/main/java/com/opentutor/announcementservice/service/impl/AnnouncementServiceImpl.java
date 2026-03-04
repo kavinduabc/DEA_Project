@@ -1,0 +1,108 @@
+package com.opentutor.announcementservice.service.impl;
+
+import com.opentutor.announcementservice.dto.AnnouncementRequestDTO;
+import com.opentutor.announcementservice.dto.AnnouncementResponseDTO;
+import com.opentutor.announcementservice.exception.ResourceNotFoundException;
+import com.opentutor.announcementservice.mapper.AnnouncementMapper;
+import com.opentutor.announcementservice.model.Announcement;
+import com.opentutor.announcementservice.repository.AnnouncementRepository;
+import com.opentutor.announcementservice.service.AnnouncementService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+/**
+ * Implementation of the {@link AnnouncementService} interface.
+ * Contains all business logic for managing announcements.
+ */
+@Service
+@Transactional
+public class AnnouncementServiceImpl implements AnnouncementService {
+
+    private final AnnouncementRepository repo;
+    private final AnnouncementMapper mapper;
+
+    public AnnouncementServiceImpl(AnnouncementRepository repo, AnnouncementMapper mapper) {
+        this.repo = repo;
+        this.mapper = mapper;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AnnouncementResponseDTO createAnnouncement(AnnouncementRequestDTO requestDTO) {
+        Announcement entity = mapper.toEntity(requestDTO);
+        Announcement saved = repo.save(entity);
+        return mapper.toResponseDTO(saved);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<AnnouncementResponseDTO> getByClassroomId(UUID classroomId) {
+        return mapper.toResponseDTOList(repo.findAllByClassroomId(classroomId));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<AnnouncementResponseDTO> getById(UUID id) {
+        return repo.findById(id).map(mapper::toResponseDTO);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AnnouncementResponseDTO updateAnnouncement(UUID id, AnnouncementRequestDTO requestDTO) {
+        Announcement existing = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Announcement", "id", id));
+
+        mapper.updateEntityFromDTO(existing, requestDTO);
+        Announcement updated = repo.save(existing);
+        return mapper.toResponseDTO(updated);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteAnnouncement(UUID id) {
+        if (!repo.existsById(id)) {
+            throw new ResourceNotFoundException("Announcement", "id", id);
+        }
+        repo.deleteById(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AnnouncementResponseDTO generateShareToken(UUID id) {
+        Announcement announcement = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Announcement", "id", id));
+
+        announcement.setShareToken(UUID.randomUUID().toString());
+        Announcement saved = repo.save(announcement);
+        return mapper.toResponseDTO(saved);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public AnnouncementResponseDTO getByShareToken(String token) {
+        Announcement announcement = repo.findByShareToken(token)
+                .orElseThrow(() -> new ResourceNotFoundException("Announcement", "shareToken", token));
+        return mapper.toResponseDTO(announcement);
+    }
+}

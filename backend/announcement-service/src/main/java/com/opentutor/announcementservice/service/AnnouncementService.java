@@ -2,73 +2,70 @@ package com.opentutor.announcementservice.service;
 
 import com.opentutor.announcementservice.dto.AnnouncementRequestDTO;
 import com.opentutor.announcementservice.dto.AnnouncementResponseDTO;
-import com.opentutor.announcementservice.mapper.AnnouncementMapper;
-import com.opentutor.announcementservice.model.Announcement;
-import com.opentutor.announcementservice.repository.AnnouncementRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Service
-@Transactional
-public class AnnouncementService {
+/**
+ * Service interface for Announcement operations.
+ * Defines the contract for all announcement-related business logic.
+ */
+public interface AnnouncementService {
 
-    private final AnnouncementRepository repo;
-    private final AnnouncementMapper mapper;
+    /**
+     * Creates a new announcement.
+     *
+     * @param requestDTO the data for the new announcement
+     * @return the created announcement as a response DTO
+     */
+    AnnouncementResponseDTO createAnnouncement(AnnouncementRequestDTO requestDTO);
 
-    public AnnouncementService(AnnouncementRepository repo, AnnouncementMapper mapper) {
-        this.repo = repo;
-        this.mapper = mapper;
-    }
+    /**
+     * Retrieves all announcements belonging to a specific classroom.
+     *
+     * @param classroomId the UUID of the classroom
+     * @return a list of announcements for the given classroom
+     */
+    List<AnnouncementResponseDTO> getByClassroomId(UUID classroomId);
 
-    public AnnouncementResponseDTO createAnnouncement(AnnouncementRequestDTO requestDTO) {
-        Announcement entity = mapper.toEntity(requestDTO);
-        Announcement saved = repo.save(entity);
-        return mapper.toResponseDTO(saved);
-    }
+    /**
+     * Retrieves a single announcement by its ID.
+     *
+     * @param id the UUID of the announcement
+     * @return an Optional containing the announcement if found, or empty if not
+     */
+    Optional<AnnouncementResponseDTO> getById(UUID id);
 
-    @Transactional(readOnly = true)
-    public List<AnnouncementResponseDTO> getByClassroomId(UUID classroomId) {
-        return mapper.toResponseDTOList(repo.findAllByClassroomId(classroomId));
-    }
+    /**
+     * Updates an existing announcement.
+     *
+     * @param id         the UUID of the announcement to update
+     * @param requestDTO the updated data
+     * @return the updated announcement as a response DTO
+     */
+    AnnouncementResponseDTO updateAnnouncement(UUID id, AnnouncementRequestDTO requestDTO);
 
-    @Transactional(readOnly = true)
-    public Optional<AnnouncementResponseDTO> getById(UUID id) {
-        return repo.findById(id).map(mapper::toResponseDTO);
-    }
+    /**
+     * Deletes an announcement by its ID.
+     *
+     * @param id the UUID of the announcement to delete
+     */
+    void deleteAnnouncement(UUID id);
 
-    public AnnouncementResponseDTO updateAnnouncement(UUID id, AnnouncementRequestDTO requestDTO) {
-        Announcement existing = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Announcement not found: " + id));
+    /**
+     * Generates a unique public share token for an announcement.
+     *
+     * @param id the UUID of the announcement
+     * @return the updated announcement with the new share token
+     */
+    AnnouncementResponseDTO generateShareToken(UUID id);
 
-        mapper.updateEntityFromDTO(existing, requestDTO);
-        Announcement updated = repo.save(existing);
-        return mapper.toResponseDTO(updated);
-    }
-
-    public void deleteAnnouncement(UUID id) {
-        if (!repo.existsById(id)) {
-            throw new RuntimeException("Announcement not found: " + id);
-        }
-        repo.deleteById(id);
-    }
-
-    public AnnouncementResponseDTO generateShareToken(UUID id) {
-        Announcement a = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Announcement not found: " + id));
-
-        a.setShareToken(UUID.randomUUID().toString());
-        Announcement saved = repo.save(a);
-        return mapper.toResponseDTO(saved);
-    }
-
-    @Transactional(readOnly = true)
-    public AnnouncementResponseDTO getByShareToken(String token) {
-        Announcement a = repo.findByShareToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid share token"));
-        return mapper.toResponseDTO(a);
-    }
+    /**
+     * Retrieves a publicly shared announcement by its share token.
+     *
+     * @param token the unique share token
+     * @return the announcement associated with the given token
+     */
+    AnnouncementResponseDTO getByShareToken(String token);
 }
