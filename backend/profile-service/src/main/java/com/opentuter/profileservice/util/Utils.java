@@ -32,7 +32,6 @@ public class Utils {
     public static final String PASSWORD_NOT_BLANK = "Password cannot be blank";
     public static final String LOGIN_TO_STRING_LOGREQ= "LoginRequest{";
     public static final String LOGIN_TO_STRING_EMAIL = "email='";
-    public static final String LOGIN_TO_STRING_PASSWORD = "password='";
     public static final String EMAIL_REQUIRED = "Email is required";
     public static final String PASSWORD_REQUIRED = "Password is required";
     public static final String ROLE_REQUIRED = "Role is required";
