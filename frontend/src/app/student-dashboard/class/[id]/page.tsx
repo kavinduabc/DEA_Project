@@ -4,111 +4,202 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
   GraduationCap,
   ArrowLeft,
-  Users,
+  Megaphone,
   BookOpen,
-  FileText,
-  Video,
   MessageSquare,
+  FileText,
+  ClipboardList,
+  Plus,
+  Trash2,
+  Download,
+  Upload,
+  Play,
+  Link as LinkIcon,
   Clock,
   CheckCircle2,
-  Circle,
-  ChevronRight,
-  Play,
-  Download
+  Power,
 } from 'lucide-react'
 
-export default function StudentClassView({ params }: { params: { id: string } }) {
-  const [activeModule, setActiveModule] = useState(1)
-  const [activeTab, setActiveTab] = useState('content')
+// ── Types matching each service's response ────────────────────────────────────
 
-  const classInfo = {
-    id: params.id,
+// Classroom Service
+interface Classroom {
+  id: number
+  teacherId: string
+  title: string
+  subject: string
+  bannerImage: string | null
+  inviteCode: string | null
+  isActive: boolean
+}
+
+// Announcement Service
+interface Announcement {
+  id: number
+  classroomId: number
+  title: string
+  content: string
+  authorId: string
+  createdAt: string
+}
+
+// Resources Service
+interface Module {
+  id: number
+  classroomId: number
+  title: string
+  orderIndex: number
+}
+interface Resource {
+  id: number
+  moduleId: number
+  title: string
+  type: 'pdf' | 'video' | 'link'
+  url: string
+}
+
+// Q&A Service
+interface Question {
+  id: number
+  classroomId: number
+  authorId: string
+  authorName: string
+  content: string
+  createdAt: string
+  replyCount: number
+}
+
+// Quizzes Service
+interface Quiz {
+  id: number
+  classroomId: number
+  title: string
+  questionCount: number
+  attempted: boolean
+  score: number | null
+}
+
+// Assignment Service
+interface Assignment {
+  id: number
+  classroomId: number
+  title: string
+  description: string
+  dueDate: string
+  submissionStatus: 'not_submitted' | 'submitted' | 'graded'
+  grade: number | null
+  feedback: string | null
+}
+
+export default function StudentClassView({ params }: { params: { id: string } }) {
+  // ── Classroom Service ──────────────────────────────────────────────────────
+  // TODO: GET /api/classrooms/{id}
+  const classroom: Classroom = {
+    id: Number(params.id),
+    teacherId: 'teacher-uuid-1',
     title: 'Advanced Java Programming',
-    teacher: 'Dr. Sarah Chen',
-    students: 234,
-    overallProgress: 75,
-    modulesCompleted: 9,
-    totalModules: 12
+    subject: 'Programming',
+    bannerImage: null,
+    inviteCode: null,
+    isActive: true,
   }
 
-  const modules = [
-    {
-      id: 1,
-      title: 'Getting Started',
-      status: 'completed',
-      lessons: [
-        { id: 1, title: 'Course Introduction', type: 'video', duration: '12:30' },
-        { id: 2, title: 'Setting Up Your Environment', type: 'video', duration: '18:45' }
-      ]
-    },
-    {
-      id: 2,
-      title: 'Java Basics Review',
-      status: 'completed',
-      lessons: [
-        { id: 3, title: 'Variables and Data Types', type: 'video', duration: '22:15' },
-        { id: 4, title: 'Control Flow', type: 'video', duration: '25:00' }
-      ]
-    },
-    {
-      id: 3,
-      title: 'Object-Oriented Programming',
-      status: 'completed',
-      lessons: [
-        { id: 5, title: 'Classes and Objects', type: 'video', duration: '30:00' },
-        { id: 6, title: 'Inheritance', type: 'video', duration: '28:30' }
-      ]
-    },
-    {
-      id: 4,
-      title: 'Advanced OOP Concepts',
-      status: 'in_progress',
-      lessons: [
-        { id: 7, title: 'Polymorphism', type: 'video', duration: '32:00' },
-        { id: 8, title: 'Abstract Classes', type: 'video', duration: '25:45' },
-        { id: 9, title: 'Interfaces', type: 'video', duration: '27:30' }
-      ]
-    },
-    {
-      id: 5,
-      title: 'Exception Handling',
-      status: 'locked',
-      lessons: [
-        { id: 10, title: 'Try-Catch Blocks', type: 'video', duration: '20:00' },
-        { id: 11, title: 'Custom Exceptions', type: 'video', duration: '18:30' }
-      ]
-    },
-    {
-      id: 6,
-      title: 'Collections Framework',
-      status: 'locked',
-      lessons: [
-        { id: 12, title: 'Lists', type: 'video', duration: '35:00' },
-        { id: 13, title: 'Sets and Maps', type: 'video', duration: '40:00' }
-      ]
+  // ── Announcement Service ───────────────────────────────────────────────────
+  // TODO: GET /api/announcements/classroom/{classroomId}
+  const announcements: Announcement[] = [
+    { id: 1, classroomId: classroom.id, title: 'Welcome!', content: 'Welcome to the course. Please review the syllabus.', authorId: classroom.teacherId, createdAt: '2 days ago' },
+    { id: 2, classroomId: classroom.id, title: 'Assignment Due Friday', content: 'Reminder: your first assignment is due this Friday at midnight.', authorId: classroom.teacherId, createdAt: '1 day ago' },
+  ]
+
+  // ── Resources Service ──────────────────────────────────────────────────────
+  // TODO: GET /api/modules/classroom/{classroomId}
+  const modules: Module[] = [
+    { id: 1, classroomId: classroom.id, title: 'Getting Started', orderIndex: 1 },
+    { id: 2, classroomId: classroom.id, title: 'Core Concepts', orderIndex: 2 },
+  ]
+  // TODO: GET /api/resources/module/{moduleId}
+  const resources: Resource[] = [
+    { id: 1, moduleId: 1, title: 'Introduction Slides', type: 'pdf', url: '#' },
+    { id: 2, moduleId: 1, title: 'Setup Tutorial', type: 'link', url: '#' },
+    { id: 3, moduleId: 2, title: 'Lecture Recording', type: 'video', url: '#' },
+    { id: 4, moduleId: 2, title: 'Practice Exercises', type: 'pdf', url: '#' },
+  ]
+
+  // ── Q&A Service ────────────────────────────────────────────────────────────
+  // TODO: GET /api/questions/classroom/{classroomId}
+  const [questions, setQuestions] = useState<Question[]>([
+    { id: 1, classroomId: classroom.id, authorId: 'student-1', authorName: 'Alice', content: 'What is polymorphism in Java?', createdAt: '3 hours ago', replyCount: 2 },
+    { id: 2, classroomId: classroom.id, authorId: 'student-2', authorName: 'Bob', content: 'Can someone explain abstract classes vs interfaces?', createdAt: '1 hour ago', replyCount: 0 },
+  ])
+  const [showQuestionModal, setShowQuestionModal] = useState(false)
+  const [questionForm, setQuestionForm] = useState({ content: '' })
+
+  // ── Quizzes Service ────────────────────────────────────────────────────────
+  // TODO: GET /api/quizzes/classroom/{classroomId}
+  const quizzes: Quiz[] = [
+    { id: 1, classroomId: classroom.id, title: 'OOP Basics Quiz', questionCount: 10, attempted: true, score: 85 },
+    { id: 2, classroomId: classroom.id, title: 'Collections Quiz', questionCount: 8, attempted: false, score: null },
+  ]
+
+  // ── Assignment Service ─────────────────────────────────────────────────────
+  // TODO: GET /api/assignments/classroom/{classroomId}
+  const assignments: Assignment[] = [
+    { id: 1, classroomId: classroom.id, title: 'OOP Design Exercise', description: 'Design a class hierarchy for a banking system.', dueDate: '2024-02-15', submissionStatus: 'graded', grade: 88, feedback: 'Good use of inheritance. Consider adding interfaces.' },
+    { id: 2, classroomId: classroom.id, title: 'Collections Task', description: 'Implement a sorted contact list using Java Collections.', dueDate: '2024-02-22', submissionStatus: 'not_submitted', grade: null, feedback: null },
+  ]
+
+  // ── Q&A handlers ──────────────────────────────────────────────────────────
+  // TODO: POST /api/questions → { classroomId, content }
+  const handlePostQuestion = () => {
+    console.log('POST /api/questions', { classroomId: classroom.id, content: questionForm.content })
+    const newQ: Question = {
+      id: Date.now(),
+      classroomId: classroom.id,
+      authorId: 'current-student-id',
+      authorName: 'You',
+      content: questionForm.content,
+      createdAt: 'Just now',
+      replyCount: 0,
     }
-  ]
+    setQuestions((prev) => [newQ, ...prev])
+    setShowQuestionModal(false)
+    setQuestionForm({ content: '' })
+  }
 
-  const resources = [
-    { id: 1, title: 'Java Cheat Sheet', type: 'pdf', size: '2.4 MB' },
-    { id: 2, title: 'Practice Exercises', type: 'pdf', size: '1.8 MB' },
-    { id: 3, title: 'Code Templates', type: 'zip', size: '560 KB' },
-    { id: 4, title: 'Additional Reading', type: 'pdf', size: '3.2 MB' }
-  ]
+  // TODO: DELETE /api/questions/{id} — only for own questions
+  const handleDeleteQuestion = (id: number) => {
+    console.log('DELETE /api/questions/' + id)
+    setQuestions((prev) => prev.filter((q) => q.id !== id))
+  }
 
-  const forumPosts = [
-    { id: 1, author: 'John D.', title: 'Question about polymorphism', replies: 5, time: '2 hours ago' },
-    { id: 2, author: 'Emily R.', title: 'Help with interfaces', replies: 8, time: '5 hours ago' },
-    { id: 3, author: 'Mike S.', title: 'Best practices for collections', replies: 12, time: '1 day ago' }
-  ]
+  const resourceIcon = (type: Resource['type']) => {
+    if (type === 'pdf') return <FileText className="h-4 w-4 text-red-500" />
+    if (type === 'video') return <Play className="h-4 w-4 text-blue-500" />
+    return <LinkIcon className="h-4 w-4 text-green-500" />
+  }
+
+  const submissionBadge = (status: Assignment['submissionStatus']) => {
+    if (status === 'graded') return <Badge className="bg-green-100 text-green-800 border-green-200">Graded</Badge>
+    if (status === 'submitted') return <Badge variant="secondary">Submitted</Badge>
+    return <Badge variant="outline">Not Submitted</Badge>
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -129,245 +220,264 @@ export default function StudentClassView({ params }: { params: { id: string } })
         </div>
       </header>
 
-      {/* Class Header */}
-      <div className="bg-gradient-to-r from-primary via-orange-500 to-orange-600 text-white py-8">
+      {/* Class Banner — Classroom Service */}
+      <div
+        className="bg-gradient-to-r from-primary via-orange-500 to-orange-600 text-white py-10"
+        style={classroom.bannerImage ? { backgroundImage: `linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)),url(${classroom.bannerImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+      >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2">{classInfo.title}</h1>
-          <p className="opacity-90 mb-4">Dr. Sarah Chen</p>
-          <div className="flex flex-wrap gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              {classInfo.students} students
-            </div>
-            <div className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4" />
-              {classInfo.modulesCompleted}/{classInfo.totalModules} modules
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4" />
-              {classInfo.overallProgress}% complete
-            </div>
+          <div className="flex items-center gap-3 mb-3">
+            <Badge className="bg-white/20 text-white border-white/30">{classroom.subject}</Badge>
+            <Badge className={classroom.isActive ? 'bg-green-500/80 text-white border-green-400/30' : 'bg-gray-500/80 text-white border-gray-400/30'}>
+              {classroom.isActive ? 'Active' : 'Inactive'}
+            </Badge>
           </div>
-          <div className="mt-4 max-w-md">
-            <Progress value={classInfo.overallProgress} className="h-2 bg-white/30" />
-          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold">{classroom.title}</h1>
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Tabs */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid lg:grid-cols-4 gap-6">
-          {/* Sidebar - Modules & Resources */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-24">
-              <CardHeader>
-                <CardTitle className="text-lg">Course Content</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <ScrollArea className="h-[calc(100vh-250px)]">
-                  <div className="p-4 space-y-2">
-                    {modules.map((module) => (
-                      <div key={module.id}>
-                        <button
-                          onClick={() => setActiveModule(module.id)}
-                          className={`w-full text-left p-3 rounded-lg transition-all ${
-                            activeModule === module.id
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted hover:bg-muted/80'
-                          }`}
-                          disabled={module.status === 'locked'}
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex items-start gap-3">
-                              {module.status === 'completed' ? (
-                                <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0" />
-                              ) : module.status === 'in_progress' ? (
-                                <Circle className="h-5 w-5 mt-0.5 flex-shrink-0" />
-                              ) : (
-                                <div className="h-5 w-5 mt-0.5 flex-shrink-0 rounded-full border-2 border-muted-foreground/30" />
-                              )}
-                              <div>
-                                <div className="font-semibold text-sm">Module {module.id}</div>
-                                <div className="text-xs opacity-90">{module.title}</div>
-                              </div>
-                            </div>
-                            {module.status !== 'locked' && (
-                              <ChevronRight className="h-4 w-4 opacity-70" />
-                            )}
-                          </div>
-                        </button>
-                        {activeModule === module.id && (
-                          <div className="ml-8 mt-2 space-y-1">
-                            {module.lessons.map((lesson) => (
-                              <div key={lesson.id} className="flex items-center gap-2 text-sm p-2 rounded hover:bg-muted/50 cursor-pointer">
-                                <Video className="h-3 w-3 opacity-70" />
-                                <span className="flex-1 truncate">{lesson.title}</span>
-                                <span className="text-xs opacity-60">{lesson.duration}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
+        <Tabs defaultValue="announcements" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5">
+            <TabsTrigger value="announcements" className="gap-1 text-xs"><Megaphone className="h-4 w-4" /><span className="hidden sm:inline">Announcements</span></TabsTrigger>
+            <TabsTrigger value="resources" className="gap-1 text-xs"><BookOpen className="h-4 w-4" /><span className="hidden sm:inline">Resources</span></TabsTrigger>
+            <TabsTrigger value="qa" className="gap-1 text-xs"><MessageSquare className="h-4 w-4" /><span className="hidden sm:inline">Q&amp;A</span></TabsTrigger>
+            <TabsTrigger value="quizzes" className="gap-1 text-xs"><ClipboardList className="h-4 w-4" /><span className="hidden sm:inline">Quizzes</span></TabsTrigger>
+            <TabsTrigger value="assignments" className="gap-1 text-xs"><FileText className="h-4 w-4" /><span className="hidden sm:inline">Assignments</span></TabsTrigger>
+          </TabsList>
+
+          {/* ── ANNOUNCEMENTS — Announcement Service ── */}
+          <TabsContent value="announcements" className="space-y-4">
+            <h2 className="text-2xl font-bold">Announcements</h2>
+            {/* GET /api/announcements/classroom/{classroomId} */}
+            {announcements.length === 0 && <p className="text-muted-foreground text-center py-8">No announcements yet.</p>}
+            {announcements.map((a) => (
+              <Card key={a.id}>
+                <CardHeader>
+                  <CardTitle className="text-lg">{a.title}</CardTitle>
+                  <CardDescription>{a.createdAt}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">{a.content}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+
+          {/* ── RESOURCES — Resources Service ── */}
+          <TabsContent value="resources" className="space-y-4">
+            <h2 className="text-2xl font-bold">Course Resources</h2>
+            {/* GET /api/modules/classroom/{classroomId} */}
+            {modules.map((mod) => (
+              <Card key={mod.id}>
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">Module {mod.orderIndex}</Badge>
+                    <CardTitle className="text-lg">{mod.title}</CardTitle>
                   </div>
-                  
-                  <Separator className="my-4" />
-                  
-                  <div className="px-4 pb-4">
-                    <h3 className="font-semibold mb-3">Resources</h3>
+                </CardHeader>
+                <CardContent>
+                  {/* GET /api/resources/module/{moduleId} */}
+                  {resources.filter((r) => r.moduleId === mod.id).length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No resources available yet.</p>
+                  ) : (
                     <div className="space-y-2">
-                      {resources.map((resource) => (
-                        <div
-                          key={resource.id}
-                          className="flex items-center justify-between p-2 rounded hover:bg-muted/50 cursor-pointer text-sm"
-                        >
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-primary" />
-                            <span className="truncate">{resource.title}</span>
+                      {resources.filter((r) => r.moduleId === mod.id).map((res) => (
+                        <div key={res.id} className="flex items-center justify-between p-3 rounded-lg border hover:border-primary transition-colors">
+                          <div className="flex items-center gap-3">
+                            {resourceIcon(res.type)}
+                            <div>
+                              <div className="font-medium text-sm">{res.title}</div>
+                              <Badge variant="secondary" className="text-xs mt-0.5">{res.type.toUpperCase()}</Badge>
+                            </div>
                           </div>
-                          <Download className="h-4 w-4 opacity-60" />
+                          {/* View/Download Resource */}
+                          <Button variant="outline" size="sm" className="gap-2" onClick={() => console.log('Access resource', res.id)}>
+                            {res.type === 'pdf' ? <Download className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                            {res.type === 'pdf' ? 'Download' : 'Open'}
+                          </Button>
                         </div>
                       ))}
                     </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+
+          {/* ── Q&A — Q&A Service ── */}
+          <TabsContent value="qa" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Q&A Forum</h2>
+              <Dialog open={showQuestionModal} onOpenChange={setShowQuestionModal}>
+                <DialogTrigger asChild>
+                  <Button className="gap-2"><Plus className="h-4 w-4" />Ask a Question</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-lg">
+                  <DialogHeader>
+                    <DialogTitle>Post a Question</DialogTitle>
+                    {/* Q&A Service: POST /api/questions */}
+                    <DialogDescription>Ask something and your teacher or classmates will reply.</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label>Your Question</Label>
+                      <Textarea placeholder="Type your question here..." value={questionForm.content} onChange={(e) => setQuestionForm({ content: e.target.value })} rows={4} />
+                    </div>
+                    <div className="flex gap-3">
+                      <Button variant="outline" className="flex-1" onClick={() => setShowQuestionModal(false)}>Cancel</Button>
+                      <Button className="flex-1" onClick={handlePostQuestion} disabled={!questionForm.content.trim()}>Post Question</Button>
+                    </div>
                   </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Main Content Area */}
-          <div className="lg:col-span-3">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="content" className="gap-2">
-                  <Play className="h-4 w-4" />
-                  Content
-                </TabsTrigger>
-                <TabsTrigger value="resources" className="gap-2">
-                  <FileText className="h-4 w-4" />
-                  Resources
-                </TabsTrigger>
-                <TabsTrigger value="forum" className="gap-2">
-                  <MessageSquare className="h-4 w-4" />
-                  Forum
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Content Tab */}
-              <TabsContent value="content" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge>Module 4</Badge>
-                      <Badge variant="outline">In Progress</Badge>
+                </DialogContent>
+              </Dialog>
+            </div>
+            {/* GET /api/questions/classroom/{classroomId} */}
+            {questions.length === 0 && <p className="text-muted-foreground text-center py-8">No questions yet. Be the first to ask!</p>}
+            {questions.map((q) => (
+              <Card key={q.id}>
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle className="text-base">{q.content}</CardTitle>
+                      <CardDescription>by {q.authorName} · {q.createdAt}</CardDescription>
                     </div>
-                    <CardTitle className="text-2xl">Advanced OOP Concepts</CardTitle>
-                    <CardDescription>
-                      Deep dive into polymorphism, abstract classes, and interfaces
-                    </CardDescription>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">{q.replyCount} replies</Badge>
+                      {/* Delete own question — DELETE /api/questions/{id} */}
+                      {q.authorName === 'You' && (
+                        <Button variant="ghost" size="icon" onClick={() => handleDeleteQuestion(q.id)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {/* View Replies — GET /api/replies/question/{questionId} */}
+                  {/* Reply — POST /api/replies → { questionId, content } */}
+                  <Button variant="outline" size="sm" className="gap-2" onClick={() => console.log('View/Reply to question', q.id)}>
+                    <MessageSquare className="h-4 w-4" />View & Reply ({q.replyCount})
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+
+          {/* ── QUIZZES — Quizzes Service ── */}
+          <TabsContent value="quizzes" className="space-y-4">
+            <h2 className="text-2xl font-bold">Quizzes</h2>
+            {/* GET /api/quizzes/classroom/{classroomId} */}
+            {quizzes.length === 0 && <p className="text-muted-foreground text-center py-8">No quizzes yet.</p>}
+            <div className="grid md:grid-cols-2 gap-4">
+              {quizzes.map((quiz) => (
+                <Card key={quiz.id}>
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <CardTitle className="text-lg">{quiz.title}</CardTitle>
+                      {quiz.attempted ? (
+                        <Badge className="bg-green-100 text-green-800 border-green-200">
+                          <CheckCircle2 className="h-3 w-3 mr-1" />Done
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline">
+                          <Clock className="h-3 w-3 mr-1" />Pending
+                        </Badge>
+                      )}
+                    </div>
+                    <CardDescription>{quiz.questionCount} questions</CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <div className="aspect-video bg-muted rounded-lg mb-4 flex items-center justify-center">
-                      <div className="text-center">
-                        <Play className="h-16 w-16 mx-auto mb-4 text-primary opacity-80" />
-                        <p className="text-muted-foreground">Video Player Placeholder</p>
-                        <p className="text-sm text-muted-foreground mt-2">Duration: 32:00</p>
+                  <CardContent className="space-y-3">
+                    {quiz.attempted && quiz.score !== null && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-muted-foreground">Your Score:</span>
+                        <span className="font-bold text-primary text-lg">{quiz.score}%</span>
                       </div>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <Button variant="outline" size="lg" className="gap-2">
-                        <ArrowLeft className="h-4 w-4" />
-                        Previous
+                    )}
+                    {quiz.attempted ? (
+                      // View attempt history — GET /api/attempts/quiz/{quizId}?studentId=...
+                      <Button variant="outline" size="sm" className="w-full" onClick={() => console.log('View attempts for quiz', quiz.id)}>
+                        View Attempt History
                       </Button>
-                      <Button size="lg" className="gap-2">
-                        Next
-                        <ChevronRight className="h-4 w-4" />
+                    ) : (
+                      // Start quiz — POST /api/attempts → { quizId, studentId }
+                      <Button size="sm" className="w-full gap-2" onClick={() => console.log('Start quiz', quiz.id)}>
+                        <Play className="h-4 w-4" />Start Quiz
                       </Button>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
+              ))}
+            </div>
+          </TabsContent>
 
-                <Card>
+          {/* ── ASSIGNMENTS — Assignment Service ── */}
+          <TabsContent value="assignments" className="space-y-4">
+            <h2 className="text-2xl font-bold">Assignments</h2>
+            {/* GET /api/assignments/classroom/{classroomId} */}
+            {assignments.length === 0 && <p className="text-muted-foreground text-center py-8">No assignments yet.</p>}
+            <div className="space-y-4">
+              {assignments.map((a) => (
+                <Card key={a.id}>
                   <CardHeader>
-                    <CardTitle>Lesson Notes</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4">
-                      Polymorphism is the ability of an object to take on many forms. In Java, this is achieved through method overriding and interface implementation.
-                    </p>
-                    <p className="text-muted-foreground">
-                      Key concepts covered in this module include runtime polymorphism, compile-time polymorphism, and the use of abstract classes and interfaces to create flexible code architectures.
-                    </p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Resources Tab */}
-              <TabsContent value="resources" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Course Resources</CardTitle>
-                    <CardDescription>
-                      Download materials and additional resources to support your learning
-                    </CardDescription>
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <CardTitle className="text-lg">{a.title}</CardTitle>
+                        <CardDescription className="flex items-center gap-2 mt-1">
+                          <Clock className="h-3 w-3" />Due: {a.dueDate}
+                        </CardDescription>
+                      </div>
+                      {submissionBadge(a.submissionStatus)}
+                    </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {resources.map((resource) => (
-                      <div
-                        key={resource.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:border-primary transition-colors"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                            <FileText className="h-6 w-6 text-primary" />
-                          </div>
-                          <div>
-                            <div className="font-semibold">{resource.title}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {resource.type.toUpperCase()} • {resource.size}
-                            </div>
-                          </div>
+                    <p className="text-sm text-muted-foreground">{a.description}</p>
+
+                    {/* Grade & Feedback — from Assignment Service */}
+                    {a.submissionStatus === 'graded' && (
+                      <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-muted-foreground">Grade:</span>
+                          <span className="font-bold text-primary">{a.grade}%</span>
                         </div>
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <Download className="h-4 w-4" />
-                          Download
-                        </Button>
+                        {a.feedback && (
+                          <div>
+                            <span className="text-sm text-muted-foreground">Feedback: </span>
+                            <span className="text-sm">{a.feedback}</span>
+                          </div>
+                        )}
                       </div>
-                    ))}
+                    )}
+
+                    <div className="flex gap-2">
+                      {a.submissionStatus === 'not_submitted' && (
+                        // Submit Assignment — POST /api/submissions → { assignmentId, studentId }
+                        // Upload File — part of submission payload
+                        <Button size="sm" className="gap-2" onClick={() => console.log('Submit assignment', a.id)}>
+                          <Upload className="h-4 w-4" />Submit Assignment
+                        </Button>
+                      )}
+                      {a.submissionStatus === 'submitted' && (
+                        // View submitted file — GET /api/submissions/assignment/{id}?studentId=...
+                        <Button variant="outline" size="sm" className="gap-2" onClick={() => console.log('View submission', a.id)}>
+                          <FileText className="h-4 w-4" />View My Submission
+                        </Button>
+                      )}
+                      {a.submissionStatus === 'graded' && (
+                        <Button variant="outline" size="sm" className="gap-2" onClick={() => console.log('View submission', a.id)}>
+                          <FileText className="h-4 w-4" />View Submission
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
-              </TabsContent>
-
-              {/* Forum Tab */}
-              <TabsContent value="forum" className="space-y-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold">Class Discussion</h2>
-                  <Button className="gap-2">
-                    <MessageSquare className="h-4 w-4" />
-                    New Post
-                  </Button>
-                </div>
-                
-                {forumPosts.map((post) => (
-                  <Card key={post.id} className="hover:shadow-md transition-shadow cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <CardTitle className="text-lg mb-1">{post.title}</CardTitle>
-                          <CardDescription>
-                            by {post.author} • {post.time}
-                          </CardDescription>
-                        </div>
-                        <Badge variant="secondary">{post.replies} replies</Badge>
-                      </div>
-                    </CardHeader>
-                  </Card>
-                ))}
-              </TabsContent>
-            </Tabs>
-          </div>
-        </div>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )
 }
+
