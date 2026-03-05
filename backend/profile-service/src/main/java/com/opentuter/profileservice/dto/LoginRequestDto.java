@@ -1,15 +1,16 @@
 package com.opentuter.profileservice.dto;
 
+import com.opentuter.profileservice.util.Utils;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequestDto {
 
-    @Email(message = "Email should be valid")
-    @NotBlank(message = "Email cannot be blank")
+    @Email(message = Utils.EMAIL_VALIDE)
+    @NotBlank(message = Utils.EMAIL_NOT_BLANK)
     private String email;
 
-    @NotBlank(message = "Password cannot be blank")
+    @NotBlank(message = Utils.PASSWORD_NOT_BLANK)
     private String password;
 
     // Default Constructor
@@ -42,8 +43,8 @@ public class LoginRequestDto {
 
     @Override
     public String toString() {
-        return "LoginRequest{" +
-                "email='" + email + '\'' +
+        return Utils.LOGIN_TO_STRING_LOGREQ +
+                Utils.LOGIN_TO_STRING_EMAIL + email + '\'' +
                 ", password='" + (password != null ? "***" : "null") + '\'' +
                 '}';
     }
