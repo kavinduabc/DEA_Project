@@ -142,6 +142,16 @@ public class AssignmentServiceImpl implements IAssignmentService {
      * {@inheritDoc}
      */
     @Override
+    public SubmissionResponseDTO getSubmissionById(UUID id) {
+        AssignmentSubmission submission = submissionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.SUBMISSION_NOT_FOUND + id));
+        return assignmentMapper.toDTO(submission);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public SubmissionResponseDTO gradeSubmission(UUID id, Double grade, String feedback) {
         AssignmentSubmission submission = submissionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(AppConstants.SUBMISSION_NOT_FOUND + id));

@@ -13,6 +13,6 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("Assignment Service APIs")
                         .version("1.0")
-                        .description("Assignment Service API documentation of OpenTuror Learing Platform"));
+                        .description("Assignment Service API documentation of OpenTutor Learning Platform"));
     }
 }

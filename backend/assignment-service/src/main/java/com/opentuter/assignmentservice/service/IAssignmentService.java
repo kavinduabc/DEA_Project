@@ -100,6 +100,17 @@ public interface IAssignmentService {
     SubmissionResponseDTO submitAssignment(SubmissionRequestDTO request);
 
     /**
+     * Retrieves a single submission by its unique ID.
+     *
+     * @param id the UUID of the submission
+     * @return the matching submission as a response DTO
+     * @throws com.opentuter.assignmentservice.exception.ResourceNotFoundException if
+     *                                                                             not
+     *                                                                             found
+     */
+    SubmissionResponseDTO getSubmissionById(UUID id);
+
+    /**
      * Records a grade and feedback for an existing submission.
      *
      * @param id       the UUID of the submission
