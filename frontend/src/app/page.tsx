@@ -21,6 +21,7 @@ import {
   ChevronDown,
 } from 'lucide-react'
 
+
 // ── Latest Announcements component ───────────────────────────────────────────
 // Data comes from Announcement Service: GET /api/announcements/latest
 interface Announcement {
