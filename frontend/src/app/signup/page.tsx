@@ -223,6 +223,8 @@ export default function SignUpPage() {
             </CardContent>
           </Card>
 
+          {/* {Login} */}
+
           <div className="mt-6 text-center">
             <p className="text-muted-foreground">
               Already have an account?{' '}
