@@ -412,6 +412,7 @@ export default function StudentClassView({ params }: { params: { id: string } })
             </div>
           </TabsContent>
 
+
           {/* ── ASSIGNMENTS — Assignment Service ── */}
           <TabsContent value="assignments" className="space-y-4">
             <h2 className="text-2xl font-bold">Assignments</h2>
