@@ -7,32 +7,43 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { GraduationCap, User, Mail, Lock, ArrowLeft, UserCheck, GraduationCap as TeacherIcon } from 'lucide-react'
+import { GraduationCap, User, Mail, Lock, ArrowLeft, UserCheck } from 'lucide-react'
 
 export default function SignUpPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const roleFromUrl = searchParams.get('role')
-  
-  const [role, setRole] = useState<'student' | 'teacher'>(roleFromUrl === 'teacher' ? 'teacher' : 'student')
+
+  // Matches Profile Service — Assign Role (student / teacher)
+  const [role, setRole] = useState<'student' | 'teacher'>(
+    roleFromUrl === 'teacher' ? 'teacher' : 'student'
+  )
+
+  // Matches Profile Service — Register User + Update Profile
+  // POST /api/auth/register → { name, email, password, role }
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    name: '',        // stored in profiles.name
+    email: '',       // stored in users.email
+    password: '',    // stored as hashed in users.password
+    confirmPassword: '',
   })
 
+  const passwordsMatch = formData.password === formData.confirmPassword
+  const isValid = formData.name && formData.email && formData.password && passwordsMatch
+
+  // TODO: POST /api/auth/register → { name, email, password, role }
+  // Response: { userId, token }
+  // Then redirect to appropriate dashboard
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement actual signup logic
-    console.log('Signup:', { ...formData, role })
-    // Redirect to appropriate dashboard
-    if (role === 'student') {
-      router.push('/student-dashboard')
-    } else {
-      router.push('/teacher-dashboard')
-    }
+    if (!isValid) return
+    console.log('POST /api/auth/register', {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      role,
+    })
+    router.push(role === 'student' ? '/student-dashboard' : '/teacher-dashboard')
   }
 
   return (
@@ -46,7 +57,7 @@ export default function SignUpPage() {
               <span className="text-2xl font-bold text-foreground">OpenTutor</span>
             </Link>
             <Link href="/login">
-              <Button variant="ghost" size="lg" className="gap-2">
+              <Button variant="ghost" size="lg">
                 Already have an account? Log In
               </Button>
             </Link>
@@ -54,11 +65,13 @@ export default function SignUpPage() {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
-            <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors"
+            >
               <ArrowLeft className="h-4 w-4" />
               Back to Home
             </Link>
@@ -66,58 +79,45 @@ export default function SignUpPage() {
             <p className="text-muted-foreground">Join OpenTutor and start your journey</p>
           </div>
 
-          {/* Role Selection */}
+          {/* Role Selection — Profile Service: Assign Role */}
           <div className="grid grid-cols-2 gap-4 mb-6">
-            <Card
-              className={`cursor-pointer transition-all border-2 ${
-                role === 'student'
-                  ? 'border-primary bg-primary/5 shadow-md'
-                  : 'border-border hover:border-primary/50'
-              }`}
-              onClick={() => setRole('student')}
-            >
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    role === 'student' ? 'bg-primary' : 'bg-muted'
-                  }`}>
-                    <UserCheck className={`h-6 w-6 ${
-                      role === 'student' ? 'text-primary-foreground' : 'text-muted-foreground'
-                    }`} />
+            {(['student', 'teacher'] as const).map((r) => (
+              <Card
+                key={r}
+                className={`cursor-pointer transition-all border-2 ${
+                  role === r
+                    ? 'border-primary bg-primary/5 shadow-md'
+                    : 'border-border hover:border-primary/50'
+                }`}
+                onClick={() => setRole(r)}
+              >
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                        role === r ? 'bg-primary' : 'bg-muted'
+                      }`}
+                    >
+                      <UserCheck
+                        className={`h-6 w-6 ${
+                          role === r ? 'text-primary-foreground' : 'text-muted-foreground'
+                        }`}
+                      />
+                    </div>
+                    <span
+                      className={`font-semibold capitalize ${
+                        role === r ? 'text-primary' : 'text-foreground'
+                      }`}
+                    >
+                      {r}
+                    </span>
                   </div>
-                  <span className={`font-semibold ${
-                    role === 'student' ? 'text-primary' : 'text-foreground'
-                  }`}>Student</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card
-              className={`cursor-pointer transition-all border-2 ${
-                role === 'teacher'
-                  ? 'border-primary bg-primary/5 shadow-md'
-                  : 'border-border hover:border-primary/50'
-              }`}
-              onClick={() => setRole('teacher')}
-            >
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    role === 'teacher' ? 'bg-primary' : 'bg-muted'
-                  }`}>
-                    <TeacherIcon className={`h-6 w-6 ${
-                      role === 'teacher' ? 'text-primary-foreground' : 'text-muted-foreground'
-                    }`} />
-                  </div>
-                  <span className={`font-semibold ${
-                    role === 'teacher' ? 'text-primary' : 'text-foreground'
-                  }`}>Teacher</span>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
-          {/* Sign Up Form */}
+          {/* Register Form — Profile Service: POST /api/auth/register */}
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="text-xl">
@@ -126,43 +126,28 @@ export default function SignUpPage() {
               <CardDescription>
                 {role === 'student'
                   ? 'Start learning from experts around the world'
-                  : 'Share your knowledge and create impactful courses'
-                }
+                  : 'Share your knowledge and create impactful courses'}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="firstName"
-                        placeholder="John"
-                        className="pl-9"
-                        value={formData.firstName}
-                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="lastName"
-                        placeholder="Doe"
-                        className="pl-9"
-                        value={formData.lastName}
-                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                        required
-                      />
-                    </div>
+                {/* name — stored in profiles.name */}
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="name"
+                      placeholder="John Doe"
+                      className="pl-9"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                    />
                   </div>
                 </div>
 
+                {/* email — stored in users.email */}
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <div className="relative">
@@ -179,6 +164,7 @@ export default function SignUpPage() {
                   </div>
                 </div>
 
+                {/* password — hashed by Profile Service */}
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
                   <div className="relative">
@@ -195,6 +181,7 @@ export default function SignUpPage() {
                   </div>
                 </div>
 
+                {/* confirmPassword — client-side validation only, not sent to API */}
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
                   <div className="relative">
@@ -203,24 +190,35 @@ export default function SignUpPage() {
                       id="confirmPassword"
                       type="password"
                       placeholder="••••••••"
-                      className="pl-9"
+                      className={`pl-9 ${
+                        formData.confirmPassword && !passwordsMatch ? 'border-destructive' : ''
+                      }`}
                       value={formData.confirmPassword}
-                      onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, confirmPassword: e.target.value })
+                      }
                       required
                     />
                   </div>
+                  {formData.confirmPassword && !passwordsMatch && (
+                    <p className="text-xs text-destructive">Passwords do not match</p>
+                  )}
                 </div>
 
-                <Button type="submit" className="w-full" size="lg">
+                <Button type="submit" className="w-full" size="lg" disabled={!isValid}>
                   Create Account
                 </Button>
 
-                <div className="text-center text-sm text-muted-foreground">
+                <p className="text-center text-sm text-muted-foreground">
                   By creating an account, you agree to our{' '}
-                  <Link href="#" className="text-primary hover:underline">Terms of Service</Link>
-                  {' '}and{' '}
-                  <Link href="#" className="text-primary hover:underline">Privacy Policy</Link>
-                </div>
+                  <Link href="#" className="text-primary hover:underline">
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link href="#" className="text-primary hover:underline">
+                    Privacy Policy
+                  </Link>
+                </p>
               </form>
             </CardContent>
           </Card>

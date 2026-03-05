@@ -12,16 +12,19 @@ import { GraduationCap, Mail, Lock, ArrowLeft, CheckCircle2 } from 'lucide-react
 export default function LoginPage() {
   const router = useRouter()
   const [role, setRole] = useState<'student' | 'teacher'>('student')
+
+  // Matches Profile Service — Login User (POST /api/auth/login)
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   })
 
+  // TODO: POST /api/auth/login → { email, password }
+  // Response: { token, userId, role }
+  // Store token in auth context / cookie, then redirect based on role
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement actual login logic
-    console.log('Login:', { ...formData, role })
-    // Redirect to appropriate dashboard
+    console.log('POST /api/auth/login', { email: formData.email, password: formData.password })
     if (role === 'student') {
       router.push('/student-dashboard')
     } else {
@@ -40,7 +43,7 @@ export default function LoginPage() {
               <span className="text-2xl font-bold text-foreground">OpenTutor</span>
             </Link>
             <Link href="/signup">
-              <Button variant="ghost" size="lg" className="gap-2">
+              <Button variant="ghost" size="lg">
                 New to OpenTutor? Sign Up
               </Button>
             </Link>
@@ -48,11 +51,13 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
-            <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors"
+            >
               <ArrowLeft className="h-4 w-4" />
               Back to Home
             </Link>
@@ -60,73 +65,57 @@ export default function LoginPage() {
             <p className="text-muted-foreground">Sign in to continue your journey</p>
           </div>
 
-          {/* Role Selection */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <Card
-              className={`cursor-pointer transition-all border-2 ${
-                role === 'student'
-                  ? 'border-primary bg-primary/5 shadow-md'
-                  : 'border-border hover:border-primary/50'
-              }`}
-              onClick={() => setRole('student')}
-            >
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    role === 'student' ? 'bg-primary' : 'bg-muted'
-                  }`}>
-                    {role === 'student' ? (
-                      <CheckCircle2 className="h-6 w-6 text-primary-foreground" />
-                    ) : (
-                      <span className="text-2xl">👨‍🎓</span>
-                    )}
+          {/* Role Selection — used only for client-side redirect after login */}
+          {/* <div className="grid grid-cols-2 gap-4 mb-6">
+            {(['student', 'teacher'] as const).map((r) => (
+              <Card
+                key={r}
+                className={`cursor-pointer transition-all border-2 ${
+                  role === r
+                    ? 'border-primary bg-primary/5 shadow-md'
+                    : 'border-border hover:border-primary/50'
+                }`}
+                onClick={() => setRole(r)}
+              >
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                        role === r ? 'bg-primary' : 'bg-muted'
+                      }`}
+                    >
+                      {role === r ? (
+                        <CheckCircle2 className="h-6 w-6 text-primary-foreground" />
+                      ) : (
+                        <span className="text-2xl">{r === 'student' ? '👨‍🎓' : '👨‍🏫'}</span>
+                      )}
+                    </div>
+                    <span
+                      className={`font-semibold capitalize ${
+                        role === r ? 'text-primary' : 'text-foreground'
+                      }`}
+                    >
+                      {r}
+                    </span>
                   </div>
-                  <span className={`font-semibold ${
-                    role === 'student' ? 'text-primary' : 'text-foreground'
-                  }`}>Student</span>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ))}
+          </div> */}
 
-            <Card
-              className={`cursor-pointer transition-all border-2 ${
-                role === 'teacher'
-                  ? 'border-primary bg-primary/5 shadow-md'
-                  : 'border-border hover:border-primary/50'
-              }`}
-              onClick={() => setRole('teacher')}
-            >
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    role === 'teacher' ? 'bg-primary' : 'bg-muted'
-                  }`}>
-                    {role === 'teacher' ? (
-                      <CheckCircle2 className="h-6 w-6 text-primary-foreground" />
-                    ) : (
-                      <span className="text-2xl">👨‍🏫</span>
-                    )}
-                  </div>
-                  <span className={`font-semibold ${
-                    role === 'teacher' ? 'text-primary' : 'text-foreground'
-                  }`}>Teacher</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Login Form */}
+          {/* Login Form — Profile Service: POST /api/auth/login */}
           <Card className="shadow-lg">
-            <CardHeader>
+            {/* <CardHeader>
               <CardTitle className="text-xl">
                 Log in as {role === 'student' ? 'Student' : 'Teacher'}
               </CardTitle>
               <CardDescription>
                 Enter your credentials to access your {role === 'student' ? 'courses' : 'classrooms'}
               </CardDescription>
-            </CardHeader>
+            </CardHeader> */}
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* email */}
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <div className="relative">
@@ -143,13 +132,9 @@ export default function LoginPage() {
                   </div>
                 </div>
 
+                {/* password */}
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <Link href="#" className="text-sm text-primary hover:underline">
-                      Forgot password?
-                    </Link>
-                  </div>
+                  <Label htmlFor="password">Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -173,7 +158,7 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center">
             <p className="text-muted-foreground">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/signup" className="text-primary font-medium hover:underline">
                 Sign up
               </Link>
