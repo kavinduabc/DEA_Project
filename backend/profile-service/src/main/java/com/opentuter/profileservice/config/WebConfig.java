@@ -1,6 +1,7 @@
 package com.opentuter.profileservice.config;
 
 
+import com.opentuter.profileservice.util.Utils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -10,8 +11,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     public void addResourceHandler(ResourceHandlerRegistry registry)
     {
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:uploads/");
+        registry.addResourceHandler(Utils.ACCEPT_IMG_FORMAT)
+                .addResourceLocations(Utils.UPLOAD_DIR);
     }
 }
 

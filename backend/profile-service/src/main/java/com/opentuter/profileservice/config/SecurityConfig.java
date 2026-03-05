@@ -1,6 +1,7 @@
 package com.opentuter.profileservice.config;
 
 import com.opentuter.profileservice.jwt.JwtAuthFilter;
+import com.opentuter.profileservice.util.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +45,9 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                //**
                 // Disable CSRF (standard for stateless APIs)
+                // */
                 .csrf(csrf -> csrf.disable())
 
                 // Enable CORS (essential if frontend is on a different port)
@@ -53,7 +56,7 @@ public class SecurityConfig {
                 // 1. Define Access Rules
                 .authorizeHttpRequests(auth -> auth
                         // Goal 2: Allow Login & Register without token
-                        .requestMatchers("/api/user/reg", "/api/user/login").permitAll()
+                        .requestMatchers(Utils.ACCESS_URL_REGISTER, Utils.ACCESS_URL_LOGIN).permitAll()
 
                         // Allow Swagger UI and OpenAPI docs without authentication
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
@@ -68,10 +71,10 @@ public class SecurityConfig {
                 // 3. Custom Error Handling (Without ObjectMapper)
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) ->
-                                writeCustomJsonError(response, HttpStatus.UNAUTHORIZED, "Unauthorized", authException.getMessage(), request))
+                                writeCustomJsonError(response, HttpStatus.UNAUTHORIZED, Utils.UNAOTHORIZED, authException.getMessage(), request))
 
                         .accessDeniedHandler((request, response, accessDeniedException) ->
-                                writeCustomJsonError(response, HttpStatus.FORBIDDEN, "Forbidden", accessDeniedException.getMessage(), request))
+                                writeCustomJsonError(response, HttpStatus.FORBIDDEN, Utils.FORBIDDEN, accessDeniedException.getMessage(), request))
                 )
 
                 // Add your JWT Filter before the standard auth filter
@@ -96,11 +99,11 @@ public class SecurityConfig {
     private void writeCustomJsonError(HttpServletResponse response, HttpStatus status, String error, String message, HttpServletRequest request) throws IOException {
         response.setStatus(status.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding(Utils.UHF);
 
         // Manually build the JSON string
         String json = String.format(
-                "{\"timestamp\": \"%s\", \"status\": %d, \"error\": \"%s\", \"message\": \"%s\", \"path\": \"%s\"}",
+                Utils.JSON_FORMAT,
                 LocalDateTime.now(),
                 status.value(),
                 escapeJson(error),

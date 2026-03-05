@@ -1,6 +1,7 @@
 package com.opentuter.profileservice.jwt;
 
 import com.opentuter.profileservice.service.JwtService;
+import com.opentuter.profileservice.util.Utils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,8 +31,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     // Authentication end points*/
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getServletPath().equals("/api/user/login")
-                || request.getServletPath().equals("/api/user/reg");
+        return request.getServletPath().equals(Utils.ACCESS_URL_LOGIN)
+                || request.getServletPath().equals(Utils.ACCESS_URL_REGISTER);
     }
 
 
@@ -43,16 +44,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         // Get Authorization header
-        String header = request.getHeader("Authorization");
+        String header = request.getHeader(Utils.AUTHORIZATION);
 
         //implemnt methos for continue request without authentication
-        if(header == null || !header.startsWith("Bearer ")){
+        if(header == null || !header.startsWith(Utils.BEARER)){
             filterChain.doFilter(request, response);
             return;
         }
 
         // method for remove "Bearer" and get only JWT token
-        String token = header.substring(7);
+        String token = header.substring(Utils.BEGININDEX);
 
         try {
             //method for extract email and role from jwt
@@ -62,7 +63,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if(email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 //implement method for convert role into spring security authority
                 List<GrantedAuthority> authorities =
-                        List.of(new SimpleGrantedAuthority("ROLE_" + role));
+                        List.of(new SimpleGrantedAuthority(Utils.ROLE + role));
 
 
                 //*
