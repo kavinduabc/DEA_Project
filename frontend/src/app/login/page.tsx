@@ -22,6 +22,7 @@ export default function LoginPage() {
   // TODO: POST /api/auth/login → { email, password }
   // Response: { token, userId, role }
   // Store token in auth context / cookie, then redirect based on role
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log('POST /api/auth/login', { email: formData.email, password: formData.password })
@@ -155,6 +156,8 @@ export default function LoginPage() {
               </form>
             </CardContent>
           </Card>
+
+          {/* {sinup} */}
 
           <div className="mt-6 text-center">
             <p className="text-muted-foreground">
