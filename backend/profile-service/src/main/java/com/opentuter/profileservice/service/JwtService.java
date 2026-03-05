@@ -19,7 +19,11 @@ import java.util.Date;
 @Component
 public class JwtService {
 
+frontend
     @Value(Utils.SECRET_KEY)
+
+    @Value("77a955704741b6d5c2bcf34a89b95ba0d1ccbb22dbba9eeeceec78adc5fcc7b2")
+ development
     private String secret;
 
     private Key getKey(){

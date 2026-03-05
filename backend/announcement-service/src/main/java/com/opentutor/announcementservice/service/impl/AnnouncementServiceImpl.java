@@ -1,0 +1,114 @@
+package com.opentutor.announcementservice.service.impl;
+
+import com.opentutor.announcementservice.dto.AnnouncementRequestDTO;
+import com.opentutor.announcementservice.dto.AnnouncementResponseDTO;
+import com.opentutor.announcementservice.exception.ResourceNotFoundException;
+import com.opentutor.announcementservice.mapper.AnnouncementMapper;
+import com.opentutor.announcementservice.model.Announcement;
+import com.opentutor.announcementservice.repository.AnnouncementRepository;
+import com.opentutor.announcementservice.service.AnnouncementService;
+import com.opentutor.announcementservice.util.AnnouncementConstants;
+import com.opentutor.announcementservice.util.AnnouncementHelper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+/**
+ * Implementation of the {@link AnnouncementService} interface.
+ * Contains all business logic for managing announcements.
+ */
+@Service
+@Transactional
+public class AnnouncementServiceImpl implements AnnouncementService {
+
+    private final AnnouncementRepository repo;
+    private final AnnouncementMapper mapper;
+
+    public AnnouncementServiceImpl(AnnouncementRepository repo, AnnouncementMapper mapper) {
+        this.repo = repo;
+        this.mapper = mapper;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AnnouncementResponseDTO createAnnouncement(AnnouncementRequestDTO requestDTO) {
+        Announcement entity = mapper.toEntity(requestDTO);
+        Announcement saved = repo.save(entity);
+        return mapper.toResponseDTO(saved);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<AnnouncementResponseDTO> getByClassroomId(UUID classroomId) {
+        return mapper.toResponseDTOList(repo.findAllByClassroomId(classroomId));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<AnnouncementResponseDTO> getById(UUID id) {
+        return repo.findById(id).map(mapper::toResponseDTO);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AnnouncementResponseDTO updateAnnouncement(UUID id, AnnouncementRequestDTO requestDTO) {
+        Announcement existing = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        AnnouncementConstants.RESOURCE_ANNOUNCEMENT, AnnouncementConstants.FIELD_ID, id));
+
+        mapper.updateEntityFromDTO(existing, requestDTO);
+        Announcement updated = repo.save(existing);
+        return mapper.toResponseDTO(updated);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteAnnouncement(UUID id) {
+        if (!repo.existsById(id)) {
+            throw new ResourceNotFoundException(
+                    AnnouncementConstants.RESOURCE_ANNOUNCEMENT, AnnouncementConstants.FIELD_ID, id);
+        }
+        repo.deleteById(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AnnouncementResponseDTO generateShareToken(UUID id) {
+        Announcement announcement = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        AnnouncementConstants.RESOURCE_ANNOUNCEMENT, AnnouncementConstants.FIELD_ID, id));
+
+        announcement.setShareToken(AnnouncementHelper.generateShareToken());
+        Announcement saved = repo.save(announcement);
+        return mapper.toResponseDTO(saved);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public AnnouncementResponseDTO getByShareToken(String token) {
+        Announcement announcement = repo.findByShareToken(token)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        AnnouncementConstants.RESOURCE_ANNOUNCEMENT, AnnouncementConstants.FIELD_SHARE_TOKEN, token));
+        return mapper.toResponseDTO(announcement);
+    }
+}

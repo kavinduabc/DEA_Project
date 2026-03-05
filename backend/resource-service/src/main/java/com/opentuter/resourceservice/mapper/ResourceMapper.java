@@ -1,9 +1,12 @@
 package com.opentuter.resourceservice.mapper;
 
 
+
 import com.opentuter.resourceservice.dto.ResourceRequestDto;
 import com.opentuter.resourceservice.dto.ResourceResponseDto;
 import com.opentuter.resourceservice.model.Resource;
+
+import java.util.UUID;
 
 public class ResourceMapper {
 
@@ -16,9 +19,16 @@ public class ResourceMapper {
     }
 
     public static ResourceResponseDto toDto(Resource resource) {
+
+        UUID moduleId = null;
+
+        if (resource.getModule() != null) {
+            moduleId = resource.getModule().getId();
+        }
+
         return new ResourceResponseDto(
                 resource.getId(),
-                resource.getModule().getId(),
+                moduleId,
                 resource.getTitle(),
                 resource.getType(),
                 resource.getFileUrl()

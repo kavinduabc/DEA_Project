@@ -9,11 +9,10 @@ import java.util.UUID;
 public class Resource {
 
     @Id
-    @GeneratedValue
-    @Column(columnDefinition = "uuid")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
-    // Foreign key relationship
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "module_id", nullable = false)
     private Module module;
@@ -22,15 +21,13 @@ public class Resource {
     private String title;
 
     @Column(nullable = false)
-    private String type; // PDF, VIDEO, LINK
+    private String type;
 
     @Column(name = "file_url", nullable = false)
     private String fileUrl;
 
-    // ===== Constructors =====
     public Resource() {}
 
-    // ===== Getters & Setters =====
     public UUID getId() {
         return id;
     }

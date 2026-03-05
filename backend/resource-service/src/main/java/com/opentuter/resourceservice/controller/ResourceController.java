@@ -1,17 +1,16 @@
 package com.opentuter.resourceservice.controller;
 
-
+import com.opentuter.resourceservice.dto.ModuleRequestDto;
+import com.opentuter.resourceservice.dto.ModuleResponseDto;
 import com.opentuter.resourceservice.dto.ResourceRequestDto;
 import com.opentuter.resourceservice.dto.ResourceResponseDto;
-import com.opentuter.resourceservice.exception.ResourceNotFoundException;
-import com.opentuter.resourceservice.model.Module;
 import com.opentuter.resourceservice.service.ResourceService;
-import com.opentuter.resourceservice.repository.ModuleRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -19,51 +18,66 @@ import java.util.UUID;
 public class ResourceController {
 
     private final ResourceService resourceService;
-    private final ModuleRepository moduleRepository;
 
-    public ResourceController(ResourceService resourceService,
-                              ModuleRepository moduleRepository) {
+    public ResourceController(ResourceService resourceService) {
         this.resourceService = resourceService;
-        this.moduleRepository = moduleRepository;
     }
 
     // ==================================================
     // MODULE ENDPOINTS
     // ==================================================
 
-    // POST /api/modules - Create a new chapter/week
+    // ✅ CREATE MODULE
+    // POST /api/modules
     @PostMapping("/modules")
-    public ResponseEntity<Module> createModule(@Valid @RequestBody Module module) {
+    public ResponseEntity<ModuleResponseDto> createModule(
+            @Valid @RequestBody ModuleRequestDto request) {
+
         return new ResponseEntity<>(
-                moduleRepository.save(module),
+                resourceService.createModule(request),
                 HttpStatus.CREATED
         );
     }
 
-    // PUT /api/modules/{id} - Rename or reorder a module
-    @PutMapping("/modules/{id}")
-    public ResponseEntity<Module> updateModule(
-            @PathVariable UUID id,
-            @RequestBody Module updatedModule) {
+    // ✅ GET MODULE BY ID
+    // GET /api/modules/{id}
+    @GetMapping("/modules/{id}")
+    public ResponseEntity<ModuleResponseDto> getModuleById(
+            @PathVariable UUID id) {
 
-        Module module = moduleRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Module", "id", id));
-
-        module.setTitle(updatedModule.getTitle());
-
-        return ResponseEntity.ok(moduleRepository.save(module));
+        return ResponseEntity.ok(
+                resourceService.getModuleById(id)
+        );
     }
 
-    // DELETE /api/modules/{id} - Remove a module
+    // ✅ GET ALL MODULES
+    // GET /api/modules
+    @GetMapping("/modules")
+    public ResponseEntity<List<ModuleResponseDto>> getAllModules() {
+
+        return ResponseEntity.ok(
+                resourceService.getAllModules()
+        );
+    }
+
+    // ✅ UPDATE MODULE
+    // PUT /api/modules/{id}
+    @PutMapping("/modules/{id}")
+    public ResponseEntity<ModuleResponseDto> updateModule(
+            @PathVariable UUID id,
+            @Valid @RequestBody ModuleRequestDto request) {
+
+        return ResponseEntity.ok(
+                resourceService.updateModule(id, request)
+        );
+    }
+
+    // ✅ DELETE MODULE
+    // DELETE /api/modules/{id}
     @DeleteMapping("/modules/{id}")
     public ResponseEntity<Void> deleteModule(@PathVariable UUID id) {
 
-        Module module = moduleRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Module", "id", id));
-
-        moduleRepository.delete(module);
+        resourceService.deleteModule(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -71,7 +85,8 @@ public class ResourceController {
     // RESOURCE ENDPOINTS
     // ==================================================
 
-    // POST /api/resources - Upload a file or add a video link
+    // ✅ CREATE RESOURCE
+    // POST /api/resources
     @PostMapping("/resources")
     public ResponseEntity<ResourceResponseDto> createResource(
             @Valid @RequestBody ResourceRequestDto request) {
@@ -82,13 +97,30 @@ public class ResourceController {
         );
     }
 
-    // GET /api/resources/{id} - Get resource details
+    // ✅ GET RESOURCE BY ID
+    // GET /api/resources/{id}
     @GetMapping("/resources/{id}")
-    public ResponseEntity<ResourceResponseDto> getResource(@PathVariable UUID id) {
-        return ResponseEntity.ok(resourceService.getResourceById(id));
+    public ResponseEntity<ResourceResponseDto> getResource(
+            @PathVariable UUID id) {
+
+        return ResponseEntity.ok(
+                resourceService.getResourceById(id)
+        );
     }
 
-    // PUT /api/resources/{id} - Update resource metadata
+    // ✅ GET RESOURCES BY MODULE ID
+    // GET /api/resources/module/{moduleId}
+    @GetMapping("/resources/module/{moduleId}")
+    public ResponseEntity<List<ResourceResponseDto>> getResourcesByModuleId(
+            @PathVariable UUID moduleId) {
+
+        return ResponseEntity.ok(
+                resourceService.getResourcesByModuleId(moduleId)
+        );
+    }
+
+    // ✅ UPDATE RESOURCE
+    // PUT /api/resources/{id}
     @PutMapping("/resources/{id}")
     public ResponseEntity<ResourceResponseDto> updateResource(
             @PathVariable UUID id,
@@ -99,9 +131,11 @@ public class ResourceController {
         );
     }
 
-    // DELETE /api/resources/{id} - Remove a resource
+    // ✅ DELETE RESOURCE
+    // DELETE /api/resources/{id}
     @DeleteMapping("/resources/{id}")
     public ResponseEntity<Void> deleteResource(@PathVariable UUID id) {
+
         resourceService.deleteResource(id);
         return ResponseEntity.noContent().build();
     }
