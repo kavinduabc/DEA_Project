@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b03548db-ece7-4304-99b3-d7c018b3efe6" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/frontend/.zscripts/build.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/.zscripts/mini-services-build.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/.zscripts/mini-services-install.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/.zscripts/mini-services-start.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/.zscripts/start.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/db/custom.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/download/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/examples/websocket/frontend.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/examples/websocket/server.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/mini-services/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/prisma/schema.prisma" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/api/route.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/login/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/signup/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/signup/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/student-dashboard/class/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/student-dashboard/class/[id]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/student-dashboard/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/student-dashboard/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/teacher-dashboard/class/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/teacher-dashboard/class/[id]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/teacher-dashboard/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/teacher-dashboard/page.tsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_C:/Users/User/Desktop/DEA/DEA_Project" value="3AX5o5jia8pPNm8bvfA1AykkEbn" />
+    </persistenceIdMap>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Hirunidiv&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/kavinduabc/DEA_Project.git&quot;,
+    &quot;accountId&quot;: &quot;75dbd4de-0e2a-4edf-8855-954d8669f1a4&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="3AX5o5jia8pPNm8bvfA1AykkEbn" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "development",
+    "kotlin-language-version-configured": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-26cb7f24e5b0-intellij.indexing.shared.core-IU-253.29346.240" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b03548db-ece7-4304-99b3-d7c018b3efe6" name="Changes" comment="" />
+      <created>1772726275908</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1772726275908</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>
