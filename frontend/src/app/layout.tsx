@@ -14,24 +14,43 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Z.ai Code Scaffold - AI-Powered Development",
-  description: "Modern Next.js scaffold optimized for AI-powered development with Z.ai. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
-  keywords: ["Z.ai", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "AI development", "React"],
-  authors: [{ name: "Z.ai Team" }],
-  icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+  title: {
+    default: "OpenTutor",
+    template: "%s | OpenTutor",
   },
+  description:
+    "OpenTutor is an online learning platform offering interactive courses, expert guidance, and modern tools to enhance your knowledge and skills.",
+  keywords: [
+    "OpenTutor",
+    "E-learning platform",
+    "Online courses",
+    "Student learning",
+    "Education platform",
+    "Interactive learning",
+    "Skill development",
+  ],
+  authors: [{ name: "OpenTutor Team" }],
+  creator: "OpenTutor",
+  applicationName: "OpenTutor",
+
+  icons: {
+    icon: "/favicon.ico", // Replace with your own favicon in public folder
+  },
+
   openGraph: {
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
-    url: "https://chat.z.ai",
-    siteName: "Z.ai",
+    title: "OpenTutor - Learn Without Limits",
+    description:
+      "Join OpenTutor to access high-quality online courses, track your progress, and improve your skills anytime, anywhere.",
+    url: "https://opentutor.com", // Replace with your actual domain
+    siteName: "OpenTutor",
     type: "website",
   },
+
   twitter: {
     card: "summary_large_image",
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
+    title: "OpenTutor - Online Learning Platform",
+    description:
+      "Interactive courses, expert tutors, and modern learning tools. Start your journey with OpenTutor today!",
   },
 };
 
