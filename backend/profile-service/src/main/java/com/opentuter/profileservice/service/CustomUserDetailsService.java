@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,14 +32,11 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException(Utils.USER_CHECK_EMAIL + email);
         }
 
-        List<SimpleGrantedAuthority> authorities = Collections.singletonList(
-                new SimpleGrantedAuthority(Utils.ROLE + user.get().getRole())
-        );
-
+        // Generic USER authority (not role-based) - authentication only, no role-based authorization
         return new org.springframework.security.core.userdetails.User(
                 user.get().getEmail(),
                 user.get().getPassword(),
-                authorities
+                Collections.singletonList(new SimpleGrantedAuthority("USER"))
         );
     }
 }

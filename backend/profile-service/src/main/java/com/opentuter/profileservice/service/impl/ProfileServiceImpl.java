@@ -114,6 +114,21 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     //**
+    // implement the method for get user by email
+    // */
+    @Override
+    public ProfileResponseDto getUserByEmail(String email) {
+
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            throw new ResourceNotFoundException(Utils.USER_NOT_FOUND);
+        }
+
+        return userMapper.toReseponseDTO(user);
+    }
+
+    //**
     // implement the method for get all users
     // */
     @Override

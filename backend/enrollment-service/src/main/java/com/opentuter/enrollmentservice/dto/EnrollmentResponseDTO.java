@@ -27,7 +27,7 @@ public class EnrollmentResponseDTO {
 
     private UUID id;
     private UUID studentId;
-    private UUID classroomId;
+    private int classroomId;
 
     public UUID getId() {
         return id;
@@ -45,11 +45,11 @@ public class EnrollmentResponseDTO {
         this.studentId = studentId;
     }
 
-    public UUID getClassroomId() {
+    public int getClassroomId() {
         return classroomId;
     }
 
-    public void setClassroomId(UUID classroomId) {
+    public void setClassroomId(int classroomId) {
         this.classroomId = classroomId;
     }
 }

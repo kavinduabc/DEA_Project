@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -56,23 +55,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = header.substring(Utils.BEGININDEX);
 
         try {
-            //method for extract email and role from jwt
+            //method for extract email from jwt (no role extraction for authorization)
             String email = jwtService.extractEmail(token);
-            String role = jwtService.extractRole(token);
 
             if(email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                //implement method for convert role into spring security authority
-                List<GrantedAuthority> authorities =
-                        List.of(new SimpleGrantedAuthority(Utils.ROLE + role));
-
-
                 //*
-                // implement method for create authentication object
-                // according to that user is now authenticated*/
+                // Create authentication with generic USER authority (not role-based)
+                // This ensures Spring Security considers the user "fully authenticated"
+                // but no role-based authorization checks are performed*/
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         email,
                         null,
-                        authorities
+                        List.of(new SimpleGrantedAuthority("USER")) // Generic authority, no role-based authorization
                 );
 
                 //implement method for store authentication is securitycontext and continue request processing

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: EnrollmentService
+    name: enrollment-service
 
   config:
     import: optional:file:.env[.properties]

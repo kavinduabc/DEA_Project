@@ -13,6 +13,7 @@ public interface ProfileService {
     public ProfileResponseDto addUser(ProfileRequestDto profileRequestDto);
     public LoginResponseDto verify(String email, String password);
     public ProfileResponseDto getUserById(UUID id);
+    public ProfileResponseDto getUserByEmail(String email);
     public List<ProfileResponseDto> getAllUsers();
     public ProfileResponseDto updateUser(UUID id, ProfileUpdateDto profileUpdateDto);
     public ProfileResponseDto deleteUser(UUID id);

@@ -1,5 +1,6 @@
 package com.opentutor.classroomservice.exception;
 
+import com.opentutor.classroomservice.util.ClassroomUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -31,9 +32,9 @@ public class GlobalExceptionHandler {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.CONFLICT.value());
-        response.put("error", "Conflict");
+        response.put("error", ClassroomUtil.ERROR_CONFLICT);
         response.put("message", ex.getMessage());
-        response.put("path", request.getDescription(false).replace("uri=", ""));
+        response.put("path", request.getDescription(false).replace(ClassroomUtil.URI_PREFIX, ""));
 
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
@@ -49,11 +50,29 @@ public class GlobalExceptionHandler {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.NOT_FOUND.value());
-        response.put("error", "Not Found");
+        response.put("error", ClassroomUtil.ERROR_NOT_FOUND);
         response.put("message", ex.getMessage());
-        response.put("path", request.getDescription(false).replace("uri=", ""));
+        response.put("path", request.getDescription(false).replace(ClassroomUtil.URI_PREFIX, ""));
 
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    // Handle custom UnauthorizedException
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Map<String, Object>> handleUnauthorized(
+            UnauthorizedException ex,
+            WebRequest request) {
+
+        logger.warn("Unauthorized access: {}", ex.getMessage());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.UNAUTHORIZED.value());
+        response.put("error", ClassroomUtil.ERROR_UNAUTHORIZED);
+        response.put("message", ex.getMessage());
+        response.put("path", request.getDescription(false).replace(ClassroomUtil.URI_PREFIX, ""));
+
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
     // Handle validation errors
@@ -74,10 +93,10 @@ public class GlobalExceptionHandler {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.BAD_REQUEST.value());
-        response.put("error", "Validation Failed");
-        response.put("message", "Invalid input data");
+        response.put("error", ClassroomUtil.ERROR_VALIDATION_FAILED);
+        response.put("message", ClassroomUtil.MSG_INVALID_INPUT);
         response.put("errors", errors);
-        response.put("path", request.getDescription(false).replace("uri=", ""));
+        response.put("path", request.getDescription(false).replace(ClassroomUtil.URI_PREFIX, ""));
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -90,30 +109,30 @@ public class GlobalExceptionHandler {
 
         logger.error("Database constraint violation", ex);
 
-        String message = "Data integrity violation occurred";
+        String message = ClassroomUtil.MSG_DATA_INTEGRITY_DEFAULT;
         String detailedMessage = ex.getMessage();
 
         // Check for specific constraint violations
         if (detailedMessage != null) {
-            if (detailedMessage.contains("duplicate key") && detailedMessage.contains("email")) {
-                message = "A profile with this email address already exists. Please use a different email.";
-            } else if (detailedMessage.contains("duplicate key") && detailedMessage.contains("phone")) {
-                message = "A profile with this phone number already exists. Please use a different phone number.";
-            } else if (detailedMessage.contains("duplicate key")) {
-                message = "A profile with these details already exists. Please use different information.";
-            } else if (detailedMessage.contains("foreign key constraint")) {
-                message = "Cannot perform this operation due to related data constraints.";
-            } else if (detailedMessage.contains("not-null constraint")) {
-                message = "Required field cannot be empty.";
+            if (detailedMessage.contains(ClassroomUtil.DUPLICATE_KEY) && detailedMessage.contains(ClassroomUtil.CONSTRAINT_EMAIL)) {
+                message = ClassroomUtil.MSG_DUPLICATE_EMAIL;
+            } else if (detailedMessage.contains(ClassroomUtil.DUPLICATE_KEY) && detailedMessage.contains(ClassroomUtil.CONSTRAINT_PHONE)) {
+                message = ClassroomUtil.MSG_DUPLICATE_PHONE;
+            } else if (detailedMessage.contains(ClassroomUtil.DUPLICATE_KEY)) {
+                message = ClassroomUtil.MSG_DUPLICATE_GENERIC;
+            } else if (detailedMessage.contains(ClassroomUtil.FOREIGN_KEY_CONSTRAINT)) {
+                message = ClassroomUtil.MSG_FOREIGN_KEY;
+            } else if (detailedMessage.contains(ClassroomUtil.NOT_NULL_CONSTRAINT)) {
+                message = ClassroomUtil.MSG_NOT_NULL;
             }
         }
 
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.CONFLICT.value());
-        response.put("error", "Conflict");
+        response.put("error", ClassroomUtil.ERROR_CONFLICT);
         response.put("message", message);
-        response.put("path", request.getDescription(false).replace("uri=", ""));
+        response.put("path", request.getDescription(false).replace(ClassroomUtil.URI_PREFIX, ""));
 
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
@@ -129,9 +148,9 @@ public class GlobalExceptionHandler {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.put("error", "Internal Server Error");
-        response.put("message", "An unexpected error occurred. Please try again later.");
-        response.put("path", request.getDescription(false).replace("uri=", ""));
+        response.put("error", ClassroomUtil.ERROR_INTERNAL_SERVER);
+        response.put("message", ClassroomUtil.MSG_UNEXPECTED_ERROR);
+        response.put("path", request.getDescription(false).replace(ClassroomUtil.URI_PREFIX, ""));
 
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }

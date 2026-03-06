@@ -3,6 +3,7 @@ package com.opentutor.classroomservice.mapper;
 import com.opentutor.classroomservice.dto.ClassroomRequestDTO;
 import com.opentutor.classroomservice.dto.ClassroomResponseDTO;
 import com.opentutor.classroomservice.model.Classroom;
+import com.opentutor.classroomservice.util.ClassroomUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class ClassroomMapper {
         entity.setSubject(dto.getSubject());
         entity.setBannerImage(dto.getBannerImage());
         entity.setInviteCode(dto.getInviteCode());
-        entity.setActive(true); // default value
+        entity.setActive(ClassroomUtil.DEFAULT_IS_ACTIVE); // default value
 
         return entity;
     }

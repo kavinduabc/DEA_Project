@@ -15,5 +15,3 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations(Utils.UPLOAD_DIR);
     }
 }
-
-//Use util package for hardcoded stuff

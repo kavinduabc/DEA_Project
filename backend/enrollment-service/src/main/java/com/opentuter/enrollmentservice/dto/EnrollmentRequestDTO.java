@@ -17,16 +17,17 @@
 
 package com.opentuter.enrollmentservice.dto;
 
+import com.opentuter.enrollmentservice.util.EnrollmentUtil;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public class EnrollmentRequestDTO {
 
-    @NotNull(message = "studentId is required")
+    @NotNull(message = EnrollmentUtil.VALIDATION_STUDENT_ID_REQUIRED)
     private UUID studentId;
 
-    @NotNull(message = "classroomId is required")
-    private UUID classroomId;
+    @NotNull(message = EnrollmentUtil.VALIDATION_CLASSROOM_ID_REQUIRED)
+    private int classroomId;
 
     public UUID getStudentId() {
         return studentId;
@@ -36,11 +37,11 @@ public class EnrollmentRequestDTO {
         this.studentId = studentId;
     }
 
-    public UUID getClassroomId() {
+    public int getClassroomId() {
         return classroomId;
     }
 
-    public void setClassroomId(UUID classroomId) {
+    public void setClassroomId(int classroomId) {
         this.classroomId = classroomId;
     }
 }

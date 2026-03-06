@@ -3,6 +3,7 @@ package com.opentutor.classroomservice.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import com.opentutor.classroomservice.util.ClassroomUtil;
 
 import java.util.UUID;
 
@@ -15,15 +16,15 @@ public class Classroom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Teacher Id is required")
+    @NotNull(message = ClassroomUtil.MSG_ENTITY_TEACHER_ID_REQUIRED)
     @Column(name = "teacher_id", nullable = false)
     private UUID teacherId;
 
-    @NotBlank(message = "Title is required")
+    @NotBlank(message = ClassroomUtil.MSG_ENTITY_TITLE_REQUIRED)
     @Column(nullable = false)
     private String title;
 
-    @NotBlank(message = "Subject is required")
+    @NotBlank(message = ClassroomUtil.MSG_ENTITY_SUBJECT_REQUIRED)
     @Column(nullable = false)
     private String subject;
 
@@ -34,7 +35,7 @@ public class Classroom {
     private String inviteCode;
 
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
+    private Boolean isActive = ClassroomUtil.DEFAULT_IS_ACTIVE;
 
     public Classroom(){
 

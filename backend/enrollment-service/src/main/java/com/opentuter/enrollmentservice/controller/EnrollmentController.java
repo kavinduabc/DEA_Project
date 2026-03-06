@@ -89,6 +89,7 @@ package com.opentuter.enrollmentservice.controller;
 import com.opentuter.enrollmentservice.dto.EnrollmentRequestDTO;
 import com.opentuter.enrollmentservice.dto.EnrollmentResponseDTO;
 import com.opentuter.enrollmentservice.service.EnrollmentService;
+import com.opentuter.enrollmentservice.util.EnrollmentUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -98,7 +99,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/enrollments")
+@RequestMapping(EnrollmentUtil.BASE_URL)
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
@@ -122,14 +123,14 @@ public class EnrollmentController {
         return ResponseEntity.ok(enrollmentService.getAllEnrollments());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(EnrollmentUtil.ID_ENDPOINT)
     public ResponseEntity<EnrollmentResponseDTO> getById(@PathVariable UUID id) {
         return enrollmentService.getEnrollmentById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/student/{studentId}")
+    @GetMapping(EnrollmentUtil.STUDENT_ENDPOINT)
     public ResponseEntity<List<EnrollmentResponseDTO>> getByStudent(
             @PathVariable UUID studentId) {
         return ResponseEntity.ok(
@@ -137,15 +138,15 @@ public class EnrollmentController {
         );
     }
 
-    @GetMapping("/classroom/{classroomId}")
+    @GetMapping(EnrollmentUtil.CLASSROOM_ENDPOINT)
     public ResponseEntity<List<EnrollmentResponseDTO>> getByClassroom(
-            @PathVariable UUID classroomId) {
+            @PathVariable int classroomId) {
         return ResponseEntity.ok(
                 enrollmentService.getEnrollmentsByClassroomId(classroomId)
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(EnrollmentUtil.ID_ENDPOINT)
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         enrollmentService.deleteEnrollment(id);
         return ResponseEntity.noContent().build();

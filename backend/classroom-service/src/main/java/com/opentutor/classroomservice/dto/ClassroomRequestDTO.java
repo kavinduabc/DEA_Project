@@ -3,25 +3,26 @@ package com.opentutor.classroomservice.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
+import com.opentutor.classroomservice.util.ClassroomUtil;
 
 import java.util.UUID;
 
 public class ClassroomRequestDTO {
 
-    @NotNull(message = "Teacher ID is required")
+    @NotNull(message = ClassroomUtil.MSG_TEACHER_ID_REQUIRED)
     private UUID teacherId;
 
-    @NotBlank(message = "Title is required")
-    @Length(min = 3, max = 100, message = "Title should be between 3 and 100 characters")
+    @NotBlank(message = ClassroomUtil.MSG_TITLE_REQUIRED)
+    @Length(min = ClassroomUtil.TITLE_MIN_LENGTH, max = ClassroomUtil.TITLE_MAX_LENGTH, message = ClassroomUtil.MSG_TITLE_LENGTH)
     private String title;
 
-    @NotBlank(message = "Subject is required")
-    @Length(min = 3, max = 50, message = "Subject should be between 3 and 50 characters")
+    @NotBlank(message = ClassroomUtil.MSG_SUBJECT_REQUIRED)
+    @Length(min = ClassroomUtil.SUBJECT_MIN_LENGTH, max = ClassroomUtil.SUBJECT_MAX_LENGTH, message = ClassroomUtil.MSG_SUBJECT_LENGTH)
     private String subject;
 
     private String bannerImage;
 
-    @Length(min = 6, max = 10, message = "Invite code should be between 6 and 10 characters")
+    @Length(min = ClassroomUtil.INVITE_CODE_MIN_LENGTH, max = ClassroomUtil.INVITE_CODE_MAX_LENGTH, message = ClassroomUtil.MSG_INVITE_CODE_LENGTH)
     private String inviteCode;
 
     public ClassroomRequestDTO(UUID teacherId, String title, String subject, String bannerImage, String inviteCode) {

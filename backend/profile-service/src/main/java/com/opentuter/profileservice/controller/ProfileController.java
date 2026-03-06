@@ -20,9 +20,6 @@ import java.util.UUID;
 @RestController
 
 @RequestMapping(Utils.BASE_URL)
-
-@RequestMapping("/api/user")
- development
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class ProfileController {
 
@@ -51,9 +48,16 @@ public class ProfileController {
     }
 
     @GetMapping(Utils.VIEW_USER_BY_ID_URL)
-    public ResponseEntity<ProfileResponseDto> viewUserByEmail(
+    public ResponseEntity<ProfileResponseDto> viewUserById(
             @PathVariable UUID id) {
         ProfileResponseDto response = userProfileService.getUserById(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(Utils.VIEW_USER_BY_EMAIL_URL)
+    public ResponseEntity<ProfileResponseDto> viewUserByEmail(
+            @PathVariable String email) {
+        ProfileResponseDto response = userProfileService.getUserByEmail(email);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

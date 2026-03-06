@@ -1,5 +1,6 @@
 package com.opentuter.enrollmentservice.model;
 
+import com.opentuter.enrollmentservice.util.EnrollmentUtil;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.UuidGenerator;
@@ -8,32 +9,32 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "enrollments")
+@Table(name = EnrollmentUtil.TABLE_ENROLLMENTS)
 public class Enrollment {
 
     @Id
     @GeneratedValue
     @UuidGenerator
-    @Column(name = "id", updatable = false, nullable = false)
+    @Column(name = EnrollmentUtil.COLUMN_ID, updatable = false, nullable = false)
     private UUID id;
 
     @NotNull
-    @Column(name = "student_id", nullable = false)
+    @Column(name = EnrollmentUtil.COLUMN_STUDENT_ID, nullable = false)
     private UUID studentId;
 
     @NotNull
-    @Column(name = "classroom_id", nullable = false)
-    private UUID classroomId;
+    @Column(name = EnrollmentUtil.COLUMN_CLASSROOM_ID, nullable = false)
+    private int classroomId;
 
     @NotNull
-    @Column(name = "enrolled_at", nullable = false)
+    @Column(name = EnrollmentUtil.COLUMN_ENROLLED_AT, nullable = false)
     private LocalDateTime enrolledAt;
 
     public Enrollment() {
         this.enrolledAt = LocalDateTime.now();
     }
 
-    public Enrollment(UUID studentId, UUID classroomId) {
+    public Enrollment(UUID studentId, int classroomId) {
         this.studentId = studentId;
         this.classroomId = classroomId;
         this.enrolledAt = LocalDateTime.now();
@@ -55,11 +56,11 @@ public class Enrollment {
         this.studentId = studentId;
     }
 
-    public UUID getClassroomId() {
+    public int getClassroomId() {
         return classroomId;
     }
 
-    public void setClassroomId(UUID classroomId) {
+    public void setClassroomId(int classroomId) {
         this.classroomId = classroomId;
     }
 

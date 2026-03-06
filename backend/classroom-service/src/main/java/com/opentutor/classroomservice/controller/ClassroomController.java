@@ -3,7 +3,9 @@ package com.opentutor.classroomservice.controller;
 import com.opentutor.classroomservice.dto.ClassroomRequestDTO;
 import com.opentutor.classroomservice.dto.ClassroomResponseDTO;
 import com.opentutor.classroomservice.service.ClassroomService;
+import com.opentutor.classroomservice.util.ClassroomUtil;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/classrooms")
+@RequestMapping(ClassroomUtil.API_BASE_PATH)
 public class ClassroomController {
     private final ClassroomService classroomService;
 
@@ -21,7 +23,8 @@ public class ClassroomController {
     }
 
     @PostMapping
-    public ResponseEntity<ClassroomResponseDTO> createClassroom(@Valid @RequestBody ClassroomRequestDTO classroomRequestDTO){
+    public ResponseEntity<ClassroomResponseDTO> createClassroom(
+            @Valid @RequestBody ClassroomRequestDTO classroomRequestDTO){
         ClassroomResponseDTO createdClassroom = classroomService.createClassroom(classroomRequestDTO);
         return new ResponseEntity<>(createdClassroom, HttpStatus.CREATED);
     }

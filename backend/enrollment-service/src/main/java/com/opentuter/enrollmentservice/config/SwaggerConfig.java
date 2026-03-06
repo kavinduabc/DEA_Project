@@ -1,5 +1,6 @@
 package com.opentuter.enrollmentservice.config;
 
+import com.opentuter.enrollmentservice.util.EnrollmentUtil;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
@@ -11,8 +12,8 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Enrollment Service APIs")
-                        .version("1.0")
-                        .description("Enrollment Service API documentation of OpenTuror Learing Platform"));
+                        .title(EnrollmentUtil.SWAGGER_TITLE)
+                        .version(EnrollmentUtil.SWAGGER_VERSION)
+                        .description(EnrollmentUtil.SWAGGER_DESCRIPTION));
     }
 }
