@@ -4,22 +4,22 @@ public class ClassroomUtil {
 
     private ClassroomUtil() {}
 
-    // ── Controller ────────────────────────────────────────────────────────────
+    // Controller
     public static final String API_BASE_PATH = "api/classrooms";
 
-    // ── Resource / Field names (used in exceptions) ───────────────────────────
+    // Resource / Field names
     public static final String RESOURCE_CLASSROOM = "Classroom";
     public static final String RESOURCE_USER      = "User";
     public static final String FIELD_ID           = "id";
     public static final String FIELD_INVITE_CODE  = "inviteCode";
 
-    // ── UserServiceClient ─────────────────────────────────────────────────────
+    // UserServiceClient
     public static final String PROFILE_SERVICE_USER_URI = "http://profile-service/api/user/view/id/{id}";
 
-    // ── Mapper defaults ───────────────────────────────────────────────────────
+    // Mapper defaults
     public static final boolean DEFAULT_IS_ACTIVE = true;
 
-    // ── Validation messages (ClassroomRequestDTO) ─────────────────────────────
+    // Validation messages
     public static final String MSG_TEACHER_ID_REQUIRED = "Teacher ID is required";
     public static final String MSG_TITLE_REQUIRED      = "Title is required";
     public static final String MSG_SUBJECT_REQUIRED    = "Subject is required";
@@ -30,7 +30,7 @@ public class ClassroomUtil {
     public static final String MSG_INVITE_CODE_LENGTH =
             "Invite code should be between 6 and 10 characters";
 
-    // ── Validation constraints ────────────────────────────────────────────────
+    // Validation constraints
     public static final int TITLE_MIN_LENGTH       = 3;
     public static final int TITLE_MAX_LENGTH       = 100;
     public static final int SUBJECT_MIN_LENGTH     = 3;
@@ -38,12 +38,12 @@ public class ClassroomUtil {
     public static final int INVITE_CODE_MIN_LENGTH = 6;
     public static final int INVITE_CODE_MAX_LENGTH = 10;
 
-    // ── Validation messages (Classroom entity) ────────────────────────────────
+    // Validation messages
     public static final String MSG_ENTITY_TEACHER_ID_REQUIRED = "Teacher Id is required";
     public static final String MSG_ENTITY_TITLE_REQUIRED      = "Title is required";
     public static final String MSG_ENTITY_SUBJECT_REQUIRED    = "Subject is required";
 
-    // ── GlobalExceptionHandler strings ────────────────────────────────────────
+    // GlobalExceptionHandler strings
     public static final String ERROR_CONFLICT               = "Conflict";
     public static final String ERROR_NOT_FOUND              = "Not Found";
     public static final String ERROR_UNAUTHORIZED           = "Unauthorized";

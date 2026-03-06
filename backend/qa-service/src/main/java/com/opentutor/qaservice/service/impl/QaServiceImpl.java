@@ -17,6 +17,7 @@ import com.opentutor.qaservice.model.Question;
 import com.opentutor.qaservice.repository.AnswerRepository;
 import com.opentutor.qaservice.repository.QuestionRepository;
 import com.opentutor.qaservice.service.QaService;
+import com.opentutor.qaservice.util.QaUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,12 +52,12 @@ public class QaServiceImpl implements QaService {
     public QuestionResponseDto createQuestion(QuestionRequestDto requestDto) {
         // Validate user exists
         if (!userServiceClient.userExists(requestDto.getUserId())) {
-            throw new ResourceNotFoundException("User not found with ID: " + requestDto.getUserId());
+            throw new ResourceNotFoundException(QaUtil.USER_NOT_FOUND + requestDto.getUserId());
         }
 
         // Validate classroom exists
         if (!classroomServiceClient.classroomExists(requestDto.getClassroomId())) {
-            throw new ResourceNotFoundException("Classroom not found with ID: " + requestDto.getClassroomId());
+            throw new ResourceNotFoundException(QaUtil.CLASSROOM_NOT_FOUND + requestDto.getClassroomId());
         }
 
         Question question = questionMapper.toEntity(requestDto);
@@ -67,7 +68,7 @@ public class QaServiceImpl implements QaService {
     @Override
     public QuestionResponseDto getQuestionById(String id) {
         Question question = questionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.QUESTION_NOT_FOUND + id));
 
         question.incrementViewCount();
         questionRepository.save(question);
@@ -127,7 +128,7 @@ public class QaServiceImpl implements QaService {
     @Override
     public QuestionResponseDto updateQuestion(String id, QuestionUpdateDto updateDto) {
         Question existingQuestion = questionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.QUESTION_NOT_FOUND + id));
 
         // Update fields if provided
         if (updateDto.getTitle() != null && !updateDto.getTitle().isEmpty()) {
@@ -147,7 +148,7 @@ public class QaServiceImpl implements QaService {
     @Override
     public QuestionResponseDto markAsResolved(String questionId, String answerId) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.QUESTION_NOT_FOUND + questionId));
 
         question.setIsResolved(true);
         question.setResolvedAnswerId(answerId);
@@ -159,7 +160,7 @@ public class QaServiceImpl implements QaService {
     @Override
     public QuestionResponseDto markAsUnresolved(String questionId) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.QUESTION_NOT_FOUND + questionId));
 
         question.setIsResolved(false);
         question.setResolvedAnswerId(null);
@@ -171,12 +172,12 @@ public class QaServiceImpl implements QaService {
     @Override
     public void deleteQuestion(String id) {
         Question question = questionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.QUESTION_NOT_FOUND + id));
 
         if (question.getAnswers() != null && !question.getAnswers().isEmpty()) {
             throw new DeletionNotAllowedException(
-                    "Cannot delete question with ID " + id + " because it has " +
-                    question.getAnswers().size() + " answer(s). Please remove all answers before deleting the question.");
+                    QaUtil.QUESTION_HAS_ANSWERS_PREFIX + id + QaUtil.QUESTION_HAS_ANSWERS_SUFFIX +
+                    question.getAnswers().size() + QaUtil.QUESTION_HAS_ANSWERS_POSTFIX);
         }
 
         questionRepository.delete(question);
@@ -185,7 +186,7 @@ public class QaServiceImpl implements QaService {
     @Override
     public void incrementAnswerCount(String questionId) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.QUESTION_NOT_FOUND + questionId));
         question.incrementAnswerCount();
         questionRepository.save(question);
     }
@@ -193,7 +194,7 @@ public class QaServiceImpl implements QaService {
     @Override
     public void decrementAnswerCount(String questionId) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.QUESTION_NOT_FOUND + questionId));
         question.decrementAnswerCount();
         questionRepository.save(question);
     }
@@ -201,7 +202,7 @@ public class QaServiceImpl implements QaService {
     @Override
     public AnswerResponseDto createAnswer(AnswerRequestDto requestDto) {
         questionRepository.findById(requestDto.getQuestionId())
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + requestDto.getQuestionId()));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.QUESTION_NOT_FOUND + requestDto.getQuestionId()));
 
         Answer answer = answerMapper.toEntity(requestDto);
         Answer savedAnswer = answerRepository.save(answer);
@@ -214,14 +215,14 @@ public class QaServiceImpl implements QaService {
     @Override
     public AnswerResponseDto getAnswerById(String id) {
         Answer answer = answerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.ANSWER_NOT_FOUND + id));
         return answerMapper.toResponseDto(answer);
     }
 
     @Override
     public List<AnswerResponseDto> getAnswersByQuestionId(String questionId) {
         questionRepository.findById(questionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.QUESTION_NOT_FOUND + questionId));
 
         List<Answer> answers = answerRepository.findByQuestionIdOrderByIsAcceptedDescUpvotesDescCreatedAtDesc(questionId);
         return answers.stream()
@@ -240,10 +241,10 @@ public class QaServiceImpl implements QaService {
     @Override
     public AnswerResponseDto updateAnswer(String id, AnswerUpdateDto updateDto) {
         Answer existingAnswer = answerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.ANSWER_NOT_FOUND + id));
 
         if (existingAnswer.getIsAccepted()) {
-            throw new DeletionNotAllowedException("Cannot edit an accepted answer");
+            throw new DeletionNotAllowedException(QaUtil.CANNOT_EDIT_ACCEPTED_ANSWER);
         }
 
         if (updateDto.getContent() != null && !updateDto.getContent().isEmpty()) {
@@ -257,7 +258,7 @@ public class QaServiceImpl implements QaService {
     @Override
     public AnswerResponseDto markAsAccepted(String answerId) {
         Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + answerId));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.ANSWER_NOT_FOUND + answerId));
 
         List<Answer> previouslyAccepted = answerRepository
                 .findByQuestionIdOrderByIsAcceptedDescUpvotesDescCreatedAtDesc(answer.getQuestionId())
@@ -281,7 +282,7 @@ public class QaServiceImpl implements QaService {
     @Override
     public AnswerResponseDto unmarkAsAccepted(String answerId) {
         Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + answerId));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.ANSWER_NOT_FOUND + answerId));
 
         answer.setIsAccepted(false);
         Answer updatedAnswer = answerRepository.save(answer);
@@ -294,7 +295,7 @@ public class QaServiceImpl implements QaService {
     @Override
     public AnswerResponseDto upvoteAnswer(String answerId) {
         Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + answerId));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.ANSWER_NOT_FOUND + answerId));
 
         answer.incrementUpvotes();
         Answer updatedAnswer = answerRepository.save(answer);
@@ -304,7 +305,7 @@ public class QaServiceImpl implements QaService {
     @Override
     public AnswerResponseDto removeUpvote(String answerId) {
         Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + answerId));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.ANSWER_NOT_FOUND + answerId));
 
         answer.decrementUpvotes();
         Answer updatedAnswer = answerRepository.save(answer);
@@ -314,10 +315,10 @@ public class QaServiceImpl implements QaService {
     @Override
     public void deleteAnswer(String id) {
         Answer answer = answerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(QaUtil.ANSWER_NOT_FOUND + id));
 
         if (answer.getIsAccepted()) {
-            throw new DeletionNotAllowedException("Cannot delete an accepted answer. Please unmark it first.");
+            throw new DeletionNotAllowedException(QaUtil.CANNOT_DELETE_ACCEPTED_ANSWER);
         }
 
         String questionId = answer.getQuestionId();

@@ -1,12 +1,5 @@
 package com.opentuter.enrollmentservice.util;
 
-/**
- * Utility class for Enrollment Service constants.
- * <p>
- * Centralizes all hardcoded string literals and configuration values
- * so that they can be changed in one place without hunting through the codebase.
- * </p>
- */
 public final class EnrollmentUtil {
 
     // Prevent instantiation of this utility class
@@ -14,19 +7,12 @@ public final class EnrollmentUtil {
         throw new UnsupportedOperationException("EnrollmentUtil is a utility class and cannot be instantiated.");
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // API ENDPOINTS
-    // ══════════════════════════════════════════════════════════════════════════
-
     /** Base URL for enrollment endpoints */
     public static final String BASE_URL = "/api/enrollments";
     public static final String STUDENT_ENDPOINT = "/student/{studentId}";
     public static final String CLASSROOM_ENDPOINT = "/classroom/{classroomId}";
     public static final String ID_ENDPOINT = "/{id}";
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // RESOURCE NAMES (used in exceptions)
-    // ══════════════════════════════════════════════════════════════════════════
 
     /** Resource name for Enrollment entity */
     public static final String RESOURCE_ENROLLMENT = "Enrollment";
@@ -36,10 +22,6 @@ public final class EnrollmentUtil {
 
     /** Resource name for Classroom entity */
     public static final String RESOURCE_CLASSROOM = "Classroom";
-
-    // ══════════════════════════════════════════════════════════════════════════
-    // FIELD NAMES
-    // ══════════════════════════════════════════════════════════════════════════
 
     /** Field name for ID */
     public static final String FIELD_ID = "id";
@@ -52,10 +34,6 @@ public final class EnrollmentUtil {
 
     /** Combined field name for composite key */
     public static final String FIELD_STUDENT_CLASSROOM = "studentId + classroomId";
-
-    // ══════════════════════════════════════════════════════════════════════════
-    // ERROR MESSAGES
-    // ══════════════════════════════════════════════════════════════════════════
 
     /** Error message when required fields are null */
     public static final String ERROR_NULL_FIELDS = "studentId and classroomId must not be null";
@@ -96,19 +74,11 @@ public final class EnrollmentUtil {
     /** Error message for data integrity violation */
     public static final String ERROR_DATA_INTEGRITY = "Data integrity violation occurred";
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // VALIDATION MESSAGES
-    // ══════════════════════════════════════════════════════════════════════════
-
     /** Validation message for required student ID */
     public static final String VALIDATION_STUDENT_ID_REQUIRED = "studentId is required";
 
     /** Validation message for required classroom ID */
     public static final String VALIDATION_CLASSROOM_ID_REQUIRED = "classroomId is required";
-
-    // ══════════════════════════════════════════════════════════════════════════
-    // SWAGGER CONFIGURATION
-    // ══════════════════════════════════════════════════════════════════════════
 
     /** Swagger API title */
     public static final String SWAGGER_TITLE = "Enrollment Service APIs";
@@ -118,10 +88,6 @@ public final class EnrollmentUtil {
 
     /** Swagger API description */
     public static final String SWAGGER_DESCRIPTION = "Enrollment Service API documentation of OpenTuror Learing Platform";
-
-    // ══════════════════════════════════════════════════════════════════════════
-    // DATABASE TABLE AND COLUMN NAMES
-    // ══════════════════════════════════════════════════════════════════════════
 
     /** Database table name for enrollments */
     public static final String TABLE_ENROLLMENTS = "enrollments";
@@ -138,10 +104,6 @@ public final class EnrollmentUtil {
     /** Database column name for enrolled at timestamp */
     public static final String COLUMN_ENROLLED_AT = "enrolled_at";
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // LOGGING MESSAGES
-    // ══════════════════════════════════════════════════════════════════════════
-
     /** Log message prefix for duplicate resource */
     public static final String LOG_DUPLICATE_RESOURCE = "Duplicate resource: {}";
 
@@ -156,10 +118,6 @@ public final class EnrollmentUtil {
 
     /** Log message for unexpected error */
     public static final String LOG_UNEXPECTED_ERROR = "Unexpected error occurred";
-
-    // ══════════════════════════════════════════════════════════════════════════
-    // MISCELLANEOUS
-    // ══════════════════════════════════════════════════════════════════════════
 
     /** URI prefix to remove from request description */
     public static final String URI_PREFIX = "uri=";

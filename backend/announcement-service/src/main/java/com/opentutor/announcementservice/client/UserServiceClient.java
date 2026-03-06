@@ -16,12 +16,6 @@ public class UserServiceClient {
         this.webClientBuilder = webClientBuilder;
     }
 
-    /**
-     * Checks if a user exists in the profile-service.
-     *
-     * @param userId the UUID of the user to check
-     * @return true if the user exists, false otherwise
-     */
     public boolean userExists(UUID userId) {
         try {
             webClientBuilder.build()

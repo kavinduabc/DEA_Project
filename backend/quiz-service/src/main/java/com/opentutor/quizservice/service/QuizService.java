@@ -13,24 +13,14 @@ import java.util.List;
 public interface QuizService {
 
     QuizResponceDto createQuiz(QuizRequestDto requestDto);
-
     QuizResponceDto getQuizById(String id);
-
     List<QuizResponceDto> getQuizzesByModuleId(String moduleId);
-
     QuizResponceDto updateQuiz(String id, QuizUpdateDto updateDto);
-
     void deleteQuiz(String id);
-
     QuestionResponseDto createQuestion(String quizId, QuestionRequestDto requestDto);
-
     QuestionResponseDto getQuestionById(String id);
-
     List<QuestionResponseDto> getQuestionsByQuizId(String quizId);
-
     void deleteQuestion(String id);
-
     AttemptResponseDto createAttempt(String quizId, AttemptRequestDto requestDto);
-
     List<AttemptResponseDto> getAttemptsByQuizId(String quizId);
 }

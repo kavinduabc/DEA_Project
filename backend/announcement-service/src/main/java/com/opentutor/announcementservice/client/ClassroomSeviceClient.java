@@ -16,12 +16,6 @@ public class ClassroomSeviceClient {
         this.webClientBuilder = webClientBuilder;
     }
 
-    /**
-     * Checks if a classroom exists in the classroom-service.
-     *
-     * @param classroomId the UUID of the classroom to check
-     * @return true if the classroom exists, false otherwise
-     */
     public boolean classroomExists(UUID classroomId) {
         try {
             webClientBuilder.build()

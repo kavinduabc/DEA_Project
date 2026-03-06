@@ -3,10 +3,6 @@ package com.opentutor.announcementservice.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-/**
- * Exception thrown when attempting to create a resource that already exists.
- * Results in a 409 CONFLICT HTTP response.
- */
 @ResponseStatus(HttpStatus.CONFLICT)
 public class DuplicateResourceException extends AnnouncementServiceException {
 

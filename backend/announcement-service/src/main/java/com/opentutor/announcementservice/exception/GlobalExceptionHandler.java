@@ -12,21 +12,6 @@ import org.springframework.web.context.request.WebRequest;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
-/**
- * Global exception handler for the Announcement Service.
- * Catches and formats exceptions thrown across all controllers
- * into consistent {@link ErrorResponseDTO} JSON responses.
- *
- * <p>Handler resolution order (Spring picks the most specific match first):
- * <ol>
- *   <li>{@link ResourceNotFoundException}    → 404 NOT FOUND</li>
- *   <li>{@link DuplicateResourceException}   → 409 CONFLICT</li>
- *   <li>{@link AnnouncementServiceException} → 400 BAD REQUEST (base for all custom exceptions)</li>
- *   <li>{@link MethodArgumentNotValidException}  → 400 BAD REQUEST (Bean Validation failures)</li>
- *   <li>{@link HttpMessageNotReadableException}  → 400 BAD REQUEST (malformed JSON)</li>
- *   <li>{@link Exception}                    → 500 INTERNAL SERVER ERROR (catch-all)</li>
- * </ol>
- */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

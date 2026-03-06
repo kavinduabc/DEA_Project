@@ -9,6 +9,7 @@ import com.opentuter.resourceservice.model.Resource;
 import com.opentuter.resourceservice.repository.ModuleRepository;
 import com.opentuter.resourceservice.repository.ResourceRepository;
 import com.opentuter.resourceservice.service.ResourceService;
+import com.opentuter.resourceservice.util.RscourceUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,6 @@ public class ResourceServiceImpl implements ResourceService {
         this.classroomServiceClient = classroomServiceClient;
     }
 
-    // ================= MODULE =================
 
     @Override
     public ModuleResponseDto createModule(ModuleRequestDto dto) {
@@ -56,7 +56,7 @@ public class ResourceServiceImpl implements ResourceService {
     public ModuleResponseDto updateModule(UUID id, ModuleRequestDto dto) {
         Module existing = moduleRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Module", "id", id));
+                        new ResourceNotFoundException(RscourceUtil.ENTITY_MODULE, RscourceUtil.FIELD_ID, id));
 
         existing.setTitle(dto.getTitle());
         existing.setClassroomId(dto.getClassroomId());
@@ -74,7 +74,7 @@ public class ResourceServiceImpl implements ResourceService {
     public void deleteModule(UUID id) {
         Module module = moduleRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Module", "id", id));
+                        new ResourceNotFoundException(RscourceUtil.ENTITY_MODULE, RscourceUtil.FIELD_ID, id));
 
         moduleRepository.delete(module);
     }
@@ -95,7 +95,7 @@ public class ResourceServiceImpl implements ResourceService {
     public ModuleResponseDto getModuleById(UUID id) {
         Module module = moduleRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Module", "id", id));
+                        new ResourceNotFoundException(RscourceUtil.ENTITY_MODULE, RscourceUtil.FIELD_ID, id));
 
         return new ModuleResponseDto(
                 module.getId(),
@@ -110,7 +110,7 @@ public class ResourceServiceImpl implements ResourceService {
     public ResourceResponseDto createResource(ResourceRequestDto dto) {
         Module module = moduleRepository.findById(dto.getModuleId())
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Module", "id", dto.getModuleId()));
+                        new ResourceNotFoundException(RscourceUtil.ENTITY_MODULE, RscourceUtil.FIELD_ID, dto.getModuleId()));
 
         Resource resource = ResourceMapper.toEntity(dto);
         resource.setModule(module);
@@ -124,7 +124,7 @@ public class ResourceServiceImpl implements ResourceService {
     public ResourceResponseDto getResourceById(UUID id) {
         Resource resource = resourceRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Resource", "id", id));
+                        new ResourceNotFoundException(RscourceUtil.ENTITY_RESOURCE, RscourceUtil.FIELD_ID, id));
 
         return ResourceMapper.toDto(resource);
     }
@@ -133,7 +133,7 @@ public class ResourceServiceImpl implements ResourceService {
     public List<ResourceResponseDto> getResourcesByModuleId(UUID moduleId) {
         moduleRepository.findById(moduleId)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Module", "id", moduleId));
+                        new ResourceNotFoundException(RscourceUtil.ENTITY_MODULE, RscourceUtil.FIELD_ID, moduleId));
 
         return resourceRepository.findByModule_Id(moduleId)
                 .stream()
@@ -145,7 +145,7 @@ public class ResourceServiceImpl implements ResourceService {
     public ResourceResponseDto updateResource(UUID id, ResourceRequestDto dto) {
         Resource resource = resourceRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Resource", "id", id));
+                        new ResourceNotFoundException(RscourceUtil.ENTITY_RESOURCE, RscourceUtil.FIELD_ID, id));
 
         resource.setTitle(dto.getTitle());
         resource.setType(dto.getType());
@@ -160,7 +160,7 @@ public class ResourceServiceImpl implements ResourceService {
     public void deleteResource(UUID id) {
         Resource resource = resourceRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Resource", "id", id));
+                        new ResourceNotFoundException(RscourceUtil.ENTITY_RESOURCE, RscourceUtil.FIELD_ID, id));
 
         resourceRepository.delete(resource);
     }

@@ -1,5 +1,6 @@
 package com.opentutor.quizservice.client;
 
+import com.opentutor.quizservice.util.QuizUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -11,21 +12,14 @@ public class ResourceServiceClient {
 
     public ResourceServiceClient(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder
-                .baseUrl("http://resource-service")
+                .baseUrl(QuizUtil.RESOURCE_SERVICE_BASE_URL)
                 .build();
     }
 
-    /**
-     * Checks whether a module with the given ID exists in the resource-service.
-     *
-     * @param moduleId the UUID of the module to validate
-     * @return true if the module exists, false if a 404 is returned
-     * @throws RuntimeException for any other non-2xx response
-     */
     public boolean isModuleValid(String moduleId) {
         try {
             webClient.get()
-                    .uri("/api/resources/modules/{id}", moduleId)
+                    .uri(QuizUtil.RESOURCE_SERVICE_GET_MODULE_BY_ID, moduleId)
                     .retrieve()
                     .toBodilessEntity()
                     .block();

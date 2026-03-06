@@ -18,6 +18,7 @@ import com.opentutor.quizservice.model.Question;
 import com.opentutor.quizservice.model.Quiz;
 import com.opentutor.quizservice.repository.QuizRepository;
 import com.opentutor.quizservice.service.QuizService;
+import com.opentutor.quizservice.util.QuizUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,11 +43,11 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public QuizResponceDto createQuiz(QuizRequestDto requestDto) {
         if (!resourceServiceClient.isModuleValid(requestDto.getModuleId().toString())) {
-            throw new ResourceNotFoundException("Module", "id", requestDto.getModuleId());
+            throw new ResourceNotFoundException(QuizUtil.ENTITY_MODULE, QuizUtil.FIELD_ID, requestDto.getModuleId());
         }
 
         if (quizRepository.findByModuleIdAndTitle(requestDto.getModuleId(), requestDto.getTitle()).isPresent()) {
-            throw new DuplicateResourceException("Quiz", "title", requestDto.getTitle());
+            throw new DuplicateResourceException(QuizUtil.ENTITY_QUIZ, QuizUtil.FIELD_TITLE, requestDto.getTitle());
         }
 
         Quiz quiz = quizMapper.toEntity(requestDto);
@@ -58,10 +59,10 @@ public class QuizServiceImpl implements QuizService {
     public QuizResponceDto getQuizById(String id) {
         try {
             Quiz quiz = quizRepository.findById(UUID.fromString(id))
-                    .orElseThrow(() -> new ResourceNotFoundException("Quiz", "id", id));
+                    .orElseThrow(() -> new ResourceNotFoundException(QuizUtil.ENTITY_QUIZ, QuizUtil.FIELD_ID, id));
             return quizMapper.toDto(quiz);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid UUID format: " + id);
+            throw new IllegalArgumentException(QuizUtil.INVALID_UUID_FORMAT + id);
         }
     }
 
@@ -73,7 +74,7 @@ public class QuizServiceImpl implements QuizService {
                     .map(quizMapper::toDto)
                     .toList();
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid UUID format: " + moduleId);
+            throw new IllegalArgumentException(QuizUtil.INVALID_UUID_FORMAT + moduleId);
         }
     }
 
@@ -81,13 +82,13 @@ public class QuizServiceImpl implements QuizService {
     public QuizResponceDto updateQuiz(String id, QuizUpdateDto updateDto) {
         try {
             Quiz existingQuiz = quizRepository.findById(UUID.fromString(id))
-                    .orElseThrow(() -> new ResourceNotFoundException("Quiz", "id", id));
+                    .orElseThrow(() -> new ResourceNotFoundException(QuizUtil.ENTITY_QUIZ, QuizUtil.FIELD_ID, id));
 
             if (quizRepository.findByModuleIdAndTitleAndIdNot(
                     existingQuiz.getModuleId(),
                     updateDto.getTitle(),
                     existingQuiz.getId()).isPresent()) {
-                throw new DuplicateResourceException("Quiz", "title", updateDto.getTitle());
+                throw new DuplicateResourceException(QuizUtil.ENTITY_QUIZ, QuizUtil.FIELD_TITLE, updateDto.getTitle());
             }
 
             existingQuiz.setTitle(updateDto.getTitle());
@@ -97,8 +98,8 @@ public class QuizServiceImpl implements QuizService {
             Quiz updatedQuiz = quizRepository.save(existingQuiz);
             return quizMapper.toDto(updatedQuiz);
         } catch (IllegalArgumentException e) {
-            if (e.getMessage().contains("Invalid UUID format") || e.getMessage().contains("Invalid UUID string")) {
-                throw new IllegalArgumentException("Invalid UUID format: " + id);
+            if (e.getMessage().contains(QuizUtil.INVALID_UUID_FORMAT) || e.getMessage().contains(QuizUtil.INVALID_UUID_STRING)) {
+                throw new IllegalArgumentException(QuizUtil.INVALID_UUID_FORMAT + id);
             }
             throw e;
         }
@@ -108,24 +109,28 @@ public class QuizServiceImpl implements QuizService {
     public void deleteQuiz(String id) {
         try {
             Quiz quiz = quizRepository.findById(UUID.fromString(id))
-                    .orElseThrow(() -> new ResourceNotFoundException("Quiz", "id", id));
+                    .orElseThrow(() -> new ResourceNotFoundException(QuizUtil.ENTITY_QUIZ, QuizUtil.FIELD_ID, id));
 
             if (quiz.getQuestions() != null && !quiz.getQuestions().isEmpty()) {
                 throw new DeletionNotAllowedException(
-                        "Cannot delete quiz with ID " + id + " because it contains " +
-                        quiz.getQuestions().size() + " question(s). Please remove all questions before deleting the quiz.");
+                        QuizUtil.DELETE_QUIZ_HAS_QUESTIONS_PREFIX + id +
+                        QuizUtil.DELETE_QUIZ_HAS_QUESTIONS_MID +
+                        quiz.getQuestions().size() +
+                        QuizUtil.DELETE_QUIZ_HAS_QUESTIONS_SUFFIX);
             }
 
             if (quiz.getAttempts() != null && !quiz.getAttempts().isEmpty()) {
                 throw new DeletionNotAllowedException(
-                        "Cannot delete quiz with ID " + id + " because it has " +
-                        quiz.getAttempts().size() + " attempt(s). Quizzes with student attempts cannot be deleted.");
+                        QuizUtil.DELETE_QUIZ_HAS_QUESTIONS_PREFIX + id +
+                        QuizUtil.DELETE_QUIZ_HAS_ATTEMPTS_MID +
+                        quiz.getAttempts().size() +
+                        QuizUtil.DELETE_QUIZ_HAS_ATTEMPTS_SUFFIX);
             }
 
             quizRepository.delete(quiz);
         } catch (IllegalArgumentException e) {
-            if (e.getMessage().contains("Invalid UUID format") || e.getMessage().contains("Invalid UUID string")) {
-                throw new IllegalArgumentException("Invalid UUID format: " + id);
+            if (e.getMessage().contains(QuizUtil.INVALID_UUID_FORMAT) || e.getMessage().contains(QuizUtil.INVALID_UUID_STRING)) {
+                throw new IllegalArgumentException(QuizUtil.INVALID_UUID_FORMAT + id);
             }
             throw e;
         }
@@ -135,7 +140,7 @@ public class QuizServiceImpl implements QuizService {
     public QuestionResponseDto createQuestion(String quizId, QuestionRequestDto requestDto) {
         try {
             Quiz quiz = quizRepository.findById(UUID.fromString(quizId))
-                    .orElseThrow(() -> new ResourceNotFoundException("Quiz", "id", quizId));
+                    .orElseThrow(() -> new ResourceNotFoundException(QuizUtil.ENTITY_QUIZ, QuizUtil.FIELD_ID, quizId));
 
             Question question = questionMapper.toEntity(requestDto, quiz);
 
@@ -150,8 +155,8 @@ public class QuizServiceImpl implements QuizService {
 
             return questionMapper.toDto(savedQuestion);
         } catch (IllegalArgumentException e) {
-            if (e.getMessage().contains("Invalid UUID format") || e.getMessage().contains("Invalid UUID string")) {
-                throw new IllegalArgumentException("Invalid UUID format: " + quizId);
+            if (e.getMessage().contains(QuizUtil.INVALID_UUID_FORMAT) || e.getMessage().contains(QuizUtil.INVALID_UUID_STRING)) {
+                throw new IllegalArgumentException(QuizUtil.INVALID_UUID_FORMAT + quizId);
             }
             throw e;
         }
@@ -173,9 +178,9 @@ public class QuizServiceImpl implements QuizService {
                 }
             }
 
-            throw new ResourceNotFoundException("Question", "id", id);
+            throw new ResourceNotFoundException(QuizUtil.ENTITY_QUESTION, QuizUtil.FIELD_ID, id);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid UUID format: " + id);
+            throw new IllegalArgumentException(QuizUtil.INVALID_UUID_FORMAT + id);
         }
     }
 
@@ -183,7 +188,7 @@ public class QuizServiceImpl implements QuizService {
     public List<QuestionResponseDto> getQuestionsByQuizId(String quizId) {
         try {
             Quiz quiz = quizRepository.findById(UUID.fromString(quizId))
-                    .orElseThrow(() -> new ResourceNotFoundException("Quiz", "id", quizId));
+                    .orElseThrow(() -> new ResourceNotFoundException(QuizUtil.ENTITY_QUIZ, QuizUtil.FIELD_ID, quizId));
 
             if (quiz.getQuestions() == null || quiz.getQuestions().isEmpty()) {
                 return new java.util.ArrayList<>();
@@ -193,7 +198,7 @@ public class QuizServiceImpl implements QuizService {
                     .map(questionMapper::toDto)
                     .toList();
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid UUID format: " + quizId);
+            throw new IllegalArgumentException(QuizUtil.INVALID_UUID_FORMAT + quizId);
         }
     }
 
@@ -221,10 +226,10 @@ public class QuizServiceImpl implements QuizService {
                 }
             }
 
-            throw new ResourceNotFoundException("Question", "id", id);
+            throw new ResourceNotFoundException(QuizUtil.ENTITY_QUESTION, QuizUtil.FIELD_ID, id);
         } catch (IllegalArgumentException e) {
-            if (e.getMessage().contains("Invalid UUID format") || e.getMessage().contains("Invalid UUID string")) {
-                throw new IllegalArgumentException("Invalid UUID format: " + id);
+            if (e.getMessage().contains(QuizUtil.INVALID_UUID_FORMAT) || e.getMessage().contains(QuizUtil.INVALID_UUID_STRING)) {
+                throw new IllegalArgumentException(QuizUtil.INVALID_UUID_FORMAT + id);
             }
             throw e;
         }
@@ -234,7 +239,7 @@ public class QuizServiceImpl implements QuizService {
     public AttemptResponseDto createAttempt(String quizId, AttemptRequestDto requestDto) {
         try {
             Quiz quiz = quizRepository.findById(UUID.fromString(quizId))
-                    .orElseThrow(() -> new ResourceNotFoundException("Quiz", "id", quizId));
+                    .orElseThrow(() -> new ResourceNotFoundException(QuizUtil.ENTITY_QUIZ, QuizUtil.FIELD_ID, quizId));
 
             Attempt attempt = new Attempt();
             attempt.setQuiz(quiz);
@@ -251,8 +256,8 @@ public class QuizServiceImpl implements QuizService {
 
             return mapAttemptToDto(savedAttempt);
         } catch (IllegalArgumentException e) {
-            if (e.getMessage().contains("Invalid UUID format") || e.getMessage().contains("Invalid UUID string")) {
-                throw new IllegalArgumentException("Invalid UUID format");
+            if (e.getMessage().contains(QuizUtil.INVALID_UUID_FORMAT) || e.getMessage().contains(QuizUtil.INVALID_UUID_STRING)) {
+                throw new IllegalArgumentException(QuizUtil.INVALID_UUID_GENERIC);
             }
             throw e;
         }
@@ -262,7 +267,7 @@ public class QuizServiceImpl implements QuizService {
     public List<AttemptResponseDto> getAttemptsByQuizId(String quizId) {
         try {
             Quiz quiz = quizRepository.findById(UUID.fromString(quizId))
-                    .orElseThrow(() -> new ResourceNotFoundException("Quiz", "id", quizId));
+                    .orElseThrow(() -> new ResourceNotFoundException(QuizUtil.ENTITY_QUIZ, QuizUtil.FIELD_ID, quizId));
 
             if (quiz.getAttempts() == null || quiz.getAttempts().isEmpty()) {
                 return new java.util.ArrayList<>();
@@ -272,7 +277,7 @@ public class QuizServiceImpl implements QuizService {
                     .map(this::mapAttemptToDto)
                     .toList();
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid UUID format: " + quizId);
+            throw new IllegalArgumentException(QuizUtil.INVALID_UUID_FORMAT + quizId);
         }
     }
 

@@ -1,12 +1,6 @@
 package com.opentuter.assignmentservice.util;
 
-/**
- * Application-wide constants for the Assignment Service.
- * <p>
- * Centralises all hardcoded string literals so that they can be changed
- * in one place without hunting through the codebase.
- * </p>
- */
+
 public final class AppConstants {
 
     // ── Error messages ────────────────────────────────────────────────────────

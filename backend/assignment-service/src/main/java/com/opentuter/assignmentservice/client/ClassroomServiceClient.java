@@ -14,10 +14,6 @@ public class ClassroomServiceClient {
 
     private final WebClient.Builder webClientBuilder;
 
-    /**
-     * Verifies that the classroom with the given id exists in the classroom-service.
-     * Throws {@link ResourceNotFoundException} if the classroom is not found.
-     */
     public void validateClassroomExists(UUID classroomId) {
         try {
             webClientBuilder.build()

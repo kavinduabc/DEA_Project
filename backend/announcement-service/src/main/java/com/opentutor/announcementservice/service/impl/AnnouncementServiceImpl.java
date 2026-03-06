@@ -18,10 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Implementation of the {@link AnnouncementService} interface.
- * Contains all business logic for managing announcements.
- */
 @Service
 @Transactional
 public class AnnouncementServiceImpl implements AnnouncementService {
@@ -40,9 +36,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         this.classroomServiceClient = classroomServiceClient;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public AnnouncementResponseDTO createAnnouncement(AnnouncementRequestDTO requestDTO) {
         // Verify that the teacher (user) exists in the profile-service
@@ -68,27 +62,19 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         return mapper.toResponseDTO(saved);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @Transactional(readOnly = true)
     public List<AnnouncementResponseDTO> getByClassroomId(UUID classroomId) {
         return mapper.toResponseDTOList(repo.findAllByClassroomId(classroomId));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @Transactional(readOnly = true)
     public Optional<AnnouncementResponseDTO> getById(UUID id) {
         return repo.findById(id).map(mapper::toResponseDTO);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public AnnouncementResponseDTO updateAnnouncement(UUID id, AnnouncementRequestDTO requestDTO) {
         Announcement existing = repo.findById(id)
@@ -100,9 +86,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         return mapper.toResponseDTO(updated);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public void deleteAnnouncement(UUID id) {
         if (!repo.existsById(id)) {
@@ -112,9 +96,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         repo.deleteById(id);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public AnnouncementResponseDTO generateShareToken(UUID id) {
         Announcement announcement = repo.findById(id)
@@ -126,9 +108,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         return mapper.toResponseDTO(saved);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     @Transactional(readOnly = true)
     public AnnouncementResponseDTO getByShareToken(String token) {

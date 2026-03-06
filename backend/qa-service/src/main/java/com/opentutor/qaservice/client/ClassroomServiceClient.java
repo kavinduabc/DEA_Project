@@ -1,5 +1,6 @@
 package com.opentutor.qaservice.client;
 
+import com.opentutor.qaservice.util.QaUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -16,7 +17,7 @@ public class ClassroomServiceClient {
     public boolean classroomExists(String classroomId) {
         try {
             webClient.get()
-                    .uri("http://classroom-service/api/classrooms/{id}", classroomId)
+                    .uri(QaUtil.CLASSROOM_SERVICE_GET_BY_ID, classroomId)
                     .retrieve()
                     .toBodilessEntity()
                     .block();

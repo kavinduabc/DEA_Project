@@ -8,6 +8,7 @@ import com.opentutor.quizservice.dto.QuizRequestDto;
 import com.opentutor.quizservice.dto.QuizResponceDto;
 import com.opentutor.quizservice.dto.QuizUpdateDto;
 import com.opentutor.quizservice.service.QuizService;
+import com.opentutor.quizservice.util.QuizUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/quizzes")
+@RequestMapping(QuizUtil.QUIZ_BASE_PATH)
 public class QuizController {
 
     @Autowired
@@ -29,19 +30,19 @@ public class QuizController {
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(QuizUtil.QUIZ_BY_ID_PATH)
     public ResponseEntity<QuizResponceDto> getQuizById(@PathVariable("id") String id) {
         QuizResponceDto responseDto = quizService.getQuizById(id);
         return ResponseEntity.ok(responseDto);
     }
 
-    @GetMapping("/module/{moduleId}")
+    @GetMapping(QuizUtil.QUIZ_BY_MODULE_PATH)
     public ResponseEntity<List<QuizResponceDto>> getQuizByModuleId(@PathVariable("moduleId") String moduleId) {
         List<QuizResponceDto> responseDto = quizService.getQuizzesByModuleId(moduleId);
         return ResponseEntity.ok(responseDto);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(QuizUtil.QUIZ_BY_ID_PATH)
     public ResponseEntity<QuizResponceDto> updateQuiz(
             @PathVariable("id") String id,
             @Valid @RequestBody QuizUpdateDto updateDto) {
@@ -49,13 +50,13 @@ public class QuizController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(QuizUtil.QUIZ_BY_ID_PATH)
     public ResponseEntity<Void> deleteQuiz(@PathVariable("id") String id) {
         quizService.deleteQuiz(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{quizId}/questions")
+    @PostMapping(QuizUtil.QUESTIONS_BY_QUIZ_PATH)
     public ResponseEntity<QuestionResponseDto> createQuestion(
             @PathVariable("quizId") String quizId,
             @Valid @RequestBody QuestionRequestDto requestDto) {
@@ -63,25 +64,25 @@ public class QuizController {
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
-    @GetMapping("/questions/{id}")
+    @GetMapping(QuizUtil.QUESTION_BY_ID_PATH)
     public ResponseEntity<QuestionResponseDto> getQuestionById(@PathVariable("id") String id) {
         QuestionResponseDto responseDto = quizService.getQuestionById(id);
         return ResponseEntity.ok(responseDto);
     }
 
-    @GetMapping("/{quizId}/questions")
+    @GetMapping(QuizUtil.QUESTIONS_BY_QUIZ_PATH)
     public ResponseEntity<List<QuestionResponseDto>> getQuestionsByQuizId(@PathVariable("quizId") String quizId) {
         List<QuestionResponseDto> responseDto = quizService.getQuestionsByQuizId(quizId);
         return ResponseEntity.ok(responseDto);
     }
 
-    @DeleteMapping("/questions/{id}")
+    @DeleteMapping(QuizUtil.QUESTION_BY_ID_PATH)
     public ResponseEntity<Void> deleteQuestion(@PathVariable("id") String id) {
         quizService.deleteQuestion(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{quizId}/attempts")
+    @PostMapping(QuizUtil.ATTEMPTS_BY_QUIZ_PATH)
     public ResponseEntity<AttemptResponseDto> createAttempt(
             @PathVariable("quizId") String quizId,
             @Valid @RequestBody AttemptRequestDto requestDto) {
@@ -89,7 +90,7 @@ public class QuizController {
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{quizId}/attempts")
+    @GetMapping(QuizUtil.ATTEMPTS_BY_QUIZ_PATH)
     public ResponseEntity<List<AttemptResponseDto>> getAttemptsByQuizId(@PathVariable("quizId") String quizId) {
         List<AttemptResponseDto> responseDto = quizService.getAttemptsByQuizId(quizId);
         return ResponseEntity.ok(responseDto);

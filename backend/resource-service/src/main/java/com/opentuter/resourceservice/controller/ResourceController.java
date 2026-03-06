@@ -5,6 +5,7 @@ import com.opentuter.resourceservice.dto.ModuleResponseDto;
 import com.opentuter.resourceservice.dto.ResourceRequestDto;
 import com.opentuter.resourceservice.dto.ResourceResponseDto;
 import com.opentuter.resourceservice.service.ResourceService;
+import com.opentuter.resourceservice.util.RscourceUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/resources")
+@RequestMapping(RscourceUtil.RESOURCE_BASE_PATH)
 public class ResourceController {
 
     private final ResourceService resourceService;
@@ -23,13 +24,8 @@ public class ResourceController {
         this.resourceService = resourceService;
     }
 
-    // ==================================================
-    // MODULE ENDPOINTS
-    // ==================================================
-
-    // ✅ CREATE MODULE
     // POST /api/modules
-    @PostMapping("/modules")
+    @PostMapping(RscourceUtil.MODULES_PATH)
     public ResponseEntity<ModuleResponseDto> createModule(
             @Valid @RequestBody ModuleRequestDto request) {
 
@@ -39,9 +35,8 @@ public class ResourceController {
         );
     }
 
-    // ✅ GET MODULE BY ID
     // GET /api/modules/{id}
-    @GetMapping("/modules/{id}")
+    @GetMapping(RscourceUtil.MODULES_BY_ID_PATH)
     public ResponseEntity<ModuleResponseDto> getModuleById(
             @PathVariable UUID id) {
 
@@ -50,9 +45,8 @@ public class ResourceController {
         );
     }
 
-    // ✅ GET ALL MODULES
     // GET /api/modules
-    @GetMapping("/modules")
+    @GetMapping(RscourceUtil.MODULES_PATH)
     public ResponseEntity<List<ModuleResponseDto>> getAllModules() {
 
         return ResponseEntity.ok(
@@ -60,9 +54,8 @@ public class ResourceController {
         );
     }
 
-    // ✅ UPDATE MODULE
     // PUT /api/modules/{id}
-    @PutMapping("/modules/{id}")
+    @PutMapping(RscourceUtil.MODULES_BY_ID_PATH)
     public ResponseEntity<ModuleResponseDto> updateModule(
             @PathVariable UUID id,
             @Valid @RequestBody ModuleRequestDto request) {
@@ -72,22 +65,16 @@ public class ResourceController {
         );
     }
 
-    // ✅ DELETE MODULE
     // DELETE /api/modules/{id}
-    @DeleteMapping("/modules/{id}")
+    @DeleteMapping(RscourceUtil.MODULES_BY_ID_PATH)
     public ResponseEntity<Void> deleteModule(@PathVariable UUID id) {
 
         resourceService.deleteModule(id);
         return ResponseEntity.noContent().build();
     }
 
-    // ==================================================
-    // RESOURCE ENDPOINTS
-    // ==================================================
-
-    // ✅ CREATE RESOURCE
     // POST /api/resources
-    @PostMapping("/")
+    @PostMapping(RscourceUtil.RESOURCE_CREATE_PATH)
     public ResponseEntity<ResourceResponseDto> createResource(
             @Valid @RequestBody ResourceRequestDto request) {
 
@@ -97,9 +84,8 @@ public class ResourceController {
         );
     }
 
-    // ✅ GET RESOURCE BY ID
     // GET /api/resources/{id}
-    @GetMapping("/{id}")
+    @GetMapping(RscourceUtil.RESOURCE_BY_ID_PATH)
     public ResponseEntity<ResourceResponseDto> getResource(
             @PathVariable UUID id) {
 
@@ -108,9 +94,8 @@ public class ResourceController {
         );
     }
 
-    // ✅ GET RESOURCES BY MODULE ID
     // GET /api/resources/module/{moduleId}
-    @GetMapping("/module/{moduleId}")
+    @GetMapping(RscourceUtil.RESOURCES_BY_MODULE_PATH)
     public ResponseEntity<List<ResourceResponseDto>> getResourcesByModuleId(
             @PathVariable UUID moduleId) {
 
@@ -119,9 +104,8 @@ public class ResourceController {
         );
     }
 
-    // ✅ UPDATE RESOURCE
     // PUT /api/resources/{id}
-    @PutMapping("/{id}")
+    @PutMapping(RscourceUtil.RESOURCE_BY_ID_PATH)
     public ResponseEntity<ResourceResponseDto> updateResource(
             @PathVariable UUID id,
             @Valid @RequestBody ResourceRequestDto request) {
@@ -131,9 +115,8 @@ public class ResourceController {
         );
     }
 
-    // ✅ DELETE RESOURCE
     // DELETE /api/resources/{id}
-    @DeleteMapping("/{id}")
+    @DeleteMapping(RscourceUtil.RESOURCE_BY_ID_PATH)
     public ResponseEntity<Void> deleteResource(@PathVariable UUID id) {
 
         resourceService.deleteResource(id);
