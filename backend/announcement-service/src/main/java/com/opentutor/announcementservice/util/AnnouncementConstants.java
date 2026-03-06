@@ -15,6 +15,9 @@ public final class AnnouncementConstants {
     public static final String SHARE_URL         = "/{id}/share";
     public static final String SHARED_TOKEN_URL  = "/share/{token}";
 
+    public static final String CLASSROOM_SERVICE_URL = "http://classroom-service/api/classrooms/{id}";
+    public static final String PROFILE_SERVICE_URL = "http://profile-service/api/user/view/id/{id}";
+
     // ── Resource Names (used in exceptions) ───────────────────────────────────
     public static final String RESOURCE_ANNOUNCEMENT = "Announcement";
 

@@ -1,5 +1,7 @@
 package com.opentutor.announcementservice.service.impl;
 
+import com.opentutor.announcementservice.client.ClassroomSeviceClient;
+import com.opentutor.announcementservice.client.UserServiceClient;
 import com.opentutor.announcementservice.dto.AnnouncementRequestDTO;
 import com.opentutor.announcementservice.dto.AnnouncementResponseDTO;
 import com.opentutor.announcementservice.exception.ResourceNotFoundException;
@@ -26,10 +28,16 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
     private final AnnouncementRepository repo;
     private final AnnouncementMapper mapper;
+    private final UserServiceClient userServiceClient;
+    private final ClassroomSeviceClient classroomServiceClient;
 
-    public AnnouncementServiceImpl(AnnouncementRepository repo, AnnouncementMapper mapper) {
+    public AnnouncementServiceImpl(AnnouncementRepository repo, AnnouncementMapper mapper,
+                                   UserServiceClient userServiceClient,
+                                   ClassroomSeviceClient classroomServiceClient) {
         this.repo = repo;
         this.mapper = mapper;
+        this.userServiceClient = userServiceClient;
+        this.classroomServiceClient = classroomServiceClient;
     }
 
     /**
@@ -37,6 +45,24 @@ public class AnnouncementServiceImpl implements AnnouncementService {
      */
     @Override
     public AnnouncementResponseDTO createAnnouncement(AnnouncementRequestDTO requestDTO) {
+        // Verify that the teacher (user) exists in the profile-service
+        if (!userServiceClient.userExists(requestDTO.getTeacherId())) {
+            throw new ResourceNotFoundException(
+                    "User",
+                    "id",
+                    requestDTO.getTeacherId()
+            );
+        }
+
+        // Verify that the classroom exists in the classroom-service
+        if (!classroomServiceClient.classroomExists(requestDTO.getClassroomId())) {
+            throw new ResourceNotFoundException(
+                    "Classroom",
+                    "id",
+                    requestDTO.getClassroomId()
+            );
+        }
+
         Announcement entity = mapper.toEntity(requestDTO);
         Announcement saved = repo.save(entity);
         return mapper.toResponseDTO(saved);
