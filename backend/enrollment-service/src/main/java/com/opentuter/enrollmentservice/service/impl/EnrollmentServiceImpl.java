@@ -84,7 +84,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     @Override
-    public List<EnrollmentResponseDTO> getEnrollmentsByClassroomId(int classroomId) {
+    public List<EnrollmentResponseDTO> getEnrollmentsByClassroomId(UUID classroomId) {
         return enrollmentMapper.toResponseDTOList(
                 enrollmentRepository.findByClassroomId(classroomId));
     }

@@ -21,7 +21,7 @@ public class ClassroomServiceClient {
      * @param classroomId the UUID of the classroom to check
      * @return true if the classroom exists, false otherwise
      */
-    public boolean classroomExists(int classroomId) {
+    public boolean classroomExists(UUID classroomId) {
         try {
             webClient.get()
                     .uri(CLASSROOM_SERVICE_URI, classroomId)

@@ -24,7 +24,7 @@ public class Enrollment {
 
     @NotNull
     @Column(name = EnrollmentUtil.COLUMN_CLASSROOM_ID, nullable = false)
-    private int classroomId;
+    private UUID classroomId;
 
     @NotNull
     @Column(name = EnrollmentUtil.COLUMN_ENROLLED_AT, nullable = false)
@@ -34,7 +34,7 @@ public class Enrollment {
         this.enrolledAt = LocalDateTime.now();
     }
 
-    public Enrollment(UUID studentId, int classroomId) {
+    public Enrollment(UUID studentId, UUID classroomId) {
         this.studentId = studentId;
         this.classroomId = classroomId;
         this.enrolledAt = LocalDateTime.now();
@@ -56,11 +56,11 @@ public class Enrollment {
         this.studentId = studentId;
     }
 
-    public int getClassroomId() {
+    public UUID getClassroomId() {
         return classroomId;
     }
 
-    public void setClassroomId(int classroomId) {
+    public void setClassroomId(UUID classroomId) {
         this.classroomId = classroomId;
     }
 

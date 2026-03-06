@@ -13,8 +13,8 @@ import java.util.UUID;
 public class Classroom {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     @NotNull(message = ClassroomUtil.MSG_ENTITY_TEACHER_ID_REQUIRED)
     @Column(name = "teacher_id", nullable = false)
@@ -50,11 +50,11 @@ public class Classroom {
         this.isActive = isActive;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

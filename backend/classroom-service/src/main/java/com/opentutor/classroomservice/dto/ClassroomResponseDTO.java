@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class ClassroomResponseDTO {
 
-    private Long id;
+    private UUID id;
     private UUID teacherId;
     private String title;
     private String subject;
@@ -15,7 +15,7 @@ public class ClassroomResponseDTO {
     public ClassroomResponseDTO() {
     }
 
-    public ClassroomResponseDTO(Long id, UUID teacherId, String title, String subject, String bannerImage, String inviteCode, Boolean isActive) {
+    public ClassroomResponseDTO(UUID id, UUID teacherId, String title, String subject, String bannerImage, String inviteCode, Boolean isActive) {
         this.id = id;
         this.teacherId = teacherId;
         this.title = title;
@@ -25,11 +25,11 @@ public class ClassroomResponseDTO {
         this.isActive = isActive;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

@@ -17,7 +17,7 @@ public interface EnrollmentService {
 
     List<EnrollmentResponseDTO> getEnrollmentsByStudentId(UUID studentId);
 
-    List<EnrollmentResponseDTO> getEnrollmentsByClassroomId(int classroomId);
+    List<EnrollmentResponseDTO> getEnrollmentsByClassroomId(UUID classroomId);
 
     void deleteEnrollment(UUID id);
 }

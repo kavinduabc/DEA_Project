@@ -140,7 +140,7 @@ public class EnrollmentController {
 
     @GetMapping(EnrollmentUtil.CLASSROOM_ENDPOINT)
     public ResponseEntity<List<EnrollmentResponseDTO>> getByClassroom(
-            @PathVariable int classroomId) {
+            @PathVariable UUID classroomId) {
         return ResponseEntity.ok(
                 enrollmentService.getEnrollmentsByClassroomId(classroomId)
         );

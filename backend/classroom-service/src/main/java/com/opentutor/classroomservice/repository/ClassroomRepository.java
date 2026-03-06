@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.UUID;
 
-public interface ClassroomRepository extends JpaRepository<Classroom, Long> {
+public interface ClassroomRepository extends JpaRepository<Classroom, UUID> {
     List<Classroom> findByInviteCode(String inviteCode);
     List<Classroom> findByTeacherId(UUID teacherId);
 }

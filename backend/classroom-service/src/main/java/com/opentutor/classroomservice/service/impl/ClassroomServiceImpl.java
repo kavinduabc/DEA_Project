@@ -70,7 +70,7 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     // Read by ID
     @Override
-    public ClassroomResponseDTO getClassroomById(Long id) {
+    public ClassroomResponseDTO getClassroomById(UUID id) {
         Classroom classroom = classroomRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(ClassroomUtil.RESOURCE_CLASSROOM, ClassroomUtil.FIELD_ID, id)
@@ -95,7 +95,7 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     // Update
     @Override
-    public ClassroomResponseDTO updateClassroom(Long id, ClassroomRequestDTO classroomRequestDTO) {
+    public ClassroomResponseDTO updateClassroom(UUID id, ClassroomRequestDTO classroomRequestDTO) {
 
         Classroom classroom = classroomRepository.findById(id)
                 .orElseThrow(() ->
@@ -126,7 +126,7 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     // Delete
     @Override
-    public void deleteClassroom(Long id) {
+    public void deleteClassroom(UUID id) {
         Classroom classroom = classroomRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(ClassroomUtil.RESOURCE_CLASSROOM, ClassroomUtil.FIELD_ID, id)

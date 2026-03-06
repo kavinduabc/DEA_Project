@@ -10,9 +10,9 @@ public interface ClassroomService {
 
     ClassroomResponseDTO createClassroom(ClassroomRequestDTO classroomRequestDTO);
     List<ClassroomResponseDTO> getAllClassrooms();
-    ClassroomResponseDTO getClassroomById(Long id);
+    ClassroomResponseDTO getClassroomById(UUID id);
     List<ClassroomResponseDTO> getClassroomsByTeacherId(UUID teacherId);
     List<ClassroomResponseDTO> getClassroomsByInviteCode(String inviteCode);
-    ClassroomResponseDTO updateClassroom(Long id, ClassroomRequestDTO classroomRequestDTO);
-    void deleteClassroom(Long id);
+    ClassroomResponseDTO updateClassroom(UUID id, ClassroomRequestDTO classroomRequestDTO);
+    void deleteClassroom(UUID id);
 }

@@ -27,7 +27,7 @@ public class EnrollmentRequestDTO {
     private UUID studentId;
 
     @NotNull(message = EnrollmentUtil.VALIDATION_CLASSROOM_ID_REQUIRED)
-    private int classroomId;
+    private UUID classroomId;
 
     public UUID getStudentId() {
         return studentId;
@@ -37,11 +37,11 @@ public class EnrollmentRequestDTO {
         this.studentId = studentId;
     }
 
-    public int getClassroomId() {
+    public UUID getClassroomId() {
         return classroomId;
     }
 
-    public void setClassroomId(int classroomId) {
+    public void setClassroomId(UUID classroomId) {
         this.classroomId = classroomId;
     }
 }

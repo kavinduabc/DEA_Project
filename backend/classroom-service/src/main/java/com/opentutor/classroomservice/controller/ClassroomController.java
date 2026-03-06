@@ -37,7 +37,7 @@ public class ClassroomController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ClassroomResponseDTO> getClassroomById(
-            @PathVariable Long id) {
+            @PathVariable UUID id) {
 
         ClassroomResponseDTO classroom = classroomService.getClassroomById(id);
         return ResponseEntity.ok(classroom);
@@ -66,7 +66,7 @@ public class ClassroomController {
     // Update classroom
     @PutMapping("/{id}")
     public ResponseEntity<ClassroomResponseDTO> updateClassroom(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @Valid @RequestBody ClassroomRequestDTO classroomRequestDTO) {
 
         ClassroomResponseDTO updatedClassroom =
@@ -77,7 +77,7 @@ public class ClassroomController {
 
     // Delete classroom
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClassroom(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteClassroom(@PathVariable UUID id) {
 
         classroomService.deleteClassroom(id);
         return ResponseEntity.noContent().build();
