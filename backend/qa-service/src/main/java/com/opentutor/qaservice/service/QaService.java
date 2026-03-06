@@ -6,302 +6,57 @@ import com.opentutor.qaservice.dto.AnswerUpdateDto;
 import com.opentutor.qaservice.dto.QuestionRequestDto;
 import com.opentutor.qaservice.dto.QuestionResponseDto;
 import com.opentutor.qaservice.dto.QuestionUpdateDto;
-import com.opentutor.qaservice.exception.DeletionNotAllowedException;
-import com.opentutor.qaservice.exception.ResourceNotFoundException;
-import com.opentutor.qaservice.mapper.AnswerMapper;
-import com.opentutor.qaservice.mapper.QuestionMapper;
-import com.opentutor.qaservice.model.Answer;
-import com.opentutor.qaservice.model.Question;
-import com.opentutor.qaservice.repository.AnswerRepository;
-import com.opentutor.qaservice.repository.QuestionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
-@Service
-@Transactional
-public class QaService {
+public interface QaService {
 
-    @Autowired
-    private AnswerRepository answerRepository;
+    QuestionResponseDto createQuestion(QuestionRequestDto requestDto);
 
-    @Autowired
-    private QuestionRepository questionRepository;
+    QuestionResponseDto getQuestionById(String id);
 
-    @Autowired
-    private AnswerMapper answerMapper;
+    List<QuestionResponseDto> getAllQuestions();
 
-    @Autowired
-    private QuestionMapper questionMapper;
+    List<QuestionResponseDto> getQuestionsByClassroomId(String classroomId);
 
-    
-    public QuestionResponseDto createQuestion(QuestionRequestDto requestDto) {
-        Question question = questionMapper.toEntity(requestDto);
-        Question savedQuestion = questionRepository.save(question);
-        return questionMapper.toResponseDtoWithoutAnswers(savedQuestion);
-    }
+    List<QuestionResponseDto> getQuestionsByUserId(UUID userId);
 
+    List<QuestionResponseDto> getUnresolvedQuestions();
 
-    public QuestionResponseDto getQuestionById(String id) {
-        Question question = questionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + id));
-        
-        question.incrementViewCount();
-        questionRepository.save(question);
-        
-        return questionMapper.toResponseDto(question);
-    }
+    List<QuestionResponseDto> getUnresolvedQuestionsByClassroomId(String classroomId);
 
- 
-    public List<QuestionResponseDto> getAllQuestions() {
-        List<Question> questions = questionRepository.findAll();
-        return questions.stream()
-                .map(questionMapper::toResponseDtoWithoutAnswers)
-                .collect(Collectors.toList());
-    }
+    List<QuestionResponseDto> searchQuestions(String keyword);
 
-  
-    public List<QuestionResponseDto> getQuestionsByClassroomId(String classroomId) {
-        List<Question> questions = questionRepository.findByClassroomIdOrderByCreatedAtDesc(classroomId);
-        return questions.stream()
-                .map(questionMapper::toResponseDtoWithoutAnswers)
-                .collect(Collectors.toList());
-    }
+    QuestionResponseDto updateQuestion(String id, QuestionUpdateDto updateDto);
 
-   
-    public List<QuestionResponseDto> getQuestionsByUserId(Long userId) {
-        List<Question> questions = questionRepository.findByUserIdOrderByCreatedAtDesc(userId);
-        return questions.stream()
-                .map(questionMapper::toResponseDtoWithoutAnswers)
-                .collect(Collectors.toList());
-    }
+    QuestionResponseDto markAsResolved(String questionId, String answerId);
 
-  
-    public List<QuestionResponseDto> getUnresolvedQuestions() {
-        List<Question> questions = questionRepository.findByIsResolvedOrderByCreatedAtDesc(false);
-        return questions.stream()
-                .map(questionMapper::toResponseDtoWithoutAnswers)
-                .collect(Collectors.toList());
-    }
+    QuestionResponseDto markAsUnresolved(String questionId);
 
-    public List<QuestionResponseDto> getUnresolvedQuestionsByClassroomId(String classroomId) {
-        List<Question> questions = questionRepository.findByClassroomIdAndIsResolvedOrderByCreatedAtDesc(classroomId, false);
-        return questions.stream()
-                .map(questionMapper::toResponseDtoWithoutAnswers)
-                .collect(Collectors.toList());
-    }
+    void deleteQuestion(String id);
 
- 
-    public List<QuestionResponseDto> searchQuestions(String keyword) {
-        List<Question> questions = questionRepository
-                .findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(keyword, keyword);
-        return questions.stream()
-                .map(questionMapper::toResponseDtoWithoutAnswers)
-                .collect(Collectors.toList());
-    }
+    void incrementAnswerCount(String questionId);
 
+    void decrementAnswerCount(String questionId);
 
-    public QuestionResponseDto updateQuestion(String id, QuestionUpdateDto updateDto) {
-        Question existingQuestion = questionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + id));
+    AnswerResponseDto createAnswer(AnswerRequestDto requestDto);
 
-        // Update fields if provided
-        if (updateDto.getTitle() != null && !updateDto.getTitle().isEmpty()) {
-            existingQuestion.setTitle(updateDto.getTitle());
-        }
-        if (updateDto.getContent() != null && !updateDto.getContent().isEmpty()) {
-            existingQuestion.setContent(updateDto.getContent());
-        }
-        if (updateDto.getTags() != null) {
-            existingQuestion.setTags(updateDto.getTags());
-        }
+    AnswerResponseDto getAnswerById(String id);
 
-        Question updatedQuestion = questionRepository.save(existingQuestion);
-        return questionMapper.toResponseDto(updatedQuestion);
-    }
+    List<AnswerResponseDto> getAnswersByQuestionId(String questionId);
 
+    List<AnswerResponseDto> getAnswersByUserId(UUID userId);
 
-    public QuestionResponseDto markAsResolved(String questionId, String answerId) {
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
+    AnswerResponseDto updateAnswer(String id, AnswerUpdateDto updateDto);
 
-        question.setIsResolved(true);
-        question.setResolvedAnswerId(answerId);
-        
-        Question updatedQuestion = questionRepository.save(question);
-        return questionMapper.toResponseDto(updatedQuestion);
-    }
+    AnswerResponseDto markAsAccepted(String answerId);
 
-  
-    public QuestionResponseDto markAsUnresolved(String questionId) {
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
+    AnswerResponseDto unmarkAsAccepted(String answerId);
 
-        question.setIsResolved(false);
-        question.setResolvedAnswerId(null);
-        
-        Question updatedQuestion = questionRepository.save(question);
-        return questionMapper.toResponseDto(updatedQuestion);
-    }
+    AnswerResponseDto upvoteAnswer(String answerId);
 
-    public void deleteQuestion(String id) {
-        Question question = questionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + id));
+    AnswerResponseDto removeUpvote(String answerId);
 
-        if (question.getAnswers() != null && !question.getAnswers().isEmpty()) {
-            throw new DeletionNotAllowedException(
-                    "Cannot delete question with ID " + id + " because it has " +
-                    question.getAnswers().size() + " answer(s). Please remove all answers before deleting the question.");
-        }
-
-        questionRepository.delete(question);
-    }
-
- 
-    public void incrementAnswerCount(String questionId) {
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
-        question.incrementAnswerCount();
-        questionRepository.save(question);
-    }
-
-
-    public void decrementAnswerCount(String questionId) {
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
-        question.decrementAnswerCount();
-        questionRepository.save(question);
-    }
-
-  
-    public AnswerResponseDto createAnswer(AnswerRequestDto requestDto) {
-        questionRepository.findById(requestDto.getQuestionId())
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + requestDto.getQuestionId()));
-
-        Answer answer = answerMapper.toEntity(requestDto);
-        Answer savedAnswer = answerRepository.save(answer);
-        
-        incrementAnswerCount(requestDto.getQuestionId());
-        
-        return answerMapper.toResponseDto(savedAnswer);
-    }
-
- 
-    public AnswerResponseDto getAnswerById(String id) {
-        Answer answer = answerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + id));
-        return answerMapper.toResponseDto(answer);
-    }
-
-
-    public List<AnswerResponseDto> getAnswersByQuestionId(String questionId) {
-        questionRepository.findById(questionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
-
-        List<Answer> answers = answerRepository.findByQuestionIdOrderByIsAcceptedDescUpvotesDescCreatedAtDesc(questionId);
-        return answers.stream()
-                .map(answerMapper::toResponseDto)
-                .collect(Collectors.toList());
-    }
-
-
-    public List<AnswerResponseDto> getAnswersByUserId(Long userId) {
-        List<Answer> answers = answerRepository.findByUserIdOrderByCreatedAtDesc(userId);
-        return answers.stream()
-                .map(answerMapper::toResponseDto)
-                .collect(Collectors.toList());
-    }
-
-
-    public AnswerResponseDto updateAnswer(String id, AnswerUpdateDto updateDto) {
-        Answer existingAnswer = answerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + id));
-
-        if (existingAnswer.getIsAccepted()) {
-            throw new DeletionNotAllowedException("Cannot edit an accepted answer");
-        }
-
-        if (updateDto.getContent() != null && !updateDto.getContent().isEmpty()) {
-            existingAnswer.setContent(updateDto.getContent());
-        }
-
-        Answer updatedAnswer = answerRepository.save(existingAnswer);
-        return answerMapper.toResponseDto(updatedAnswer);
-    }
-
-
-    public AnswerResponseDto markAsAccepted(String answerId) {
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + answerId));
-
-        List<Answer> previouslyAccepted = answerRepository
-                .findByQuestionIdOrderByIsAcceptedDescUpvotesDescCreatedAtDesc(answer.getQuestionId())
-                .stream()
-                .filter(Answer::getIsAccepted)
-                .collect(Collectors.toList());
-
-        for (Answer prevAnswer : previouslyAccepted) {
-            prevAnswer.setIsAccepted(false);
-            answerRepository.save(prevAnswer);
-        }
-
-        answer.setIsAccepted(true);
-        Answer updatedAnswer = answerRepository.save(answer);
-
-        markAsResolved(answer.getQuestionId(), answerId);
-
-        return answerMapper.toResponseDto(updatedAnswer);
-    }
-
-
-    public AnswerResponseDto unmarkAsAccepted(String answerId) {
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + answerId));
-
-        answer.setIsAccepted(false);
-        Answer updatedAnswer = answerRepository.save(answer);
-
-   
-        markAsUnresolved(answer.getQuestionId());
-
-        return answerMapper.toResponseDto(updatedAnswer);
-    }
-
-   
-    public AnswerResponseDto upvoteAnswer(String answerId) {
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + answerId));
-
-        answer.incrementUpvotes();
-        Answer updatedAnswer = answerRepository.save(answer);
-        return answerMapper.toResponseDto(updatedAnswer);
-    }
-
-
-    public AnswerResponseDto removeUpvote(String answerId) {
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + answerId));
-
-        answer.decrementUpvotes();
-        Answer updatedAnswer = answerRepository.save(answer);
-        return answerMapper.toResponseDto(updatedAnswer);
-    }
-
-
-    public void deleteAnswer(String id) {
-        Answer answer = answerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + id));
-
-        if (answer.getIsAccepted()) {
-            throw new DeletionNotAllowedException("Cannot delete an accepted answer. Please unmark it first.");
-        }
-
-        String questionId = answer.getQuestionId();
-        answerRepository.delete(answer);
-        
-        decrementAnswerCount(questionId);
-    }
+    void deleteAnswer(String id);
 }

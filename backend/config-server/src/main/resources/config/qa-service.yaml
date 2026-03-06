@@ -1,6 +1,6 @@
 spring:
   application:
-    name: QAService
+    name: qa-service
 
   config:
     import: optional:file:.env[.properties]

@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/qa")
@@ -53,7 +54,7 @@ public class QaController {
 
   
     @GetMapping("/questions/user/{userId}")
-    public ResponseEntity<List<QuestionResponseDto>> getQuestionsByUserId(@PathVariable Long userId) {
+    public ResponseEntity<List<QuestionResponseDto>> getQuestionsByUserId(@PathVariable UUID userId) {
         List<QuestionResponseDto> questions = qaService.getQuestionsByUserId(userId);
         return ResponseEntity.ok(questions);
     }
@@ -112,7 +113,7 @@ public class QaController {
     }
 
 
-    @PostMapping("/answers")
+        @PostMapping("/answers")
     public ResponseEntity<AnswerResponseDto> createAnswer(@Valid @RequestBody AnswerRequestDto requestDto) {
         AnswerResponseDto response = qaService.createAnswer(requestDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -134,7 +135,7 @@ public class QaController {
 
  
     @GetMapping("/answers/user/{userId}")
-    public ResponseEntity<List<AnswerResponseDto>> getAnswersByUserId(@PathVariable Long userId) {
+    public ResponseEntity<List<AnswerResponseDto>> getAnswersByUserId(@PathVariable UUID userId) {
         List<AnswerResponseDto> answers = qaService.getAnswersByUserId(userId);
         return ResponseEntity.ok(answers);
     }

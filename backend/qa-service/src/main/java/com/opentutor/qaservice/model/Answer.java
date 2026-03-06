@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "answers")
@@ -26,7 +27,7 @@ public class Answer {
 
     @NotNull(message = "User ID is required")
     @Column(nullable = false)
-    private Long userId;
+    private UUID userId;
 
     @NotBlank(message = "User name is required")
     @Column(nullable = false)
@@ -54,7 +55,7 @@ public class Answer {
     public Answer() {
     }
 
-    public Answer(String content, String questionId, Long userId, String userName) {
+    public Answer(String content, String questionId, UUID userId, String userName) {
         this.content = content;
         this.questionId = questionId;
         this.userId = userId;
@@ -88,11 +89,11 @@ public class Answer {
         this.questionId = questionId;
     }
 
-    public Long getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 

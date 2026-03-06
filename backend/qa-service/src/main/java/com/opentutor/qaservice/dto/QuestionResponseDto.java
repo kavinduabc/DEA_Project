@@ -2,13 +2,14 @@ package com.opentutor.qaservice.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public class QuestionResponseDto {
 
     private String id;
     private String title;
     private String content;
-    private Long userId;
+    private UUID userId;
     private String userName;
     private String classroomId;
     private String tags;
@@ -24,8 +25,8 @@ public class QuestionResponseDto {
     public QuestionResponseDto() {
     }
 
-    public QuestionResponseDto(String id, String title, String content, Long userId, String userName, 
-                              String classroomId, String tags, Integer viewCount, Integer answerCount, 
+    public QuestionResponseDto(String id, String title, String content, UUID userId, String userName,
+                              String classroomId, String tags, Integer viewCount, Integer answerCount,
                               Boolean isResolved, String resolvedAnswerId, LocalDateTime createdAt, 
                               LocalDateTime updatedAt) {
         this.id = id;
@@ -68,11 +69,11 @@ public class QuestionResponseDto {
         this.content = content;
     }
 
-    public Long getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 

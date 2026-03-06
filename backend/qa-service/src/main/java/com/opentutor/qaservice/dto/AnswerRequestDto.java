@@ -3,6 +3,8 @@ package com.opentutor.qaservice.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 public class AnswerRequestDto {
 
     @NotBlank(message = "Content is required")
@@ -12,7 +14,7 @@ public class AnswerRequestDto {
     private String questionId;
 
     @NotNull(message = "User ID is required")
-    private Long userId;
+    private UUID userId;
 
     @NotBlank(message = "User name is required")
     private String userName;
@@ -21,7 +23,7 @@ public class AnswerRequestDto {
     public AnswerRequestDto() {
     }
 
-    public AnswerRequestDto(String content, String questionId, Long userId, String userName) {
+    public AnswerRequestDto(String content, String questionId, UUID userId, String userName) {
         this.content = content;
         this.questionId = questionId;
         this.userId = userId;
@@ -45,11 +47,11 @@ public class AnswerRequestDto {
         this.questionId = questionId;
     }
 
-    public Long getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 
