@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/resources")
 public class ResourceController {
 
     private final ResourceService resourceService;
@@ -87,7 +87,7 @@ public class ResourceController {
 
     // ✅ CREATE RESOURCE
     // POST /api/resources
-    @PostMapping("/resources")
+    @PostMapping("/")
     public ResponseEntity<ResourceResponseDto> createResource(
             @Valid @RequestBody ResourceRequestDto request) {
 
@@ -99,7 +99,7 @@ public class ResourceController {
 
     // ✅ GET RESOURCE BY ID
     // GET /api/resources/{id}
-    @GetMapping("/resources/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ResourceResponseDto> getResource(
             @PathVariable UUID id) {
 
@@ -110,7 +110,7 @@ public class ResourceController {
 
     // ✅ GET RESOURCES BY MODULE ID
     // GET /api/resources/module/{moduleId}
-    @GetMapping("/resources/module/{moduleId}")
+    @GetMapping("/module/{moduleId}")
     public ResponseEntity<List<ResourceResponseDto>> getResourcesByModuleId(
             @PathVariable UUID moduleId) {
 
@@ -121,7 +121,7 @@ public class ResourceController {
 
     // ✅ UPDATE RESOURCE
     // PUT /api/resources/{id}
-    @PutMapping("/resources/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ResourceResponseDto> updateResource(
             @PathVariable UUID id,
             @Valid @RequestBody ResourceRequestDto request) {
@@ -133,7 +133,7 @@ public class ResourceController {
 
     // ✅ DELETE RESOURCE
     // DELETE /api/resources/{id}
-    @DeleteMapping("/resources/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteResource(@PathVariable UUID id) {
 
         resourceService.deleteResource(id);

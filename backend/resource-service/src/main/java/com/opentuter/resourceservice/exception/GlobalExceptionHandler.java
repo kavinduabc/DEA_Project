@@ -56,6 +56,24 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    // Handle ClassroomNotFoundException
+    @ExceptionHandler(ClassroomNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleClassroomNotFound(
+            ClassroomNotFoundException ex,
+            WebRequest request) {
+
+        logger.warn("Classroom not found: {}", ex.getMessage());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        response.put("error", "Not Found");
+        response.put("message", ex.getMessage());
+        response.put("path", request.getDescription(false).replace("uri=", ""));
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
     // Handle validation errors
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(
